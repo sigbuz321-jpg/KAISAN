@@ -1,5 +1,43 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\PasswordController;
+use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\SetupController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => view('beranda'))->name('beranda');
+
+// One-time installer. Both the controller and CreateFirstAdmin refuse once an
+// admin exists, so leaving the route registered is harmless.
+Route::middleware('throttle:10,1')->group(function () {
+    Route::get('/setup', [SetupController::class, 'show'])->name('setup.show');
+    Route::post('/setup', [SetupController::class, 'store'])->name('setup.store');
+});
+
+Route::middleware('guest')->group(function () {
+    Route::get('/masuk', [LoginController::class, 'show'])->name('masuk');
+
+    // 5 attempts per minute per IP, per .claude/rules/security.md.
+    Route::post('/masuk', [LoginController::class, 'store'])
+        ->middleware('throttle:5,1')
+        ->name('masuk.store');
+
+    Route::get('/lupa-kata-sandi', [PasswordResetController::class, 'request'])->name('lupa-kata-sandi');
+    Route::post('/lupa-kata-sandi', [PasswordResetController::class, 'email'])
+        ->middleware('throttle:5,1')
+        ->name('lupa-kata-sandi.email');
+
+    Route::get('/atur-ulang-kata-sandi/{token}', [PasswordResetController::class, 'reset'])
+        ->name('atur-ulang-kata-sandi');
+    Route::post('/atur-ulang-kata-sandi', [PasswordResetController::class, 'update'])
+        ->middleware('throttle:5,1')
+        ->name('atur-ulang-kata-sandi.update');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::post('/keluar', [LoginController::class, 'destroy'])->name('keluar');
+
+    Route::get('/ganti-kata-sandi', [PasswordController::class, 'edit'])->name('ganti-kata-sandi');
+    Route::put('/ganti-kata-sandi', [PasswordController::class, 'update'])->name('ganti-kata-sandi.update');
+});
