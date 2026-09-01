@@ -1,12 +1,38 @@
-# Office temp/lock files
+/vendor
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/storage/pail
+/.phpunit.cache
+.env
+.env.backup
+.env.production
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+auth.json
+npm-debug.log
+yarn-error.log
+/.idea
+/.vscode
+.DS_Store
+
+# Claude Code
+.claude/state/
+.claude/settings.local.json
+
+# Backup & dump — jangan pernah commit data murid
+*.sql
+*.sql.gz
+/backup
+
+# Office temp/lock files — dokumen penawaran ada di repo
 ~$*
 *.tmp
-
-# Windows
 Thumbs.db
 desktop.ini
 
-# Secrets — API key AI, kredensial database
-.env
-.env.*
-!.env.example
+# Arsip setup, sudah diekstrak
+KAISAN-claude-setup.zip

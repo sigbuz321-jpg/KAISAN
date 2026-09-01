@@ -1,95 +1,92 @@
-# KAISAN Bimbel — Aplikasi Digital Penunjang Bimbel
+# KAISAN
 
-Aplikasi web penunjang kegiatan belajar di **KAISAN Bimbel**: bank soal dengan
-level adaptif, pembuatan soal dibantu AI, pencatatan histori nilai, serta
-leaderboard bermusim (season) untuk guru dan siswa.
+Platform bimbel digital untuk KAISAN Bimbel. Bank soal dengan bantuan AI,
+latihan adaptif, ujian terjadwal, dan peringkat per season.
 
-> **Status:** tahap awal pengembangan. Repo ini baru berisi dokumen penawaran;
-> kode aplikasi belum ditulis.
+## Stack
 
----
+Laravel 12 · Livewire 3 · Filament 4 · PostgreSQL 17 · Redis 7 · Tailwind 4 · Pest 3
 
-## Ruang lingkup
+## Mulai (development)
 
-Aplikasi dibangun dalam 4 modul sesuai dokumen penawaran:
+```bash
+git clone https://github.com/sigbuz321-jpg/KAISAN.git
+cd KAISAN
+cp .env.example .env
+docker compose up -d --build
+docker compose exec app composer install
+docker compose exec app php artisan key:generate
+docker compose exec app php artisan migrate --seed
+docker compose exec app npm install && npm run dev
+```
 
-### 1. UI/UX & Frontend
-- Desain antarmuka aplikasi
-- **Dashboard Guru** — kelola soal, pantau nilai siswa
-- **Dashboard Siswa** — mengerjakan soal, lihat riwayat & peringkat
-- Responsif di HP dan tablet
+Buka `http://localhost:8000`.
 
-### 2. Backend & Database
-- Autentikasi dan manajemen user (Admin, Guru, Siswa)
-- **Sistem level adaptif** — tingkat kesulitan menyesuaikan kemampuan siswa
-- **Bank soal** — penyimpanan dan kategorisasi soal
-- **Histori nilai** — rekam jejak hasil pengerjaan siswa
+Akun demo dari seeder ada di `database/seeders/DemoSeeder.php`.
 
-### 3. Integrasi AI
-- Koneksi ke API AI melalui router model
-- **Prompting engine** untuk generate soal
-- **Alur review/publish** — soal hasil AI ditinjau guru sebelum terbit ke siswa
+## Verifikasi
 
-### 4. Leaderboard & Season
-- Logika perhitungan ranking
-- Reset season berkala
-- Penyimpanan snapshot data season sebelumnya
+```bash
+composer lint      # Laravel Pint
+composer analyse   # PHPStan level 6
+composer test      # Pest
+npm run build
+```
 
-## Peran pengguna
+Keempatnya harus hijau sebelum commit.
 
-| Peran | Kemampuan utama |
+## Bekerja dengan Claude Code
+
+Repo ini sudah dikonfigurasi untuk Claude Code. Mulai dengan:
+
+```bash
+claude
+```
+
+Claude akan membaca `CLAUDE.md` dan seluruh `.claude/rules/` otomatis.
+
+### Slash command
+
+| Perintah | Fungsi |
 |---|---|
-| **Admin** | Manajemen user dan konfigurasi sistem |
-| **Guru** | Generate soal via AI, review & publish soal, pantau nilai siswa |
-| **Siswa** | Mengerjakan soal adaptif, lihat histori nilai dan leaderboard |
+| `/plan <fitur>` | Rencana implementasi sebelum kode ditulis |
+| `/tdd <perilaku>` | Siklus TDD merah-hijau-refactor |
+| `/code-review` | Review kualitas + keamanan sebelum PR |
+| `/build-fix` | Diagnosis build/test yang gagal |
+| `/verify` | Loop verifikasi penuh |
+| `/checkpoint` | Simpan state sebelum compact konteks |
+| `/learn` | Ekstrak pola yang dipelajari ke rules |
+| `/handover` | Cek kesiapan serah terima ke klien |
 
-## Arsitektur & teknologi
+### Alur yang disarankan
 
-> Belum ditetapkan. Bagian ini diisi saat stack dipilih.
+```
+/plan M4 ujian terjadwal      → setujui rencananya
+/tdd validasi jendela waktu   → siklus TDD per perilaku
+/verify                       → buktikan hijau
+/code-review                  → perbaiki temuan
+commit + PR
+```
 
-Yang sudah pasti dari kebutuhan sistem:
+Jangan lompat langsung ke kode. Rencana dulu — itu inti dari setup ini.
 
-- Aplikasi web responsif (bukan aplikasi native)
-- Backend dengan database relasional untuk user, bank soal, dan histori nilai
-- Integrasi ke penyedia API AI lewat **router model** (bukan terikat satu vendor)
-- Di-deploy ke VPS, diakses lewat domain sendiri
+## Struktur
 
-## Kebutuhan operasional
+```
+.claude/
+  rules/      aturan yang selalu berlaku
+  agents/     subagent khusus (planner, architect, reviewer, ...)
+  commands/   slash command
+  skills/     pengetahuan domain & pola
+docs/         PRD, arsitektur, skema DB, roadmap, deployment
+  panduan/    panduan Bahasa Indonesia untuk klien (dibuat di M7)
+```
 
-Biaya dan layanan yang perlu disiapkan agar aplikasi bisa diakses:
+## Dokumentasi
 
-| Item | Spesifikasi / keterangan | Perkiraan biaya | Sifat |
-|---|---|---|---|
-| Domain | contoh: `kaisanbimbel.com` | Rp 150.000 – 250.000 | Tahunan |
-| VPS / server | 2 vCPU, 2 GB RAM, 60 GB SSD | Rp 100.000 – 300.000 | Bulanan |
-| Pemakaian AI | seperti token, naik-turun sesuai jumlah soal | ± Rp 150.000 | Bulanan |
+Baca berurutan: `docs/01-PRD.md` → `02-ARCHITECTURE.md` → `03-DATABASE.md`
+→ `04-ROADMAP.md`.
 
-Biaya AI bersifat variabel — bergantung banyaknya soal yang di-generate tiap bulan.
+## Lisensi
 
-## Setup pengembangan
-
-> Menyusul setelah stack ditetapkan. Akan mencakup: instalasi dependency,
-> konfigurasi environment (kredensial database dan API key AI), migrasi
-> database, dan cara menjalankan server lokal.
-
-Catatan keamanan sejak awal: **API key AI dan kredensial database tidak boleh
-di-commit** ke repo. Gunakan file `.env` yang di-ignore git.
-
-## Timeline
-
-- **Estimasi pengerjaan:** 2–3 bulan sejak DP diterima dan konfirmasi penawaran
-- **Garansi:** perbaikan bug gratis 30 hari setelah aplikasi live
-- **Revisi tampilan:** 2 kali per modul; di luar itu dihitung pekerjaan tambahan
-
-## Ketentuan kerja sama
-
-Sistem **jual putus** — setelah pelunasan, source code dan kepemilikan penuh
-aplikasi menjadi milik KAISAN Bimbel.
-
-Rincian harga, opsi pengelolaan akun operasional, dan form konfirmasi ada di:
-`Penawaran Harga & Form Konfirmasi - KAISAN Bimbel (FINAL).docx`
-
-## Kontak
-
-**Sigit Irawan** — Pengembang Aplikasi
-087733446184
+Proprietary. Dikembangkan untuk KAISAN Bimbel dengan skema jual putus.

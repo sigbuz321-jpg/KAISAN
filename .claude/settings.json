@@ -1,0 +1,45 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(composer test*)",
+      "Bash(composer lint*)",
+      "Bash(composer analyse*)",
+      "Bash(php artisan test*)",
+      "Bash(php artisan migrate*)",
+      "Bash(php artisan make:*)",
+      "Bash(php artisan route:list*)",
+      "Bash(npm run build*)",
+      "Bash(npm run dev*)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git add*)",
+      "Bash(git commit*)",
+      "Bash(./vendor/bin/pest*)",
+      "Bash(./vendor/bin/pint*)",
+      "Bash(./vendor/bin/phpstan*)",
+      "Read",
+      "Grep",
+      "Glob"
+    ],
+    "ask": [
+      "Bash(git push*)",
+      "Bash(php artisan migrate:fresh*)",
+      "Bash(docker compose*)",
+      "Bash(composer require*)",
+      "Bash(npm install*)"
+    ],
+    "deny": [
+      "Bash(git push --force*)",
+      "Bash(git reset --hard*)",
+      "Bash(rm -rf*)",
+      "Read(.env)",
+      "Read(.env.production)",
+      "Read(**/*.sql)",
+      "Read(**/*.sql.gz)"
+    ]
+  },
+  "env": {
+    "APP_ENV": "local"
+  }
+}
