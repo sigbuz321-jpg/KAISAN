@@ -40,7 +40,9 @@ jobs:
       - name: Generate application key
         run: docker compose exec -T -u www-data app php artisan key:generate
 
-      - name: Build assets (before tests: @vite needs the manifest)
+      # Must run before the tests: the home page renders @vite, which throws
+      # when public/build/manifest.json is missing.
+      - name: Build assets
         run: |
           docker compose exec -T -u www-data app npm ci
           docker compose exec -T -u www-data app npm run build
