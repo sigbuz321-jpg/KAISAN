@@ -22,7 +22,7 @@ yang jalan, dan seluruh verifikasi hijau.
 ---
 
 ## M1 — Identitas & peran
-**Status:** selesai — menunggu penerimaan (tag `v0.1.0`)
+**Status:** selesai — diterima, `v0.1.0`
 
 - Model `users`, `classrooms`
 - Login, logout, ganti password, lupa password
