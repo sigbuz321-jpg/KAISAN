@@ -2,77 +2,58 @@ name: CI
 
 on:
   push:
-    branches: [main]
   pull_request:
   workflow_dispatch:
 
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    # The runner is self-hosted on a box that also serves unrelated services.
+    # A fork's pull request must never execute on it. Combined with the repo
+    # setting "require approval for all external contributors", this keeps
+    # untrusted code off the machine.
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
 
-    # Mirrors docker-compose.yml so a green CI means the same thing locally.
-    services:
-      postgres:
-        image: postgres:17
-        env:
-          POSTGRES_DB: kaisan_test
-          POSTGRES_USER: kaisan
-          POSTGRES_PASSWORD: secret
-        ports: ['5432:5432']
-        options: >-
-          --health-cmd "pg_isready -U kaisan -d kaisan_test"
-          --health-interval 5s --health-timeout 5s --health-retries 12
-      redis:
-        image: redis:7
-        ports: ['6379:6379']
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 5s --health-timeout 5s --health-retries 12
+    runs-on: [self-hosted, kaisan]
 
+    # One isolated compose project per run, so CI never collides with the
+    # long-running dev stack on the same host.
     env:
-      DB_CONNECTION: pgsql
-      DB_HOST: 127.0.0.1
-      DB_PORT: 5432
-      DB_DATABASE: kaisan_test
-      DB_USERNAME: kaisan
-      DB_PASSWORD: secret
-      REDIS_HOST: 127.0.0.1
-      REDIS_PORT: 6379
+      COMPOSE_PROJECT_NAME: kaisan_ci_${{ github.run_id }}
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-          extensions: pdo_pgsql, redis, intl, zip, bcmath, opcache
-          coverage: none
+      - name: Prepare environment
+        run: cp .env.example .env
+
+      - name: Start the stack
+        run: docker compose up -d --build app postgres redis
 
       - name: Install PHP dependencies
-        run: composer install --no-interaction --prefer-dist --no-progress
+        run: >-
+          docker compose exec -T -u www-data
+          -e COMPOSER_HOME=/tmp/composer -e COMPOSER_MEMORY_LIMIT=-1
+          app composer install --no-interaction --prefer-dist --no-progress
 
-      - name: Prepare environment
-        run: |
-          cp .env.example .env
-          php artisan key:generate
+      - name: Generate application key
+        run: docker compose exec -T -u www-data app php artisan key:generate
 
       - name: Lint (Pint)
-        run: composer lint
+        run: docker compose exec -T -u www-data app composer lint
 
       - name: Static analysis (PHPStan level 6)
-        run: composer analyse
+        run: docker compose exec -T -u www-data app composer analyse
 
       - name: Tests (Pest)
-        run: composer test
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: npm
+        run: docker compose exec -T -u www-data app composer test
 
       - name: Build assets
         run: |
-          npm ci
-          npm run build
+          docker compose exec -T -u www-data app npm ci
+          docker compose exec -T -u www-data app npm run build
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v --remove-orphans
