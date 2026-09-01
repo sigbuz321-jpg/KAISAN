@@ -48,3 +48,42 @@ function something()
 {
     // ..
 }
+
+/*
+|--------------------------------------------------------------------------
+| Helpers
+|--------------------------------------------------------------------------
+*/
+
+use App\Filament\Imports\UserImporter;
+use App\Models\User as ImportActor;
+use Filament\Actions\Imports\Jobs\ImportCsv;
+use Filament\Actions\Imports\Models\Import;
+
+function runImport(string $csv, array $options = []): Import
+{
+    $path = tempnam(sys_get_temp_dir(), 'import').'.csv';
+    file_put_contents($path, $csv);
+
+    $import = Import::create([
+        'user_id' => ImportActor::factory()->admin()->create()->id,
+        'file_name' => 'murid.csv',
+        'file_path' => $path,
+        'importer' => UserImporter::class,
+        'total_rows' => substr_count(trim($csv), "\n"),
+    ]);
+
+    $rows = array_map(
+        fn (array $r) => array_combine(['name', 'email', 'classroom'], $r),
+        array_map('str_getcsv', array_slice(explode("\n", trim($csv)), 1))
+    );
+
+    (new ImportCsv(
+        $import,
+        rows: $rows,
+        columnMap: ['name' => 'name', 'email' => 'email', 'classroom' => 'classroom'],
+        options: array_merge(['default_password' => 'rahasia123'], $options),
+    ))->handle();
+
+    return $import->refresh();
+}
