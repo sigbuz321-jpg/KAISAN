@@ -1,0 +1,49 @@
+# Production overlay for the CLIENT VPS (4 vCPU / 8 GB / 60 GB), per docs/05-DEPLOYMENT.md.
+# Never applied on the dev VPS -- port 80/443 there belong to another service.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+name: kaisan_prod
+
+services:
+  app:
+    mem_limit: 2500m
+    environment:
+      PHP_OPCACHE_VALIDATE_TIMESTAMPS: "0"
+    logging: &logging
+      driver: json-file
+      options: {max-size: "10m", max-file: "3"}
+
+  caddy:
+    mem_limit: 256m
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/caddy/Caddyfile.prod:/etc/caddy/Caddyfile:ro
+      - .:/var/www/html:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    logging: *logging
+
+  postgres:
+    mem_limit: 3g
+    command:
+      - postgres
+      - -c
+      - config_file=/etc/postgresql/postgresql.conf
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker/postgres/postgresql.prod.conf:/etc/postgresql/postgresql.conf:ro
+    logging: *logging
+
+  redis:
+    mem_limit: 640m
+    logging: *logging
+
+  queue:
+    mem_limit: 640m
+    logging: *logging
+
+  scheduler:
+    mem_limit: 256m
+    logging: *logging

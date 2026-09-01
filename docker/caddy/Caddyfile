@@ -1,0 +1,8 @@
+# Dev: plain HTTP on :80, published only to 127.0.0.1 by compose.
+# TLS and the real hostname live in docker-compose.prod.yml.
+:80 {
+	root * /var/www/html/public
+	encode gzip
+	php_fastcgi app:9000
+	file_server
+}
