@@ -41,3 +41,6 @@ KAISAN-claude-setup.zip
 
 # PHPStan result cache (tmpDir di phpstan.neon)
 /storage/framework/phpstan
+
+# Dokumen komersial klien tidak pernah masuk repo ini.
+*.docx
