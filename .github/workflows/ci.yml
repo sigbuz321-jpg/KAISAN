@@ -40,6 +40,11 @@ jobs:
       - name: Generate application key
         run: docker compose exec -T -u www-data app php artisan key:generate
 
+      - name: Build assets (before tests: @vite needs the manifest)
+        run: |
+          docker compose exec -T -u www-data app npm ci
+          docker compose exec -T -u www-data app npm run build
+
       - name: Lint (Pint)
         run: docker compose exec -T -u www-data app composer lint
 
@@ -48,11 +53,6 @@ jobs:
 
       - name: Tests (Pest)
         run: docker compose exec -T -u www-data app composer test
-
-      - name: Build assets
-        run: |
-          docker compose exec -T -u www-data app npm ci
-          docker compose exec -T -u www-data app npm run build
 
       - name: Tear down
         if: always()
