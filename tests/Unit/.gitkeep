@@ -1,0 +1,3 @@
+Placeholder so the Unit test suite declared in phpunit.xml always exists.
+Git does not track empty directories, and Pest fails outright when a declared
+suite directory is missing. Delete this once the first unit test lands.
