@@ -14,26 +14,42 @@ git clone https://github.com/sigbuz321-jpg/KAISAN.git
 cd KAISAN
 cp .env.example .env
 docker compose up -d --build
-docker compose exec app composer install
-docker compose exec app php artisan key:generate
-docker compose exec app php artisan migrate --seed
-docker compose exec app npm install && npm run dev
+docker compose exec -u www-data app composer install
+docker compose exec -u www-data app php artisan key:generate
+docker compose exec -u www-data app php artisan migrate
+docker compose exec -u www-data app npm ci
+docker compose exec -u www-data app npm run build
 ```
 
-Buka `http://localhost:8000`.
+Buka `http://127.0.0.1:8080`.
 
-Akun demo dari seeder ada di `database/seeders/DemoSeeder.php`.
+Pada server dev, port hanya terbuka di localhost. Akses dari laptop lewat
+terowongan SSH: `ssh -L 8080:127.0.0.1:8080 kaisan-vps`.
+
+Dua hal yang wajar terjadi dan bukan kerusakan:
+
+- `queue` dan `scheduler` akan restart berulang sampai `composer install` selesai —
+  keduanya butuh `vendor/`. Setelah itu keduanya pulih sendiri.
+- `-u www-data` bukan hiasan. Tanpa itu perintah berjalan sebagai root dan file yang
+  dibuat di dalam container jadi milik root di host.
+
+Belum ada seeder demo. Akun pertama dibuat di M1.
 
 ## Verifikasi
 
 ```bash
-composer lint      # Laravel Pint
-composer analyse   # PHPStan level 6
-composer test      # Pest
-npm run build
+docker compose exec -u www-data app composer lint      # Laravel Pint
+docker compose exec -u www-data app composer analyse   # PHPStan level 6
+docker compose exec -u www-data app composer test      # Pest
+docker compose exec -u www-data app npm run build      # Vite
 ```
 
 Keempatnya harus hijau sebelum commit.
+
+Test berjalan di PostgreSQL (`kaisan_test`), bukan SQLite — skema di
+`docs/03-DATABASE.md` memakai JSONB, window function, dan CHECK constraint yang
+tidak bisa ditiru SQLite. Database itu dibuat otomatis saat volume PostgreSQL
+pertama kali dibentuk.
 
 ## Bekerja dengan Claude Code
 
