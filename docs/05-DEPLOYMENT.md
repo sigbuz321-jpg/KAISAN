@@ -2,6 +2,13 @@
 
 Target: VPS 4 vCPU, 8 GB RAM, 60 GB storage, Ubuntu 24.04.
 
+Angka di atas adalah target **server produksi milik klien**.
+
+Server development yang dipakai selama M0-M6 berbeda: VPS milik developer,
+Ubuntu 22.04, dan berbagi dengan layanan lain. Stack dev sengaja bind ke
+`127.0.0.1` saja dan tidak pernah memakai port 80/443 di sana. Karena itu overlay
+produksi di bawah tidak pernah dijalankan di server dev.
+
 ## Susunan container
 
 | Service | Image | Batas memori |
@@ -10,7 +17,7 @@ Target: VPS 4 vCPU, 8 GB RAM, 60 GB storage, Ubuntu 24.04.
 | caddy | caddy:2-alpine | 256 MB |
 | postgres | postgres:17-alpine | 3 GB |
 | redis | redis:7-alpine | 640 MB |
-| horizon | sama dgn app | 640 MB |
+| queue (Horizon sejak M3) | sama dgn app | 640 MB |
 | scheduler | sama dgn app | 256 MB |
 
 Set `mem_limit` di `docker-compose.yml`. Tanpa batas, PostgreSQL akan mengambil
@@ -46,7 +53,7 @@ OOM killer tepat saat 150 murid submit bersamaan.
 1. Arahkan domain ke IP VPS
 2. `git clone` repo ke `/opt/kaisan`
 3. Salin `.env.example` → `.env`, isi semua nilai
-4. `docker compose up -d --build`
+4. `docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build`
 5. `docker compose exec app php artisan migrate --force`
 6. `docker compose exec app php artisan storage:link`
 7. Buka `https://domain/setup` untuk membuat akun admin pertama

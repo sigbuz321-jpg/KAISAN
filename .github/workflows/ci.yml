@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    # The runner is self-hosted on a box that also serves unrelated services.
+    # A fork's pull request must never execute on it. Combined with the repo
+    # setting "require approval for all external contributors", this keeps
+    # untrusted code off the machine.
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
+
+    runs-on: [self-hosted, kaisan]
+
+    # One isolated compose project per run, so CI never collides with the
+    # long-running dev stack on the same host.
+    env:
+      COMPOSE_PROJECT_NAME: kaisan_ci_${{ github.run_id }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare environment
+        run: cp .env.example .env
+
+      - name: Start the stack
+        run: docker compose up -d --build app postgres redis
+
+      - name: Install PHP dependencies
+        run: >-
+          docker compose exec -T -u www-data
+          -e COMPOSER_HOME=/tmp/composer -e COMPOSER_MEMORY_LIMIT=-1
+          app composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Generate application key
+        run: docker compose exec -T -u www-data app php artisan key:generate
+
+      # Must run before the tests: the home page renders @vite, which throws
+      # when public/build/manifest.json is missing.
+      - name: Build assets
+        run: |
+          docker compose exec -T -u www-data app npm ci
+          docker compose exec -T -u www-data app npm run build
+
+      - name: Lint (Pint)
+        run: docker compose exec -T -u www-data app composer lint
+
+      - name: Static analysis (PHPStan level 6)
+        run: docker compose exec -T -u www-data app composer analyse
+
+      - name: Tests (Pest)
+        run: docker compose exec -T -u www-data app composer test
+
+      - name: Tear down
+        if: always()
+        run: docker compose down -v --remove-orphans

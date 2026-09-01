@@ -27,6 +27,8 @@ yarn-error.log
 *.sql
 *.sql.gz
 /backup
+# Kecuali skrip inisialisasi PostgreSQL -- ini kode, bukan dump data.
+!/docker/postgres/initdb/*.sql
 
 # Office temp/lock files — dokumen penawaran ada di repo
 ~$*
@@ -36,3 +38,9 @@ desktop.ini
 
 # Arsip setup, sudah diekstrak
 KAISAN-claude-setup.zip
+
+# PHPStan result cache (tmpDir di phpstan.neon)
+/storage/framework/phpstan
+
+# Dokumen komersial klien tidak pernah masuk repo ini.
+*.docx

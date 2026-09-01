@@ -1,0 +1,93 @@
+# Development stack. Runs on Sigit's dev VPS alongside other services,
+# so every published port is bound to 127.0.0.1 -- reach it over an SSH tunnel:
+#   ssh -L 8080:127.0.0.1:8080 kaisan-vps
+name: kaisan_dev
+
+# No env_file here on purpose: the app directory is bind-mounted, so Laravel reads
+# .env directly. Injecting it as container env would freeze the values at start
+# time and silently win over later edits (this cost us an empty APP_KEY once).
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
+    image: kaisan/app:dev
+    restart: unless-stopped
+    mem_limit: 768m
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    mem_limit: 128m
+    ports:
+      - "127.0.0.1:8080:80"
+    volumes:
+      - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - .:/var/www/html:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on: [app]
+
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    mem_limit: 768m
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-kaisan_dev}
+      POSTGRES_USER: ${DB_USERNAME:-kaisan}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker/postgres/initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-kaisan} -d ${DB_DATABASE:-kaisan_dev}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    mem_limit: 256m
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    volumes:
+      - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  # Plain queue worker for now. Swapped for Laravel Horizon in M3,
+  # when the AI generation jobs land and Horizon is actually needed.
+  queue:
+    image: kaisan/app:dev
+    restart: unless-stopped
+    mem_limit: 384m
+    command: ["php", "artisan", "queue:work", "--tries=3", "--timeout=120"]
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      app: {condition: service_started}
+      redis: {condition: service_healthy}
+
+  scheduler:
+    image: kaisan/app:dev
+    restart: unless-stopped
+    mem_limit: 256m
+    command: ["php", "artisan", "schedule:work"]
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      app: {condition: service_started}
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:
