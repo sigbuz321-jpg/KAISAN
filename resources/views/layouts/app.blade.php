@@ -14,8 +14,29 @@
     </a>
 
     <header class="border-b border-slate-200 bg-white">
-        <div class="mx-auto flex max-w-3xl items-center px-4 py-4">
-            <span class="text-lg font-semibold">{{ __('app.name') }}</span>
+        <div class="mx-auto flex max-w-3xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-4">
+            <a href="{{ route('beranda') }}" class="text-lg font-semibold">{{ __('app.name') }}</a>
+
+            <nav class="ms-auto flex items-center gap-4 text-sm">
+                @auth
+                    @if (auth()->user()->role->canAccessPanel())
+                        <a href="/admin" class="text-slate-700 underline hover:text-slate-900">Panel</a>
+                    @endif
+
+                    <a href="{{ route('ganti-kata-sandi') }}" class="text-slate-700 underline hover:text-slate-900">
+                        Ganti kata sandi
+                    </a>
+
+                    <form method="POST" action="{{ route('keluar') }}">
+                        @csrf
+                        <button type="submit" class="min-h-11 text-slate-700 underline hover:text-slate-900">
+                            Keluar
+                        </button>
+                    </form>
+                @else
+                    <a href="{{ route('masuk') }}" class="text-slate-700 underline hover:text-slate-900">Masuk</a>
+                @endauth
+            </nav>
         </div>
     </header>
 
