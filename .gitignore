@@ -5,3 +5,8 @@
 # Windows
 Thumbs.db
 desktop.ini
+
+# Secrets — API key AI, kredensial database
+.env
+.env.*
+!.env.example
