@@ -36,7 +36,7 @@ lewat panel.
 ---
 
 ## M2 — Bank soal manual
-**Status:** belum mulai
+**Status:** selesai — menunggu penerimaan (tag `v0.2.0`)
 
 - `subjects`, `topics`, `questions`
 - CRUD soal di Filament, dengan pratinjau tampilan murid
