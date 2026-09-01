@@ -55,6 +55,7 @@ function something()
 |--------------------------------------------------------------------------
 */
 
+use App\Filament\Imports\QuestionImporter;
 use App\Filament\Imports\UserImporter;
 use App\Models\User as ImportActor;
 use Filament\Actions\Imports\Jobs\ImportCsv;
@@ -83,6 +84,33 @@ function runImport(string $csv, array $options = []): Import
         rows: $rows,
         columnMap: ['name' => 'name', 'email' => 'email', 'classroom' => 'classroom'],
         options: array_merge(['default_password' => 'rahasia123'], $options),
+    ))->handle();
+
+    return $import->refresh();
+}
+
+function runQuestionImport(string $csv, ?ImportActor $actor = null): Import
+{
+    $columns = ['subject', 'topic', 'stem', 'option_a', 'option_b', 'option_c', 'option_d', 'answer_key', 'explanation', 'difficulty'];
+
+    $import = Import::create([
+        'user_id' => ($actor ?? ImportActor::factory()->guru()->create())->id,
+        'file_name' => 'soal.csv',
+        'file_path' => 'soal.csv',
+        'importer' => QuestionImporter::class,
+        'total_rows' => substr_count(trim($csv), "\n"),
+    ]);
+
+    $rows = array_map(
+        fn (array $r) => array_combine($columns, array_pad($r, count($columns), null)),
+        array_map('str_getcsv', array_slice(explode("\n", trim($csv)), 1))
+    );
+
+    (new ImportCsv(
+        $import,
+        rows: $rows,
+        columnMap: array_combine($columns, $columns),
+        options: [],
     ))->handle();
 
     return $import->refresh();
