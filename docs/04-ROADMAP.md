@@ -9,7 +9,7 @@ Tandai status di sini setiap kali modul selesai. Beri tag git `v0.<n>.0`.
 ---
 
 ## M0 — Fondasi
-**Status:** selesai — menunggu penerimaan (tag `v0.0.0`)
+**Status:** selesai — diterima, `v0.0.0`
 
 - Laravel 12 + PostgreSQL + Redis via Docker Compose
 - Pest, Pint, PHPStan level 6, skrip `composer test/lint/analyse`
