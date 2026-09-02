@@ -115,3 +115,39 @@ function runQuestionImport(string $csv, ?ImportActor $actor = null): Import
 
     return $import->refresh();
 }
+
+/**
+ * An OpenAI-compatible router reply. Pass an array to have it encoded as the
+ * JSON the parser expects, or a string to simulate a malformed answer.
+ *
+ * @param  list<array<string, mixed>>|string  $content
+ * @return array<string, mixed>
+ */
+function aiRouterPayload(
+    array|string $content,
+    int $promptTokens = 400,
+    int $completionTokens = 900,
+    string $model = 'test-model',
+): array {
+    return [
+        'model' => $model,
+        'choices' => [['message' => ['content' => is_string($content) ? $content : json_encode($content)]]],
+        'usage' => ['prompt_tokens' => $promptTokens, 'completion_tokens' => $completionTokens],
+    ];
+}
+
+/**
+ * One well-formed candidate question, so a test only states the part it cares about.
+ *
+ * @param  array<string, mixed>  $overrides
+ * @return array<string, mixed>
+ */
+function aiQuestion(string $stem = 'Berapakah hasil dari 2 tambah 2?', array $overrides = []): array
+{
+    return array_merge([
+        'stem' => $stem,
+        'options' => ['A' => 'empat', 'B' => 'tiga', 'C' => 'lima', 'D' => 'enam'],
+        'answer_key' => 'A',
+        'explanation' => 'Dua ditambah dua sama dengan empat.',
+    ], $overrides);
+}
