@@ -34,6 +34,26 @@ enum DifficultyBand: string
         };
     }
 
+    /**
+     * The Elo span a band covers when picking existing questions.
+     *
+     * Wider than the single point toElo() starts a new question at: a question
+     * the adaptive engine has since nudged to 1180 is still a "sedang" one, and
+     * a teacher asking for medium questions should get it.
+     *
+     * @return array{0: int, 1: int}
+     */
+    public function eloRange(): array
+    {
+        $half = (int) (self::SPREAD / 2);
+
+        return match ($this) {
+            self::Easy => [0, self::BASELINE - $half],
+            self::Medium => [self::BASELINE - $half + 1, self::BASELINE + $half],
+            self::Hard => [self::BASELINE + $half + 1, 9999],
+        };
+    }
+
     public function label(): string
     {
         return match ($this) {
