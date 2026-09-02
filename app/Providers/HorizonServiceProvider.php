@@ -2,35 +2,25 @@
 
 namespace App\Providers;
 
+use App\Models\User;
 use Illuminate\Support\Facades\Gate;
-use Laravel\Horizon\Horizon;
 use Laravel\Horizon\HorizonApplicationServiceProvider;
 
 class HorizonServiceProvider extends HorizonApplicationServiceProvider
 {
     /**
-     * Bootstrap any application services.
-     */
-    public function boot(): void
-    {
-        parent::boot();
-
-        // Horizon::routeSmsNotificationsTo('15556667777');
-        // Horizon::routeMailNotificationsTo('example@example.com');
-        // Horizon::routeSlackNotificationsTo('slack-webhook-url', '#channel');
-    }
-
-    /**
-     * Register the Horizon gate.
+     * Who may open the Horizon dashboard.
      *
-     * This gate determines who can access Horizon in non-local environments.
+     * The dashboard exposes job payloads and failure traces, so it is the
+     * owner's tool only -- docs/05-DEPLOYMENT.md lists it as admin-restricted.
+     * Teachers get what they need from the "Permintaan Soal AI" page instead.
+     *
+     * The stock scaffolding shipped an empty email list, which locks out
+     * everyone in production. Keyed on the role instead, so it keeps working
+     * when the client changes their own email address.
      */
     protected function gate(): void
     {
-        Gate::define('viewHorizon', function ($user = null) {
-            return in_array(optional($user)->email, [
-                //
-            ]);
-        });
+        Gate::define('viewHorizon', fn (?User $user) => $user?->isAdmin() ?? false);
     }
 }

@@ -207,23 +207,30 @@ return [
             'maxJobs' => 0,
             'memory' => 128,
             'tries' => 1,
-            'timeout' => 60,
+            // Longer than kaisan.ai.timeout (120s) plus the time to validate
+            // and store a batch. A shorter timeout here would kill a
+            // generation job mid-call and charge the client for nothing.
+            'timeout' => 180,
             'nice' => 0,
         ],
     ],
 
     'environments' => [
+        // Three worker processes, per the RAM budget in
+        // .claude/rules/performance.md. The default of 10 would take roughly
+        // 1.2 GB and starve PostgreSQL during an exam.
         'production' => [
             'supervisor-1' => [
-                'maxProcesses' => 10,
+                'maxProcesses' => 3,
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
             ],
         ],
 
+        // The dev VPS shares its memory with unrelated services.
         'local' => [
             'supervisor-1' => [
-                'maxProcesses' => 3,
+                'maxProcesses' => 2,
             ],
         ],
     ],
