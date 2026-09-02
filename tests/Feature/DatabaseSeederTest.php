@@ -11,11 +11,13 @@ use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
 
 it('refuses to run in production', function () {
-    // Well-known passwords. `migrate:fresh --seed` is a habit, and habits
-    // travel to the wrong terminal.
+    // Artisan already asks for confirmation before seeding a production
+    // database. This guard is the second line: it also stops `db:seed --force`,
+    // which is exactly what a deploy script would use. Called directly so the
+    // guard is what is under test, not Artisan's prompt.
     $this->app['env'] = 'production';
 
-    expect(fn () => $this->seed(DatabaseSeeder::class))
+    expect(fn () => app(DatabaseSeeder::class)->run())
         ->toThrow(RuntimeException::class, 'tidak boleh dijalankan di produksi');
 
     expect(User::count())->toBe(0);
