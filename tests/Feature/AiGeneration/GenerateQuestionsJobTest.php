@@ -4,6 +4,7 @@ use App\Enums\AiJobStatus;
 use App\Enums\DifficultyBand;
 use App\Enums\QuestionSource;
 use App\Enums\QuestionStatus;
+use App\Exceptions\AiRouterException;
 use App\Jobs\GenerateQuestionsJob;
 use App\Models\AiGenerationJob;
 use App\Models\Question;
@@ -194,7 +195,7 @@ it('lets the queue retry when the router cannot be reached', function () {
     // A transient fault must surface so the worker backs off and tries again,
     // rather than being swallowed as a permanent failure.
     expect(fn () => runGeneration($record))
-        ->toThrow(App\Exceptions\AiRouterException::class);
+        ->toThrow(AiRouterException::class);
 
     expect($record->refresh()->status)->toBe(AiJobStatus::Running);
 });
