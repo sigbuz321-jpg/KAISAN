@@ -23,6 +23,11 @@
                         <a href="/admin" class="text-slate-700 underline hover:text-slate-900">Panel</a>
                     @endif
 
+                    @if (auth()->user()->isMurid())
+                        <a href="{{ route('ujian.index') }}" wire:navigate
+                           class="text-slate-700 underline hover:text-slate-900">Ujian</a>
+                    @endif
+
                     <a href="{{ route('ganti-kata-sandi') }}" class="text-slate-700 underline hover:text-slate-900">
                         Ganti kata sandi
                     </a>

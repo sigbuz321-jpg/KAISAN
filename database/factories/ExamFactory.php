@@ -34,6 +34,12 @@ class ExamFactory extends Factory
         ];
     }
 
+    /** Already the default, but spelled out so every status reads the same way. */
+    public function draft(): static
+    {
+        return $this->state(fn () => ['status' => ExamStatus::Draft]);
+    }
+
     public function scheduled(): static
     {
         return $this->state(fn () => ['status' => ExamStatus::Scheduled]);
