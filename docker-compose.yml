@@ -64,13 +64,14 @@ services:
       timeout: 5s
       retries: 12
 
-  # Plain queue worker for now. Swapped for Laravel Horizon in M3,
-  # when the AI generation jobs land and Horizon is actually needed.
+  # Horizon supervises the workers as of M3. Process counts and timeouts are
+  # set in config/horizon.php, not here, so production and dev share them.
   queue:
     image: kaisan/app:dev
     restart: unless-stopped
-    mem_limit: 384m
-    command: ["php", "artisan", "queue:work", "--tries=3", "--timeout=120"]
+    mem_limit: 512m
+    command: ["php", "artisan", "horizon"]
+    stop_grace_period: 30s
     volumes:
       - .:/var/www/html
     depends_on:
