@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\Exams\Pages;
 
+use App\Enums\AttemptStatus;
 use App\Filament\Resources\Exams\ExamResource;
+use App\Models\Exam;
 use App\Models\ExamAttempt;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use Filament\Resources\Pages\Page;
@@ -30,48 +32,54 @@ class ExamResults extends Page
 
         // Results carry other students' marks, so this is narrower than being
         // allowed to see the exam itself.
-        abort_unless(auth()->user()?->can('viewResults', $this->record) ?? false, 403);
+        abort_unless(auth()->user()?->can('viewResults', $this->exam()) ?? false, 403);
     }
 
     public function getTitle(): string
     {
-        return 'Nilai: '.$this->record->title;
+        return 'Nilai: '.$this->exam()->title;
     }
 
     /** @return Collection<int, ExamAttempt> */
     public function attempts(): Collection
     {
         return ExamAttempt::query()
-            ->where('exam_id', $this->record->id)
+            ->where('exam_id', $this->exam()->id)
             ->with(['student:id,name,classroom_id', 'student.classroom:id,name'])
             ->orderByRaw('score DESC NULLS LAST')
             ->get();
     }
 
-    /** @return array{peserta: int, dinilai: int, rata: string|null, tertinggi: string|null, terendah: string|null} */
+    /**
+     * Averages ignore voided results but the list still shows them: rule 6 of
+     * domain-kaisan.md keeps the record and only stops it counting.
+     *
+     * On the query builder rather than Eloquent, because these are aggregates
+     * and not ExamAttempt records.
+     *
+     * @return array{peserta: int, dinilai: int, rata: string|null, tertinggi: string|null, terendah: string|null}
+     */
     public function stats(): array
     {
-        $graded = ExamAttempt::query()
-            ->where('exam_id', $this->record->id)
-            ->ranked()
+        $row = DB::table('exam_attempts')
+            ->where('exam_id', $this->exam()->id)
+            ->whereNotNull('submitted_at')
+            ->whereNull('voided_at')
             ->selectRaw('count(*) as jumlah, avg(score) as rata, max(score) as tertinggi, min(score) as terendah')
             ->first();
 
         return [
-            'peserta' => ExamAttempt::where('exam_id', $this->record->id)->count(),
-            'dinilai' => (int) ($graded->jumlah ?? 0),
-            'rata' => $graded?->rata === null ? null : number_format((float) $graded->rata, 2, ',', '.'),
-            'tertinggi' => $graded?->tertinggi === null ? null : number_format((float) $graded->tertinggi, 2, ',', '.'),
-            'terendah' => $graded?->terendah === null ? null : number_format((float) $graded->terendah, 2, ',', '.'),
+            'peserta' => ExamAttempt::where('exam_id', $this->exam()->id)->count(),
+            'dinilai' => (int) ($row->jumlah ?? 0),
+            'rata' => self::angka($row?->rata),
+            'tertinggi' => self::angka($row?->tertinggi),
+            'terendah' => self::angka($row?->terendah),
         ];
     }
 
     /**
      * The questions this class got wrong most often, so a teacher knows what to
      * go over again -- a user story in docs/01-PRD.md.
-     *
-     * One grouped query on the query builder rather than Eloquent: these are
-     * aggregates, not Question records.
      *
      * @return list<array{stem: string, dijawab: int, benar: int, persen: int}>
      */
@@ -80,7 +88,8 @@ class ExamResults extends Page
         return DB::table('attempt_answers')
             ->join('exam_attempts', 'exam_attempts.id', '=', 'attempt_answers.exam_attempt_id')
             ->join('questions', 'questions.id', '=', 'attempt_answers.question_id')
-            ->where('exam_attempts.exam_id', $this->record->id)
+            ->where('exam_attempts.exam_id', $this->exam()->id)
+            ->where('exam_attempts.status', AttemptStatus::Submitted->value)
             ->whereNotNull('attempt_answers.is_correct')
             ->groupBy('questions.id', 'questions.stem')
             ->selectRaw('questions.stem as stem')
@@ -96,5 +105,19 @@ class ExamResults extends Page
                 'persen' => (int) round((int) $row->benar / max(1, (int) $row->dijawab) * 100),
             ])
             ->all();
+    }
+
+    /** The record, typed. InteractsWithRecord widens it to Model|int|string. */
+    public function exam(): Exam
+    {
+        /** @var Exam $exam */
+        $exam = $this->record;
+
+        return $exam;
+    }
+
+    private static function angka(mixed $value): ?string
+    {
+        return $value === null ? null : number_format((float) $value, 2, ',', '.');
     }
 }

@@ -16,6 +16,8 @@ use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 use Illuminate\Support\Str;
 
 class QuestionsRelationManager extends RelationManager
@@ -37,7 +39,12 @@ class QuestionsRelationManager extends RelationManager
             ->columns([
                 TextColumn::make('nomor')
                     ->label('No')
-                    ->state(fn (Question $record) => $record->pivot->order + 1)
+                    ->state(function (Question $record): int {
+                        /** @var Pivot|null $pivot */
+                        $pivot = $record->getAttribute('pivot');
+
+                        return (int) ($pivot?->getAttribute('order') ?? 0) + 1;
+                    })
                     ->alignEnd(),
 
                 TextColumn::make('stem')->label('Soal')->limit(80)->wrap()->searchable(),
@@ -157,7 +164,7 @@ class QuestionsRelationManager extends RelationManager
                 : null);
     }
 
-    public static function canViewForRecord($ownerRecord, string $pageClass): bool
+    public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
     {
         return auth()->user()?->can('update', $ownerRecord) ?? false;
     }
