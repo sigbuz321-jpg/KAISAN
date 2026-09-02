@@ -118,3 +118,21 @@ it('answers the same way for an unknown email so accounts cannot be probed', fun
 
     Notification::assertNothingSent();
 });
+
+it('sends an anonymous visitor to the sign-in page instead of erroring', function () {
+    // Regression: Laravel's auth middleware redirects guests to a route named
+    // `login`, and this application names it `masuk`. Every auth-protected
+    // page answered 500 instead of redirecting, from M1 until it was noticed
+    // on the dev VPS.
+    $this->get('/ganti-kata-sandi')->assertRedirect(route('masuk'));
+});
+
+it('sends an anonymous visitor away from the exam list', function () {
+    $this->get('/ujian')->assertRedirect(route('masuk'));
+});
+
+it('sends an anonymous visitor away from an exam', function () {
+    $exam = App\Models\Exam::factory()->active()->create();
+
+    $this->get(route('ujian.kerjakan', $exam))->assertRedirect(route('masuk'));
+});
