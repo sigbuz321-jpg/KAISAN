@@ -52,7 +52,7 @@ hasilnya, dan supaya aplikasi tetap berguna kalau AI bermasalah.
 ---
 
 ## M3 — Generasi soal dengan AI
-**Status:** belum mulai
+**Status:** selesai — menunggu penerimaan (tag `v0.3.0`)
 
 Baca `.claude/skills/ai-question-generation/SKILL.md` sebelum mulai.
 

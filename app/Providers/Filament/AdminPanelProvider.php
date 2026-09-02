@@ -36,6 +36,9 @@ class AdminPanelProvider extends PanelProvider
             ->pages([
                 Dashboard::class,
             ])
+            // Question generation runs on a queue, so the teacher who asked is
+            // told through the panel's bell when the batch is ready.
+            ->databaseNotifications()
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
                 AccountWidget::class,

@@ -2,12 +2,15 @@
 
 namespace App\Filament\Resources\Questions\Tables;
 
+use App\Actions\BulkChangeQuestionStatus;
 use App\Actions\ChangeQuestionStatus;
 use App\Enums\QuestionSource;
 use App\Enums\QuestionStatus;
 use App\Exceptions\QuestionWorkflowException;
 use App\Models\Question;
 use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
+use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
@@ -15,6 +18,7 @@ use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Collection;
 
 class QuestionsTable
 {
@@ -104,7 +108,61 @@ class QuestionsTable
                 // QuestionPolicy allows this only while the question is a draft.
                 DeleteAction::make()->label('Hapus'),
             ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    self::bulkTransition(
+                        name: 'setujuiMassal',
+                        label: 'Setujui & terbitkan',
+                        target: QuestionStatus::Published,
+                        icon: 'heroicon-o-check-circle',
+                        color: 'success',
+                        heading: 'Terbitkan soal terpilih?',
+                        description: 'Soal yang disetujui langsung bisa dipakai di ujian dan latihan. Pastikan Anda sudah membacanya.',
+                    ),
+
+                    self::bulkTransition(
+                        name: 'tolakMassal',
+                        label: 'Kembalikan ke draf',
+                        target: QuestionStatus::Draft,
+                        icon: 'heroicon-o-arrow-uturn-left',
+                        color: 'warning',
+                        heading: 'Kembalikan soal terpilih ke draf?',
+                        description: 'Soal tidak dihapus. Anda bisa memperbaikinya lalu mengajukannya lagi.',
+                    ),
+                ])->label('Tindakan massal'),
+            ])
             ->emptyStateHeading('Belum ada soal')
             ->emptyStateDescription('Tambah soal satu per satu, atau impor dari CSV.');
+    }
+
+    /** The counting and the workflow rules live in BulkChangeQuestionStatus. */
+    private static function bulkTransition(
+        string $name,
+        string $label,
+        QuestionStatus $target,
+        string $icon,
+        string $color,
+        string $heading,
+        string $description,
+    ): BulkAction {
+        return BulkAction::make($name)
+            ->label($label)
+            ->icon($icon)
+            ->color($color)
+            ->requiresConfirmation()
+            ->modalHeading($heading)
+            ->modalDescription($description)
+            ->action(function (Collection $records, BulkChangeQuestionStatus $bulk) use ($target) {
+                $result = $bulk->handle($records, $target, auth()->user());
+
+                Notification::make()
+                    ->title("{$result['changed']} soal diperbarui.")
+                    ->body($result['skipped'] > 0
+                        ? "{$result['skipped']} soal dilewati karena statusnya tidak memungkinkan."
+                        : null)
+                    ->success()
+                    ->send();
+            })
+            ->deselectRecordsAfterCompletion();
     }
 }
