@@ -33,7 +33,27 @@ Dua hal yang wajar terjadi dan bukan kerusakan:
 - `-u www-data` bukan hiasan. Tanpa itu perintah berjalan sebagai root dan file yang
   dibuat di dalam container jadi milik root di host.
 
-Belum ada seeder demo. Akun pertama dibuat di M1.
+## Data contoh
+
+Untuk mengisi database development dengan data yang bisa langsung dipakai:
+
+```bash
+docker compose exec -u www-data app php artisan migrate:fresh --seed
+```
+
+Menghasilkan 3 kelas, 60 murid, 3 mata pelajaran beserta babnya, dan 12 soal —
+sebagian terbit, sebagian menunggu tinjauan, termasuk soal AI supaya layar
+tinjauan massal ada isinya.
+
+| Peran | Email | Kata sandi |
+|---|---|---|
+| Admin | `admin@kaisan.test` | `rahasia123` |
+| Guru | `guru@kaisan.test` | `rahasia123` |
+| Guru | `guru2@kaisan.test` | `rahasia123` |
+| Murid | `murid1@kaisan.test` … `murid60@kaisan.test` | `rahasia123` |
+
+Seeder menolak berjalan saat `APP_ENV=production`. Pada instalasi klien, akun
+admin pertama dibuat lewat halaman `/setup`, bukan lewat seeder.
 
 ## Verifikasi
 
