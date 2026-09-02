@@ -17,7 +17,7 @@ class CurriculumSeeder extends Seeder
                 ['name' => $name, 'is_active' => true],
             );
 
-            foreach (array_values($topics) as $order => $topic) {
+            foreach ($topics as $order => $topic) {
                 Topic::updateOrCreate(
                     ['subject_id' => $subject->id, 'name' => $topic],
                     ['order' => $order],

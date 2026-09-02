@@ -29,9 +29,9 @@ class DatabaseSeeder extends Seeder
             QuestionSeeder::class,
         ]);
 
-        $this->command?->newLine();
-        $this->command?->info('Akun contoh (kata sandi semuanya: rahasia123)');
-        $this->command?->table(['Peran', 'Email'], [
+        $this->command->newLine();
+        $this->command->info('Akun contoh (kata sandi semuanya: rahasia123)');
+        $this->command->table(['Peran', 'Email'], [
             ['Admin', 'admin@kaisan.test'],
             ['Guru', 'guru@kaisan.test'],
             ['Guru', 'guru2@kaisan.test'],
