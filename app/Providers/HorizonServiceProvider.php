@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Gate;
+use Laravel\Horizon\Horizon;
 use Laravel\Horizon\HorizonApplicationServiceProvider;
 
 class HorizonServiceProvider extends HorizonApplicationServiceProvider
@@ -22,5 +23,20 @@ class HorizonServiceProvider extends HorizonApplicationServiceProvider
     protected function gate(): void
     {
         Gate::define('viewHorizon', fn (?User $user) => $user?->isAdmin() ?? false);
+    }
+
+    /**
+     * Horizon's own scaffolding waves through every request when the app is in
+     * the local environment. The dev VPS runs as `local` and shares a machine
+     * with unrelated services, so that shortcut is removed here: the gate is
+     * the only way in, in every environment.
+     *
+     * security.md: when in doubt, take the stricter option.
+     */
+    protected function authorization(): void
+    {
+        $this->gate();
+
+        Horizon::auth(fn ($request) => Gate::check('viewHorizon', [$request->user()]));
     }
 }

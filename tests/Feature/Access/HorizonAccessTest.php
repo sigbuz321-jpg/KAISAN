@@ -31,3 +31,23 @@ it('keeps anonymous visitors out of the queue dashboard', function () {
 it('registers the dashboard route', function () {
     expect(Route::has('horizon.index'))->toBeTrue();
 });
+
+it('refuses an anonymous visitor even in the local environment', function () {
+    // Horizon's own scaffolding waves everyone through when the app is local.
+    // The dev VPS runs as local and shares a machine with other services.
+    $this->app['env'] = 'local';
+
+    $this->get('/horizon')->assertForbidden();
+});
+
+it('refuses a teacher on the dashboard route itself', function () {
+    $this->actingAs(User::factory()->guru()->create())
+        ->get('/horizon')
+        ->assertForbidden();
+});
+
+it('admits the admin to the dashboard route', function () {
+    $this->actingAs(User::factory()->admin()->create())
+        ->get('/horizon')
+        ->assertOk();
+});
