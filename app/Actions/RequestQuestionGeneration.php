@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use App\Enums\AiJobStatus;
 use App\Enums\DifficultyBand;
 use App\Exceptions\AiQuotaException;
 use App\Jobs\GenerateQuestionsJob;
@@ -35,6 +36,9 @@ class RequestQuestionGeneration
             'topic_id' => $topic?->id,
             'difficulty' => $difficulty,
             'count' => $count,
+            // Stated here rather than left to the column default, so the
+            // returned model reports its status without a round trip.
+            'status' => AiJobStatus::Queued,
         ]);
 
         // The grade steers the wording of the prompt but is not part of the

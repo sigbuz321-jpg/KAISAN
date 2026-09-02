@@ -37,9 +37,18 @@ it('rejects a candidate with a missing explanation', function () {
     expect($result->acceptedCount())->toBe(0);
 });
 
-it('rejects a candidate with an empty option', function () {
+it('rejects a candidate with a missing option', function () {
     $result = $this->validator->validate([
         aiQuestion(overrides: ['options' => ['A' => 'empat', 'B' => '', 'C' => 'lima', 'D' => 'enam']]),
+    ]);
+
+    expect($result->acceptedCount())->toBe(0);
+});
+
+it('rejects a candidate whose option holds nothing but spaces', function () {
+    // Passes `required`, so only the semantic check catches this one.
+    $result = $this->validator->validate([
+        aiQuestion(overrides: ['options' => ['A' => 'empat', 'B' => '   ', 'C' => 'lima', 'D' => 'enam']]),
     ]);
 
     expect($result->acceptedCount())->toBe(0)
