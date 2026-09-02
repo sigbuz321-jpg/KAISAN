@@ -8,6 +8,7 @@ use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 /**
  * What the AI has cost, month by month.
@@ -42,8 +43,11 @@ class AiCostReport extends Page
      */
     public function rows(): array
     {
-        return AiGenerationJob::query()
-            ->where('status', AiJobStatus::Done)
+        // The query builder rather than Eloquent: these are aggregates, not
+        // AiGenerationJob records, and hydrating a model for them would be a
+        // lie about what comes back.
+        return DB::table('ai_generation_jobs')
+            ->where('status', AiJobStatus::Done->value)
             ->selectRaw("date_trunc('month', created_at) as month")
             ->selectRaw('count(*) as jobs')
             ->selectRaw("coalesce(sum((meta->>'saved')::int), 0) as questions")
