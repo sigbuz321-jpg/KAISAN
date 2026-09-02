@@ -50,6 +50,22 @@ class ExamPaper
         return $this->optionMap($attempt, $question)[$displayed] ?? null;
     }
 
+    /**
+     * The reverse of toStoredOption: which letter on screen corresponds to a
+     * stored answer. Needed to re-select what a student already chose when
+     * they come back to a question, or reload after losing their connection.
+     */
+    public function toDisplayedOption(ExamAttempt $attempt, Question $question, ?string $stored): ?string
+    {
+        if ($stored === null) {
+            return null;
+        }
+
+        $displayed = array_search($stored, $this->optionMap($attempt, $question), true);
+
+        return $displayed === false ? null : $displayed;
+    }
+
     /** @return Collection<int, Question> */
     private function questionsFor(ExamAttempt $attempt): Collection
     {

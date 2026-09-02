@@ -3,7 +3,9 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\Murid\UjianController;
 use App\Http\Controllers\SetupController;
+use App\Livewire\Murid\PengerjaanUjian;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => view('beranda'))->name('beranda');
@@ -40,4 +42,12 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/ganti-kata-sandi', [PasswordController::class, 'edit'])->name('ganti-kata-sandi');
     Route::put('/ganti-kata-sandi', [PasswordController::class, 'update'])->name('ganti-kata-sandi.update');
+
+    Route::get('/ujian', [UjianController::class, 'index'])->name('ujian.index');
+
+    // 60 requests a minute per student, per .claude/rules/security.md. The
+    // limit sits on the exam screen because every saved answer is a request.
+    Route::get('/ujian/{exam}', PengerjaanUjian::class)
+        ->middleware('throttle:60,1')
+        ->name('ujian.kerjakan');
 });
