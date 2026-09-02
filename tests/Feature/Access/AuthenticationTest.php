@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Exam;
 use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Hash;
@@ -132,7 +133,7 @@ it('sends an anonymous visitor away from the exam list', function () {
 });
 
 it('sends an anonymous visitor away from an exam', function () {
-    $exam = App\Models\Exam::factory()->active()->create();
+    $exam = Exam::factory()->active()->create();
 
     $this->get(route('ujian.kerjakan', $exam))->assertRedirect(route('masuk'));
 });
