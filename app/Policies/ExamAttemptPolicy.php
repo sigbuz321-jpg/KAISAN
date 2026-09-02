@@ -2,7 +2,6 @@
 
 namespace App\Policies;
 
-use App\Models\Exam;
 use App\Models\ExamAttempt;
 use App\Models\User;
 
@@ -45,13 +44,6 @@ class ExamAttemptPolicy
     public function submit(User $user, ExamAttempt $attempt): bool
     {
         return $this->update($user, $attempt);
-    }
-
-    public function start(User $user, Exam $exam): bool
-    {
-        return $user->isMurid()
-            && $user->is_active
-            && $exam->status->acceptsSubmissions();
     }
 
     /**

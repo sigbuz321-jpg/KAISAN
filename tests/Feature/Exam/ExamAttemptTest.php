@@ -6,6 +6,7 @@ use App\Actions\SubmitExamAttempt;
 use App\Enums\AttemptStatus;
 use App\Exceptions\ExamWorkflowException;
 use App\Models\AttemptAnswer;
+use App\Models\Exam;
 use App\Models\ExamAttempt;
 use App\Models\Question;
 use App\Models\User;
@@ -19,8 +20,23 @@ beforeEach(function () {
     $this->submit = app(SubmitExamAttempt::class);
 });
 
+/**
+ * An exam with shuffling switched off.
+ *
+ * These tests are about the attempt lifecycle, so the paper is left in its
+ * stored order and the letter a student clicks is the letter that gets stored.
+ * Shuffling, and the translation it needs, is covered in ExamPaperTest.
+ */
+function plainExam(int $questions = 4, array $attributes = []): Exam
+{
+    return examWithQuestions($questions, array_merge(
+        ['shuffle_questions' => false, 'shuffle_options' => false],
+        $attributes,
+    ));
+}
+
 it('opens an attempt stamped with the server clock', function () {
-    $exam = examWithQuestions(4);
+    $exam = plainExam(4);
 
     $attempt = $this->start->handle($exam, $this->murid);
 
@@ -38,7 +54,7 @@ it('refuses to open an exam that is not running', function () {
 });
 
 it('hands back the same attempt when a second tab starts the exam', function () {
-    $exam = examWithQuestions(4);
+    $exam = plainExam(4);
 
     $first = $this->start->handle($exam, $this->murid);
     $second = $this->start->handle($exam, $this->murid);
@@ -48,7 +64,7 @@ it('hands back the same attempt when a second tab starts the exam', function () 
 });
 
 it('keeps the original start time when the student reconnects', function () {
-    $exam = examWithQuestions(4);
+    $exam = plainExam(4);
     $first = $this->start->handle($exam, $this->murid);
 
     $this->travelTo(now()->addMinutes(15));
@@ -59,7 +75,7 @@ it('keeps the original start time when the student reconnects', function () {
 });
 
 it('refuses to reopen an exam the student already handed in', function () {
-    $exam = examWithQuestions(4);
+    $exam = plainExam(4);
     $attempt = $this->start->handle($exam, $this->murid);
     $this->submit->handle($attempt);
 
@@ -68,7 +84,7 @@ it('refuses to reopen an exam the student already handed in', function () {
 });
 
 it('saves an answer without deciding whether it is right', function () {
-    $exam = examWithQuestions(4);
+    $exam = plainExam(4);
     $attempt = $this->start->handle($exam, $this->murid);
     $question = $exam->questions()->first();
 
@@ -81,7 +97,7 @@ it('saves an answer without deciding whether it is right', function () {
 });
 
 it('keeps one row when a student changes their mind', function () {
-    $exam = examWithQuestions(4);
+    $exam = plainExam(4);
     $attempt = $this->start->handle($exam, $this->murid);
     $question = $exam->questions()->first();
 
@@ -93,7 +109,7 @@ it('keeps one row when a student changes their mind', function () {
 });
 
 it('keeps answers saved before the connection dropped', function () {
-    $exam = examWithQuestions(4);
+    $exam = plainExam(4);
     $attempt = $this->start->handle($exam, $this->murid);
     $questions = $exam->questions()->get();
 
@@ -107,7 +123,7 @@ it('keeps answers saved before the connection dropped', function () {
 });
 
 it('refuses an answer to a question from another exam', function () {
-    $exam = examWithQuestions(4);
+    $exam = plainExam(4);
     $attempt = $this->start->handle($exam, $this->murid);
     $stranger = Question::factory()->published()->create();
 
@@ -116,7 +132,7 @@ it('refuses an answer to a question from another exam', function () {
 });
 
 it('refuses an answer once the time is up', function () {
-    $exam = examWithQuestions(4, ['duration_minutes' => 30]);
+    $exam = plainExam(4, ['duration_minutes' => 30]);
     $attempt = $this->start->handle($exam, $this->murid);
     $question = $exam->questions()->first();
 
@@ -127,7 +143,7 @@ it('refuses an answer once the time is up', function () {
 });
 
 it('scores the paper on the server when it is handed in', function () {
-    $exam = examWithQuestions(4);
+    $exam = plainExam(4);
     $attempt = $this->start->handle($exam, $this->murid);
 
     foreach (answerKeysOf($exam) as $questionId => $key) {
@@ -146,7 +162,7 @@ it('scores the paper on the server when it is handed in', function () {
 });
 
 it('marks each answer right or wrong only at grading time', function () {
-    $exam = examWithQuestions(4);
+    $exam = plainExam(4);
     $attempt = $this->start->handle($exam, $this->murid);
     $keys = answerKeysOf($exam);
     $ids = array_keys($keys);
@@ -161,7 +177,7 @@ it('marks each answer right or wrong only at grading time', function () {
 });
 
 it('counts questions the student never reached as wrong', function () {
-    $exam = examWithQuestions(4);
+    $exam = plainExam(4);
     $attempt = $this->start->handle($exam, $this->murid);
     $keys = answerKeysOf($exam);
     $first = array_key_first($keys);
@@ -175,7 +191,7 @@ it('counts questions the student never reached as wrong', function () {
 });
 
 it('accepts a submission in the last second', function () {
-    $exam = examWithQuestions(2, ['duration_minutes' => 30]);
+    $exam = plainExam(2, ['duration_minutes' => 30]);
     $attempt = $this->start->handle($exam, $this->murid);
 
     $this->travelTo(now()->addMinutes(30)->subSecond());
@@ -184,7 +200,7 @@ it('accepts a submission in the last second', function () {
 });
 
 it('rejects a submission thirty one seconds late', function () {
-    $exam = examWithQuestions(2, ['duration_minutes' => 30]);
+    $exam = plainExam(2, ['duration_minutes' => 30]);
     $attempt = $this->start->handle($exam, $this->murid);
 
     $this->travelTo(now()->addMinutes(30)->addSeconds(31));
@@ -196,7 +212,7 @@ it('rejects a submission thirty one seconds late', function () {
 });
 
 it('refuses a second submission', function () {
-    $exam = examWithQuestions(2);
+    $exam = plainExam(2);
     $attempt = $this->start->handle($exam, $this->murid);
     $this->submit->handle($attempt);
 
@@ -205,7 +221,7 @@ it('refuses a second submission', function () {
 });
 
 it('keeps one attempt per student even when two are opened at once', function () {
-    $exam = examWithQuestions(2);
+    $exam = plainExam(2);
     $other = User::factory()->murid()->create();
 
     $this->start->handle($exam, $this->murid);

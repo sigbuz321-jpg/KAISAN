@@ -44,6 +44,21 @@ class ExamPolicy
         return $this->update($user, $exam) && $exam->status->allowsQuestionEditing();
     }
 
+    /**
+     * Whether this student may sit this exam.
+     *
+     * It lives here rather than on ExamAttemptPolicy because the subject is an
+     * Exam: Laravel picks the policy from the argument's class, and an ability
+     * declared on the wrong policy is simply never found -- which reads as a
+     * denial and hides the mistake.
+     */
+    public function start(User $user, Exam $exam): bool
+    {
+        return $user->isMurid()
+            && $user->is_active
+            && $exam->status->acceptsSubmissions();
+    }
+
     /** Results carry other students' marks, so this is narrower than view(). */
     public function viewResults(User $user, Exam $exam): bool
     {
