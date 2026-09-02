@@ -2,6 +2,7 @@
 
 use App\Models\Exam;
 use App\Models\ExamAttempt;
+use App\Models\Question;
 use App\Models\Season;
 use App\Models\User;
 use Illuminate\Database\QueryException;
@@ -92,7 +93,7 @@ it('refuses a chosen option outside A to D', function () {
     $attempt = ExamAttempt::factory()->create();
 
     expect(fn () => $attempt->answers()->create([
-        'question_id' => App\Models\Question::factory()->create()->id,
+        'question_id' => Question::factory()->create()->id,
         'selected_option' => 'Z',
         'answered_at' => now(),
     ]))->toThrow(QueryException::class);
