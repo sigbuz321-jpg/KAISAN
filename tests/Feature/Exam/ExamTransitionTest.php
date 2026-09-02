@@ -60,6 +60,10 @@ it('grades an attempt the student never handed in', function () {
         'starts_at' => now()->subHour(),
         'ends_at' => now()->addMinutes(5),
         'duration_minutes' => 60,
+        // Unshuffled, so the answer key doubles as the letter on screen. This
+        // test is about grading an abandoned attempt, not about shuffling.
+        'shuffle_options' => false,
+        'shuffle_questions' => false,
     ], state: 'active');
 
     $attempt = app(StartExamAttempt::class)->handle($exam, $this->murid);
