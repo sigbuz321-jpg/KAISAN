@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Questions\Tables;
 
+use App\Actions\BulkChangeQuestionStatus;
 use App\Actions\ChangeQuestionStatus;
 use App\Enums\QuestionSource;
 use App\Enums\QuestionStatus;
@@ -134,16 +135,7 @@ class QuestionsTable
             ->emptyStateDescription('Tambah soal satu per satu, atau impor dari CSV.');
     }
 
-    /**
-     * Bulk approval exists because a teacher reviewing twenty AI drafts should
-     * not have to click twenty times -- rule 1 of domain-kaisan.md asks for a
-     * teacher's judgement, not for tedium.
-     *
-     * Each record still goes through ChangeQuestionStatus one at a time rather
-     * than a single bulk UPDATE: the workflow guard, the approver stamp and the
-     * AI-must-be-reviewed rule are per-record decisions, and a bulk update
-     * would skip all three.
-     */
+    /** The counting and the workflow rules live in BulkChangeQuestionStatus. */
     private static function bulkTransition(
         string $name,
         string $label,
@@ -160,31 +152,14 @@ class QuestionsTable
             ->requiresConfirmation()
             ->modalHeading($heading)
             ->modalDescription($description)
-            ->action(function (Collection $records, ChangeQuestionStatus $changeStatus) use ($target) {
-                $actor = auth()->user();
-                $changed = 0;
-                $skipped = 0;
-
-                foreach ($records as $record) {
-                    if (! $actor->can('changeStatus', $record)) {
-                        $skipped++;
-
-                        continue;
-                    }
-
-                    try {
-                        $changeStatus->handle($record, $target, $actor);
-                        $changed++;
-                    } catch (QuestionWorkflowException) {
-                        // Wrong starting status for this move. Reported as a
-                        // count rather than a wall of identical warnings.
-                        $skipped++;
-                    }
-                }
+            ->action(function (Collection $records, BulkChangeQuestionStatus $bulk) use ($target) {
+                $result = $bulk->handle($records, $target, auth()->user());
 
                 Notification::make()
-                    ->title("{$changed} soal diperbarui.")
-                    ->body($skipped > 0 ? "{$skipped} soal dilewati karena statusnya tidak memungkinkan." : null)
+                    ->title("{$result['changed']} soal diperbarui.")
+                    ->body($result['skipped'] > 0
+                        ? "{$result['skipped']} soal dilewati karena statusnya tidak memungkinkan."
+                        : null)
                     ->success()
                     ->send();
             })

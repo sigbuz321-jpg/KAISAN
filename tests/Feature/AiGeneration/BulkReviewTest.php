@@ -1,68 +1,84 @@
 <?php
 
+use App\Actions\BulkChangeQuestionStatus;
 use App\Enums\QuestionStatus;
-use App\Filament\Resources\Questions\Pages\ListQuestions;
 use App\Models\Question;
 use App\Models\User;
-use Livewire\Livewire;
 
 beforeEach(function () {
     $this->guru = User::factory()->guru()->create();
-    $this->actingAs($this->guru);
+    $this->bulk = app(BulkChangeQuestionStatus::class);
 });
 
 it('publishes several AI questions in one go', function () {
     $questions = Question::factory()->fromAi()->review()->count(3)->create();
 
-    Livewire::test(ListQuestions::class)
-        ->callAction('setujuiMassal', arguments: ['records' => $questions->pluck('id')->all()]);
+    $result = $this->bulk->handle($questions, QuestionStatus::Published, $this->guru);
 
-    expect(Question::where('status', QuestionStatus::Published)->count())->toBe(3);
+    expect($result)->toBe(['changed' => 3, 'skipped' => 0])
+        ->and(Question::where('status', QuestionStatus::Published)->count())->toBe(3);
 });
 
 it('stamps the approving teacher on every question it publishes', function () {
     $questions = Question::factory()->fromAi()->review()->count(2)->create();
 
-    Livewire::test(ListQuestions::class)
-        ->callAction('setujuiMassal', arguments: ['records' => $questions->pluck('id')->all()]);
+    $this->bulk->handle($questions, QuestionStatus::Published, $this->guru);
 
     $approved = Question::where('status', QuestionStatus::Published)->get();
 
-    expect($approved)->toHaveCount(2)
-        ->and($approved->pluck('approved_by')->unique()->all())->toBe([$this->guru->id]);
+    expect($approved->pluck('approved_by')->unique()->values()->all())->toBe([$this->guru->id])
+        ->and($approved->whereNull('approved_at'))->toBeEmpty();
 });
 
 it('sends questions back to draft in one go', function () {
     $questions = Question::factory()->fromAi()->review()->count(2)->create();
 
-    Livewire::test(ListQuestions::class)
-        ->callAction('tolakMassal', arguments: ['records' => $questions->pluck('id')->all()]);
+    $this->bulk->handle($questions, QuestionStatus::Draft, $this->guru);
 
+    // Rejection is not deletion: the wording is kept so it can be fixed.
     expect(Question::where('status', QuestionStatus::Draft)->count())->toBe(2)
-        // Rejection is not deletion: the wording is kept so it can be fixed.
         ->and(Question::count())->toBe(2);
 });
 
-it('skips questions whose status does not allow the move instead of failing the batch', function () {
+it('skips a question whose status forbids the move instead of failing the batch', function () {
     $reviewable = Question::factory()->fromAi()->review()->create();
     $archived = Question::factory()->fromAi()->archived()->create();
 
-    Livewire::test(ListQuestions::class)
-        ->callAction('setujuiMassal', arguments: [
-            'records' => [$reviewable->id, $archived->id],
-        ]);
+    $result = $this->bulk->handle(
+        collect([$reviewable, $archived]),
+        QuestionStatus::Published,
+        $this->guru,
+    );
 
-    expect($reviewable->refresh()->status)->toBe(QuestionStatus::Published)
+    expect($result)->toBe(['changed' => 1, 'skipped' => 1])
+        ->and($reviewable->refresh()->status)->toBe(QuestionStatus::Published)
         ->and($archived->refresh()->status)->toBe(QuestionStatus::Archived);
 });
 
-it('never lets a bulk approval push an AI draft straight past review', function () {
-    // The AI question here has never been through review. Rule 1 of
-    // domain-kaisan.md holds even when the teacher selects it in bulk.
+it('never lets a bulk approval push an unreviewed AI draft straight to published', function () {
+    // Rule 1 of domain-kaisan.md holds even when a teacher selects in bulk.
     $draft = Question::factory()->fromAi()->create();
 
-    Livewire::test(ListQuestions::class)
-        ->callAction('setujuiMassal', arguments: ['records' => [$draft->id]]);
+    $result = $this->bulk->handle(collect([$draft]), QuestionStatus::Published, $this->guru);
 
-    expect($draft->refresh()->status)->toBe(QuestionStatus::Draft);
+    expect($result)->toBe(['changed' => 0, 'skipped' => 1])
+        ->and($draft->refresh()->status)->toBe(QuestionStatus::Draft);
+});
+
+it('publishes a teacher-written draft in bulk, which needs no second opinion', function () {
+    $draft = Question::factory()->count(2)->create();
+
+    $result = $this->bulk->handle($draft, QuestionStatus::Published, $this->guru);
+
+    expect($result)->toBe(['changed' => 2, 'skipped' => 0]);
+});
+
+it('skips questions the actor is not allowed to touch', function () {
+    $murid = User::factory()->murid()->create();
+    $questions = Question::factory()->review()->count(2)->create();
+
+    $result = $this->bulk->handle($questions, QuestionStatus::Published, $murid);
+
+    expect($result)->toBe(['changed' => 0, 'skipped' => 2])
+        ->and(Question::where('status', QuestionStatus::Review)->count())->toBe(2);
 });

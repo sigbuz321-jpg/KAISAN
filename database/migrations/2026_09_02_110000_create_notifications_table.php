@@ -17,7 +17,10 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('type');
             $table->morphs('notifiable');
-            $table->text('data');
+            // jsonb, not the text column Laravel's stock migration uses:
+            // Filament filters notifications with `data->>'format'`, and on
+            // PostgreSQL that operator does not exist for text.
+            $table->jsonb('data');
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
         });
