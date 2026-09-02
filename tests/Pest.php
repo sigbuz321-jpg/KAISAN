@@ -151,3 +151,28 @@ function aiQuestion(string $stem = 'Berapakah hasil dari 2 tambah 2?', array $ov
         'explanation' => 'Dua ditambah dua sama dengan empat.',
     ], $overrides);
 }
+
+/**
+ * An exam with real published questions attached in order.
+ *
+ * @param  array<string, mixed>  $attributes  passed to ExamFactory
+ * @param  'draft'|'scheduled'|'active'|'closed'  $state
+ */
+function examWithQuestions(int $questions = 4, array $attributes = [], string $state = 'active'): App\Models\Exam
+{
+    $exam = App\Models\Exam::factory()->{$state}()->create($attributes);
+
+    App\Models\Question::factory()
+        ->published()
+        ->count($questions)
+        ->create(['subject_id' => $exam->subject_id])
+        ->each(fn (App\Models\Question $q, int $i) => $exam->questions()->attach($q, ['order' => $i]));
+
+    return $exam->refresh();
+}
+
+/** The answer keys of an exam, in order, as question id => key. */
+function answerKeysOf(App\Models\Exam $exam): array
+{
+    return $exam->questions()->pluck('answer_key', 'questions.id')->all();
+}
