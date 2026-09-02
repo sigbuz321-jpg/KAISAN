@@ -12,6 +12,8 @@ use App\Services\AiRouter\CostEstimator;
 use App\Services\AiRouter\GeneratedQuestionParser;
 use App\Services\AiRouter\GeneratedQuestionValidator;
 use App\Services\AiRouter\QuestionPromptBuilder;
+use Filament\Notifications\Notification as FilamentNotification;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -55,9 +57,9 @@ class GenerateQuestionsJob implements ShouldBeUnique, ShouldQueue
         CostEstimator $costs,
         StoreGeneratedQuestions $store,
     ): void {
-        // The prompt names the subject and topic, and lazy loading is an error
-        // outside production.
-        $record = AiGenerationJob::with(['subject', 'topic'])->find($this->aiGenerationJobId);
+        // The prompt names the subject and topic, the teacher gets notified at
+        // the end, and lazy loading is an error outside production.
+        $record = AiGenerationJob::with(['subject', 'topic', 'requester'])->find($this->aiGenerationJobId);
 
         // Already handled, or the record was deleted underneath us.
         if ($record === null || $record->status->isFinished()) {
@@ -101,6 +103,30 @@ class GenerateQuestionsJob implements ShouldBeUnique, ShouldQueue
             'ai_generation_job_id' => $record->id,
             'saved' => $stored['saved'],
         ]);
+
+        $this->announce($record, $stored['saved'], $result->rejectedCount() + $stored['duplicates']);
+    }
+
+    /**
+     * Generation runs in the background, so the teacher who asked is usually
+     * looking at another page by now. Filament shows this in the panel's bell.
+     */
+    private function announce(AiGenerationJob $record, int $saved, int $discarded): void
+    {
+        $body = $saved === 0
+            ? 'Tidak ada soal yang bisa disimpan. Coba ubah topik atau tingkat kesulitannya.'
+            : "{$saved} soal masuk ke Bank Soal dan menunggu tinjauan Anda.";
+
+        if ($saved > 0 && $discarded > 0) {
+            $body .= " {$discarded} soal lain dilewati karena tidak lolos pemeriksaan atau sudah ada.";
+        }
+
+        FilamentNotification::make()
+            ->title('Soal dari AI sudah siap')
+            ->body($body)
+            ->icon(Heroicon::OutlinedSparkles)
+            ->color($saved === 0 ? 'warning' : 'success')
+            ->sendToDatabase($record->requester);
     }
 
     /**
@@ -151,7 +177,7 @@ class GenerateQuestionsJob implements ShouldBeUnique, ShouldQueue
 
     public function failed(?Throwable $e): void
     {
-        $record = AiGenerationJob::find($this->aiGenerationJobId);
+        $record = AiGenerationJob::with('requester')->find($this->aiGenerationJobId);
 
         if ($record === null || $record->status->isFinished()) {
             return;
@@ -171,5 +197,11 @@ class GenerateQuestionsJob implements ShouldBeUnique, ShouldQueue
         ])->save();
 
         Log::warning('ai generation failed', ['ai_generation_job_id' => $record->id]);
+
+        FilamentNotification::make()
+            ->title('Pembuatan soal gagal')
+            ->body($message)
+            ->danger()
+            ->sendToDatabase($record->requester);
     }
 }
