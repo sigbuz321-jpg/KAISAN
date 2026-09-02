@@ -92,9 +92,8 @@ class GeneratedQuestionValidator
             $options
         );
 
-        if (in_array('', $normalised, true)) {
-            return 'ada pilihan jawaban yang kosong.';
-        }
+        // No emptiness check here: `required` already rejects a blank option,
+        // and it trims first, so a spaces-only option never reaches this point.
 
         // A distractor identical to the key gives the question two right
         // answers, which is worse than having no question at all.
