@@ -11,7 +11,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Laravel sends unauthenticated visitors to a route named `login`.
+        // Every user-facing route here is named in Indonesian, so without this
+        // the auth middleware threw "Route [login] not defined" and every
+        // protected page answered 500 instead of a redirect.
+        $middleware->redirectGuestsTo(fn () => route('masuk'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
