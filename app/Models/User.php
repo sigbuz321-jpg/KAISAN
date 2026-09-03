@@ -9,6 +9,7 @@ use Filament\Panel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -51,10 +52,33 @@ class User extends Authenticatable implements FilamentUser
         ];
     }
 
+    /** The class a student belongs to. Always null for staff. */
     /** @return BelongsTo<Classroom, $this> */
     public function classroom(): BelongsTo
     {
         return $this->belongsTo(Classroom::class);
+    }
+
+    /**
+     * The classes a teacher takes.
+     *
+     * Separate from `classroom` above, which is a student's own class. This is
+     * what .claude/rules/security.md means by "the classes a teacher teaches".
+     *
+     * @return BelongsToMany<Classroom, $this>
+     */
+    public function taughtClassrooms(): BelongsToMany
+    {
+        return $this->belongsToMany(Classroom::class, 'classroom_teacher')->orderBy('classrooms.name');
+    }
+
+    public function teaches(?int $classroomId): bool
+    {
+        if ($classroomId === null || ! $this->isGuru()) {
+            return false;
+        }
+
+        return $this->taughtClassrooms()->whereKey($classroomId)->exists();
     }
 
     public function isAdmin(): bool

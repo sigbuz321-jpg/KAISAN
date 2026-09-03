@@ -29,6 +29,24 @@ class AccountSeeder extends Seeder
         }
 
         $this->students();
+        $this->teachingAssignments();
+    }
+
+    /**
+     * Give each teacher some classes, so the results pages are reachable on a
+     * fresh install without anyone having to wire it up by hand first.
+     */
+    private function teachingAssignments(): void
+    {
+        $classrooms = Classroom::query()->orderBy('name')->get();
+
+        $sari = User::where('email', 'guru@kaisan.test')->first();
+        $budi = User::where('email', 'guru2@kaisan.test')->first();
+
+        // Deliberately overlapping but not identical: it makes the difference
+        // between the two teachers visible when testing the results page.
+        $sari?->taughtClassrooms()->sync($classrooms->take(2)->pluck('id'));
+        $budi?->taughtClassrooms()->sync($classrooms->skip(1)->pluck('id'));
     }
 
     private function students(): void

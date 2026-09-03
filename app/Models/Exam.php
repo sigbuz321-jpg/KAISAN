@@ -94,6 +94,22 @@ class Exam extends Model
         return $this->hasMany(ExamAttempt::class);
     }
 
+    /** The classes sitting this exam. A student outside them never sees it. */
+    /** @return BelongsToMany<Classroom, $this> */
+    public function classrooms(): BelongsToMany
+    {
+        return $this->belongsToMany(Classroom::class, 'exam_classroom')->orderBy('classrooms.name');
+    }
+
+    public function targetsClassroom(?int $classroomId): bool
+    {
+        if ($classroomId === null) {
+            return false;
+        }
+
+        return $this->classrooms()->whereKey($classroomId)->exists();
+    }
+
     /** The exam's own closing time, before any per-student deadline is applied. */
     public function closesAt(): Carbon
     {

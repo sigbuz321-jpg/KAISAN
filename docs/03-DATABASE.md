@@ -100,6 +100,31 @@ Indeks: `(status, starts_at)`, `(season_id, subject_id)`
 
 CHECK: `ends_at > starts_at`
 
+### exam_classroom
+`exam_id`, `classroom_id`
+
+Indeks: `(exam_id, classroom_id)` **unique**, `(classroom_id)`
+
+Kelas mana yang ikut sebuah ujian. Murid hanya melihat dan bisa mengerjakan ujian
+yang menyasar kelasnya. Ujian tanpa kelas peserta tidak bisa dijadwalkan, sama
+seperti ujian tanpa soal.
+
+Ditambahkan di M4. Tanpa ini setiap murid aktif melihat setiap ujian, dan sistem
+tidak bisa tahu siapa yang seharusnya ikut sehingga "belum mengerjakan" mustahil
+dilaporkan.
+
+### classroom_teacher
+`classroom_id`, `user_id`
+
+Indeks: `(classroom_id, user_id)` **unique**, `(user_id)`
+
+Guru yang mengampu sebuah kelas. Dipakai untuk menegakkan aturan di
+`.claude/rules/security.md`: data murid dibatasi ke kelas yang diampu guru
+tersebut, kecuali admin.
+
+Many-to-many karena satu guru mengampu beberapa kelas, dan satu kelas diampu
+beberapa guru untuk mata pelajaran berbeda.
+
 ### exam_questions
 `exam_id`, `question_id`, `order` smallint
 Indeks: `(exam_id, order)`, `(exam_id, question_id)` unique

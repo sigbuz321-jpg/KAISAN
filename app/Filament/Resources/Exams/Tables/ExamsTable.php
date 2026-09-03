@@ -24,6 +24,11 @@ class ExamsTable
                 TextColumn::make('title')->label('Judul')->searchable()->wrap(),
                 TextColumn::make('subject.name')->label('Mapel')->sortable(),
 
+                TextColumn::make('classrooms.name')
+                    ->label('Kelas peserta')
+                    ->badge()
+                    ->placeholder('Belum dipilih'),
+
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()

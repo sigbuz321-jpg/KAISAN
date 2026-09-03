@@ -82,9 +82,33 @@
                     </table>
                 </div>
 
+            @endif
+        </x-filament::section>
+
+        @php $absen = $this->absentStudents(); @endphp
+
+        <x-filament::section>
+            <x-slot name="heading">Belum mengerjakan</x-slot>
+
+            @if ($absen->isEmpty())
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                    Semua murid di kelas peserta sudah membuka ujian ini.
+                </p>
+            @else
+                <ul class="flex flex-wrap gap-2">
+                    @foreach ($absen as $murid)
+                        <li class="rounded-full bg-gray-100 px-3 py-1 text-sm dark:bg-white/5">
+                            {{ $murid->name }}
+                            <span class="text-gray-500 dark:text-gray-400">
+                                &middot; {{ $murid->classroom?->name ?? '-' }}
+                            </span>
+                        </li>
+                    @endforeach
+                </ul>
+
                 <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">
-                    Murid yang sama sekali tidak membuka ujian tidak muncul di daftar ini, dan tidak
-                    dicatat bernilai nol.
+                    Mereka tidak dicatat bernilai nol. Tidak hadir dan mendapat nol adalah dua hal
+                    berbeda saat dijelaskan ke orang tua.
                 </p>
             @endif
         </x-filament::section>

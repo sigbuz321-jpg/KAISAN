@@ -42,4 +42,14 @@ class ExamWorkflowException extends RuntimeException
     {
         return new self('Ujian yang sudah berjalan tidak bisa diubah soalnya. Buat ujian baru bila perlu revisi.');
     }
+
+    public static function classroomsAreFrozen(): self
+    {
+        return new self('Kelas peserta tidak bisa diubah setelah ujian dijadwalkan. Buat ujian baru bila perlu.');
+    }
+
+    public static function noClassrooms(): self
+    {
+        return new self('Ujian belum punya kelas peserta, jadi belum bisa dijadwalkan.');
+    }
 }
