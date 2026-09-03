@@ -53,6 +53,29 @@ app/
 - Query yang menyentuh lebih dari 1000 baris wajib pakai `chunk()` atau `cursor()`.
 - Jangan pakai `$model->update()` di dalam loop. Pakai bulk update.
 
+## Default kolom wajib dicerminkan di model
+
+Kalau sebuah kolom punya `default()` di migration, tulis juga di `$attributes`
+model. Kalau tidak, model yang baru dibuat melaporkan `null` untuk kolom itu —
+nilai default baru muncul setelah di-`refresh()`.
+
+```php
+// migration
+$table->integer('answers_count')->default(0);
+
+// model — wajib, bukan opsional
+protected $attributes = ['answers_count' => 0];
+```
+
+Bug ini sudah muncul tiga kali di proyek ini: status `queued` di
+`ai_generation_jobs` (M3), `times_answered` di `questions` (M5), dan
+`questions_count` di `practice_sessions` (M5). Dua di antaranya baru ketahuan
+di CI, satu hampir lolos ke VPS.
+
+Gejalanya selalu sama: `TypeError ... must be of type int, null given`, atau
+sebuah nilai yang tampak benar di database tapi salah di layar tepat setelah
+sesuatu dibuat.
+
 ## Komentar
 
 - Jangan komentari apa yang sudah jelas dari kode.
