@@ -8,6 +8,7 @@ use App\Enums\ExamStatus;
 use App\Exceptions\ExamWorkflowException;
 use App\Filament\Resources\Exams\ExamResource;
 use App\Filament\Resources\Exams\Pages\ExamResults;
+use App\Models\Classroom;
 use App\Models\Exam;
 use App\Models\ExamAttempt;
 use App\Models\Question;
@@ -128,10 +129,11 @@ it('picks only questions in the requested difficulty band', function () {
         ->and($this->exam->questions()->whereBetween('difficulty', [$from, $to])->count())->toBe(4);
 });
 
-it('schedules a draft that has questions', function () {
+it('schedules a draft that has questions and classes', function () {
     $questions = Question::factory()->published()->count(3)->create(['subject_id' => $this->subject->id]);
 
     $this->set->handle($this->exam, $questions->pluck('id')->all());
+    $this->exam->classrooms()->attach(Classroom::factory()->create()->id);
     $this->schedule->handle($this->exam);
 
     expect($this->exam->refresh()->status)->toBe(ExamStatus::Scheduled)
@@ -151,6 +153,7 @@ it('refuses to schedule an exam twice', function () {
         $this->exam,
         Question::factory()->published()->count(2)->create(['subject_id' => $this->subject->id])->pluck('id')->all()
     );
+    $this->exam->classrooms()->attach(Classroom::factory()->create()->id);
 
     $this->schedule->handle($this->exam);
 

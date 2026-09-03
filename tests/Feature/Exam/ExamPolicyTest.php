@@ -58,6 +58,10 @@ it('hides a draft exam from students', function () {
     $draft = Exam::factory()->create();
     $scheduled = Exam::factory()->scheduled()->create();
 
+    // Both aimed at this student's class, so only the status differs.
+    $draft->classrooms()->attach($this->murid->classroom_id);
+    $scheduled->classrooms()->attach($this->murid->classroom_id);
+
     expect($this->murid->can('view', $draft))->toBeFalse()
         ->and($this->murid->can('view', $scheduled))->toBeTrue();
 });
@@ -96,10 +100,15 @@ it('keeps a deactivated student out of an exam', function () {
 });
 
 it('stops anyone starting an exam that is not running', function () {
-    $scheduled = Exam::factory()->scheduled()->create();
-    $closed = Exam::factory()->closed()->create();
+    // Each exam is aimed at this student's class, so status is the only thing
+    // left deciding. Class targeting has its own tests.
+    $aimedHere = fn (Exam $exam) => tap($exam, fn (Exam $e) => $e->classrooms()->attach($this->murid->classroom_id));
+
+    $scheduled = $aimedHere(Exam::factory()->scheduled()->create());
+    $closed = $aimedHere(Exam::factory()->closed()->create());
+    $running = $aimedHere(Exam::factory()->active()->create());
 
     expect($this->murid->can('start', $scheduled))->toBeFalse()
         ->and($this->murid->can('start', $closed))->toBeFalse()
-        ->and($this->murid->can('start', Exam::factory()->active()->create()))->toBeTrue();
+        ->and($this->murid->can('start', $running))->toBeTrue();
 });

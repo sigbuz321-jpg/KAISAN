@@ -25,11 +25,14 @@ class UjianController extends Controller
 
         $season = Season::current();
 
-        $exams = $season === null
+        $exams = $season === null || $student->classroom_id === null
             ? collect()
             : Exam::query()
                 ->visibleToStudents()
                 ->where('season_id', $season->id)
+                // Only exams this student's class was actually given. Without
+                // this every student saw every exam in the school.
+                ->whereHas('classrooms', fn ($q) => $q->whereKey($student->classroom_id))
                 ->with('subject')
                 ->orderByDesc('starts_at')
                 ->get();

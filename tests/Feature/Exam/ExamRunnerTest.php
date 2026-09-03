@@ -2,6 +2,7 @@
 
 use App\Enums\AttemptStatus;
 use App\Livewire\Murid\PengerjaanUjian;
+use App\Models\Exam;
 use App\Models\ExamAttempt;
 use App\Models\Season;
 use App\Models\User;
@@ -15,8 +16,22 @@ beforeEach(function () {
     $this->paper = app(ExamPaper::class);
 });
 
+/**
+ * An exam aimed at this student's own class.
+ *
+ * Targeting is something these tests assume rather than verify; the rule
+ * itself is covered in ClassroomTargetingTest.
+ */
+function examFor(int $questions = 4, array $attributes = [], string $state = 'active'): Exam
+{
+    $exam = examWithQuestions($questions, $attributes, $state);
+    $exam->classrooms()->attach(test()->murid->classroom_id);
+
+    return $exam->refresh();
+}
+
 it('starts an attempt when a student opens the exam', function () {
-    $exam = examWithQuestions(4);
+    $exam = examFor(4);
 
     Livewire::actingAs($this->murid)
         ->test(PengerjaanUjian::class, ['exam' => $exam])
@@ -31,7 +46,7 @@ it('starts an attempt when a student opens the exam', function () {
 it('never sends the answer key to the browser', function () {
     // The single most important assertion in M4. Everything the component
     // holds is serialised into the page for Livewire.
-    $exam = examWithQuestions(4);
+    $exam = examFor(4);
     $exam->questions()->first()->update(['explanation' => 'RAHASIA PEMBAHASAN']);
 
     $rendered = Livewire::actingAs($this->murid)
@@ -52,7 +67,7 @@ it('never sends the answer key to the browser', function () {
 });
 
 it('saves an answer as soon as it is chosen', function () {
-    $exam = examWithQuestions(3, ['shuffle_options' => false]);
+    $exam = examFor(3, ['shuffle_options' => false]);
 
     $component = Livewire::actingAs($this->murid)->test(PengerjaanUjian::class, ['exam' => $exam]);
     $questionId = $component->get('paper')[0]['id'];
@@ -67,7 +82,7 @@ it('saves an answer as soon as it is chosen', function () {
 });
 
 it('brings back answers a student gave before losing their connection', function () {
-    $exam = examWithQuestions(4);
+    $exam = examFor(4);
 
     $first = Livewire::actingAs($this->murid)->test(PengerjaanUjian::class, ['exam' => $exam]);
     $questionId = $first->get('paper')[0]['id'];
@@ -80,7 +95,7 @@ it('brings back answers a student gave before losing their connection', function
 });
 
 it('shows the same letter the student picked on a shuffled paper', function () {
-    $exam = examWithQuestions(4, ['shuffle_options' => true]);
+    $exam = examFor(4, ['shuffle_options' => true]);
 
     $first = Livewire::actingAs($this->murid)->test(PengerjaanUjian::class, ['exam' => $exam]);
     $questionId = $first->get('paper')[0]['id'];
@@ -96,7 +111,7 @@ it('does not query the database again when moving between questions', function (
     // .claude/rules/performance.md: the paper is loaded once and kept in
     // component state. Re-querying per question is what falls over at 150
     // students.
-    $exam = examWithQuestions(10);
+    $exam = examFor(10);
 
     $component = Livewire::actingAs($this->murid)->test(PengerjaanUjian::class, ['exam' => $exam]);
 
@@ -111,7 +126,7 @@ it('does not query the database again when moving between questions', function (
 });
 
 it('scores the paper on the server when the student hands it in', function () {
-    $exam = examWithQuestions(4, ['shuffle_options' => false, 'shuffle_questions' => false]);
+    $exam = examFor(4, ['shuffle_options' => false, 'shuffle_questions' => false]);
 
     $component = Livewire::actingAs($this->murid)->test(PengerjaanUjian::class, ['exam' => $exam]);
 
@@ -127,7 +142,7 @@ it('scores the paper on the server when the student hands it in', function () {
 });
 
 it('counts questions left blank as wrong', function () {
-    $exam = examWithQuestions(4, ['shuffle_options' => false, 'shuffle_questions' => false]);
+    $exam = examFor(4, ['shuffle_options' => false, 'shuffle_questions' => false]);
 
     $component = Livewire::actingAs($this->murid)->test(PengerjaanUjian::class, ['exam' => $exam]);
     $keys = answerKeysOf($exam);
@@ -139,7 +154,7 @@ it('counts questions left blank as wrong', function () {
 });
 
 it('refuses a late submission and says so plainly', function () {
-    $exam = examWithQuestions(2, ['duration_minutes' => 30]);
+    $exam = examFor(2, ['duration_minutes' => 30]);
 
     $component = Livewire::actingAs($this->murid)->test(PengerjaanUjian::class, ['exam' => $exam]);
 
@@ -154,7 +169,7 @@ it('refuses a late submission and says so plainly', function () {
 });
 
 it('refuses to save an answer after the time is up', function () {
-    $exam = examWithQuestions(3, ['duration_minutes' => 30]);
+    $exam = examFor(3, ['duration_minutes' => 30]);
 
     $component = Livewire::actingAs($this->murid)->test(PengerjaanUjian::class, ['exam' => $exam]);
     $questionId = $component->get('paper')[0]['id'];
@@ -167,7 +182,7 @@ it('refuses to save an answer after the time is up', function () {
 });
 
 it('cannot be handed in twice', function () {
-    $exam = examWithQuestions(2, ['shuffle_options' => false, 'shuffle_questions' => false]);
+    $exam = examFor(2, ['shuffle_options' => false, 'shuffle_questions' => false]);
 
     $component = Livewire::actingAs($this->murid)->test(PengerjaanUjian::class, ['exam' => $exam]);
     $component->call('kumpulkan');
@@ -179,7 +194,7 @@ it('cannot be handed in twice', function () {
 });
 
 it('keeps a teacher out of the exam screen', function () {
-    $exam = examWithQuestions(2);
+    $exam = examFor(2);
 
     Livewire::actingAs(User::factory()->guru()->create())
         ->test(PengerjaanUjian::class, ['exam' => $exam])
@@ -187,7 +202,7 @@ it('keeps a teacher out of the exam screen', function () {
 });
 
 it('keeps a deactivated student out of the exam screen', function () {
-    $exam = examWithQuestions(2);
+    $exam = examFor(2);
 
     Livewire::actingAs(User::factory()->murid()->inactive()->create())
         ->test(PengerjaanUjian::class, ['exam' => $exam])
@@ -195,7 +210,7 @@ it('keeps a deactivated student out of the exam screen', function () {
 });
 
 it('refuses to open an exam that has not started', function () {
-    $exam = examWithQuestions(2, state: 'scheduled');
+    $exam = examFor(2, state: 'scheduled');
 
     Livewire::actingAs($this->murid)
         ->test(PengerjaanUjian::class, ['exam' => $exam])
@@ -204,8 +219,8 @@ it('refuses to open an exam that has not started', function () {
 
 it('lists the exams a student can sit', function () {
     $season = Season::factory()->active()->create();
-    $open = examWithQuestions(2, ['season_id' => $season->id, 'title' => 'Ulangan Aljabar']);
-    $draft = examWithQuestions(2, ['season_id' => $season->id, 'title' => 'Belum Siap'], state: 'draft');
+    $open = examFor(2, ['season_id' => $season->id, 'title' => 'Ulangan Aljabar']);
+    $draft = examFor(2, ['season_id' => $season->id, 'title' => 'Belum Siap'], state: 'draft');
 
     $this->actingAs($this->murid)
         ->get(route('ujian.index'))
@@ -226,7 +241,7 @@ it('keeps staff off the student exam list', function () {
 
 it('shows a student their own score once it is in', function () {
     $season = Season::factory()->active()->create();
-    $exam = examWithQuestions(2, ['season_id' => $season->id], state: 'closed');
+    $exam = examFor(2, ['season_id' => $season->id], state: 'closed');
 
     ExamAttempt::factory()->submitted()->create([
         'exam_id' => $exam->id,
@@ -242,7 +257,7 @@ it('shows a student their own score once it is in', function () {
 
 it('does not show a student anyone else score', function () {
     $season = Season::factory()->active()->create();
-    $exam = examWithQuestions(2, ['season_id' => $season->id], state: 'closed');
+    $exam = examFor(2, ['season_id' => $season->id], state: 'closed');
 
     ExamAttempt::factory()->submitted()->create([
         'exam_id' => $exam->id,

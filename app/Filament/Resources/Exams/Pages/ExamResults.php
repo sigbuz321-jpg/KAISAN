@@ -3,9 +3,11 @@
 namespace App\Filament\Resources\Exams\Pages;
 
 use App\Enums\AttemptStatus;
+use App\Enums\Role;
 use App\Filament\Resources\Exams\ExamResource;
 use App\Models\Exam;
 use App\Models\ExamAttempt;
+use App\Models\User;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use Filament\Resources\Pages\Page;
 use Illuminate\Database\Eloquent\Collection;
@@ -105,6 +107,27 @@ class ExamResults extends Page
                 'persen' => (int) round((int) $row->benar / max(1, (int) $row->dijawab) * 100),
             ])
             ->all();
+    }
+
+    /**
+     * Students in the exam's classes who never opened it.
+     *
+     * Only answerable now that exams name their classes: before, the system
+     * had no idea who was supposed to be there. They deliberately have no
+     * attempt row -- absent is not the same as scoring zero.
+     *
+     * @return Collection<int, User>
+     */
+    public function absentStudents(): Collection
+    {
+        return User::query()
+            ->where('role', Role::Murid)
+            ->where('is_active', true)
+            ->whereIn('classroom_id', $this->exam()->classrooms()->select('classrooms.id'))
+            ->whereNotIn('id', ExamAttempt::query()->where('exam_id', $this->exam()->id)->select('user_id'))
+            ->with('classroom:id,name')
+            ->orderBy('name')
+            ->get();
     }
 
     /** The record, typed. InteractsWithRecord widens it to Model|int|string. */

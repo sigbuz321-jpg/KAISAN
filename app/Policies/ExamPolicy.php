@@ -18,9 +18,11 @@ class ExamPolicy
             return true;
         }
 
-        // A student may know an exam exists once it has left the teacher's
-        // desk, but sitting it is decided by ExamAttemptPolicy.
-        return $user->isMurid() && $exam->status->isVisibleToStudents();
+        // A student sees an exam once it has left the teacher's desk and only
+        // if their own class is sitting it.
+        return $user->isMurid()
+            && $exam->status->isVisibleToStudents()
+            && $exam->targetsClassroom($user->classroom_id);
     }
 
     public function create(User $user): bool
@@ -56,21 +58,32 @@ class ExamPolicy
     {
         return $user->isMurid()
             && $user->is_active
-            && $exam->status->acceptsSubmissions();
+            && $exam->status->acceptsSubmissions()
+            // A student cannot sit an exam their class was not given, even
+            // with the URL in hand.
+            && $exam->targetsClassroom($user->classroom_id);
     }
 
-    /** Results carry other students' marks, so this is narrower than view(). */
+    /**
+     * Results carry other students' marks, so this is narrower than view().
+     *
+     * .claude/rules/security.md restricts student data to the classes a
+     * teacher takes. Authorship is kept alongside it so a teacher never loses
+     * access to an exam they wrote themselves -- otherwise setting an exam for
+     * a class you do not take would lock you out of its results.
+     */
     public function viewResults(User $user, Exam $exam): bool
     {
         if ($user->isAdmin()) {
             return true;
         }
 
-        // security.md restricts student data to the classes a teacher takes,
-        // but no teacher-to-classroom relation exists in the schema yet, so
-        // authorship is the closest honest boundary. Revisit when M4's panel
-        // or a later module models teaching assignments.
-        return $user->isGuru() && $exam->created_by === $user->id;
+        if (! $user->isGuru()) {
+            return false;
+        }
+
+        return $exam->created_by === $user->id
+            || $exam->classrooms()->whereIn('classrooms.id', $user->taughtClassrooms()->select('classrooms.id'))->exists();
     }
 
     /** An exam nobody has sat yet is a mistake; one with attempts is a record. */

@@ -2,9 +2,11 @@
 
 namespace App\Filament\Resources\Classrooms\Schemas;
 
+use App\Enums\Role;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 
 class ClassroomForm
 {
@@ -32,6 +34,18 @@ class ClassroomForm
                 ->validationMessages([
                     'regex' => 'Tahun ajaran ditulis seperti 2025/2026.',
                 ]),
+
+            // Who may open this class's exam results. Without it, teachers
+            // could only see exams they wrote themselves.
+            Select::make('teachers')
+                ->label('Guru pengampu')
+                ->multiple()
+                ->relationship('teachers', 'name', fn (Builder $query) => $query->where('role', Role::Guru))
+                ->preload()
+                ->searchable()
+                ->native(false)
+                ->columnSpanFull()
+                ->helperText('Guru yang diampukan ke kelas ini bisa melihat nilai ujian kelasnya, termasuk ujian yang dibuat guru lain.'),
         ]);
     }
 }

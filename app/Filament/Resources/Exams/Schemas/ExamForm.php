@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Exams\Schemas;
 
+use App\Models\Exam;
 use App\Models\Season;
 use App\Models\Subject;
 use Filament\Forms\Components\DateTimePicker;
@@ -45,6 +46,22 @@ class ExamForm
                         ->required()
                         ->native(false)
                         ->helperText('Peringkat dihitung per musim.'),
+
+                    // Only these classes see the exam at all. Frozen once the
+                    // exam is scheduled, like the questions.
+                    Select::make('classrooms')
+                        ->label('Kelas peserta')
+                        ->multiple()
+                        ->relationship('classrooms', 'name')
+                        ->preload()
+                        ->searchable()
+                        ->required()
+                        ->native(false)
+                        ->columnSpanFull()
+                        ->disabled(fn (?Exam $record) => $record !== null && ! $record->status->allowsQuestionEditing())
+                        ->helperText(fn (?Exam $record) => $record !== null && ! $record->status->allowsQuestionEditing()
+                            ? 'Kelas peserta tidak bisa diubah setelah ujian dijadwalkan.'
+                            : 'Hanya murid di kelas yang dipilih yang melihat dan bisa mengerjakan ujian ini.'),
                 ])
                 ->columns(2),
 

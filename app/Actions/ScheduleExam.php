@@ -29,6 +29,12 @@ class ScheduleExam
             throw ExamWorkflowException::noQuestions();
         }
 
+        // And an exam with no classes would open for nobody, which is a
+        // half-finished exam rather than a scheduled one.
+        if ($exam->classrooms()->count() === 0) {
+            throw ExamWorkflowException::noClassrooms();
+        }
+
         $exam->update([
             'question_count' => $attached,
             'status' => ExamStatus::Scheduled,
