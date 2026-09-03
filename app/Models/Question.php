@@ -54,6 +54,19 @@ class Question extends Model
         'created_by',
     ];
 
+    /**
+     * Mirrors the column defaults, so a model that was just created reports
+     * them instead of null. Without this, code reading a counter straight
+     * after create() gets null rather than zero.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'difficulty' => 1200,
+        'times_answered' => 0,
+        'times_correct' => 0,
+    ];
+
     protected function casts(): array
     {
         return [
