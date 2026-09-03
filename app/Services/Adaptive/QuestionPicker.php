@@ -6,6 +6,7 @@ use App\Enums\QuestionStatus;
 use App\Models\PracticeAnswer;
 use App\Models\Question;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 
 /**
  * Chooses the next question to put in front of a student.
@@ -61,9 +62,9 @@ class QuestionPicker
 
     /**
      * @param  list<int>  $excludedQuestionIds
-     * @return \Illuminate\Database\Eloquent\Builder<Question>
+     * @return Builder<Question>
      */
-    private function candidates(int $subjectId, array $excludedQuestionIds)
+    private function candidates(int $subjectId, array $excludedQuestionIds): Builder
     {
         return Question::query()
             ->where('subject_id', $subjectId)
