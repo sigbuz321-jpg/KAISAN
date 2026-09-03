@@ -24,6 +24,9 @@
                     @endif
 
                     @if (auth()->user()->isMurid())
+                        <a href="{{ route('latihan.index') }}" wire:navigate
+                           class="text-slate-700 underline hover:text-slate-900">Latihan</a>
+
                         <a href="{{ route('ujian.index') }}" wire:navigate
                            class="text-slate-700 underline hover:text-slate-900">Ujian</a>
                     @endif

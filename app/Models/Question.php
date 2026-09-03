@@ -138,6 +138,14 @@ class Question extends Model
         return $this->status === QuestionStatus::Published;
     }
 
+    /** How often this question is answered correctly, or null if untried. */
+    public function correctRate(): ?float
+    {
+        return $this->times_answered === 0
+            ? null
+            : $this->times_correct / $this->times_answered;
+    }
+
     /** @param Builder<Question> $query */
     public function scopePublished(Builder $query): void
     {
