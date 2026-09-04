@@ -29,6 +29,9 @@
 
                         <a href="{{ route('ujian.index') }}" wire:navigate
                            class="text-slate-700 underline hover:text-slate-900">Ujian</a>
+
+                        <a href="{{ route('peringkat.index') }}" wire:navigate
+                           class="text-slate-700 underline hover:text-slate-900">Peringkat</a>
                     @endif
 
                     <a href="{{ route('ganti-kata-sandi') }}" class="text-slate-700 underline hover:text-slate-900">
