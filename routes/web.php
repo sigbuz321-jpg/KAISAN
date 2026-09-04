@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Murid\LatihanController;
+use App\Http\Controllers\Murid\PeringkatController;
 use App\Http\Controllers\Murid\UjianController;
 use App\Http\Controllers\SetupController;
 use App\Livewire\Murid\LatihanAdaptif;
@@ -46,6 +47,8 @@ Route::middleware('auth')->group(function () {
     Route::put('/ganti-kata-sandi', [PasswordController::class, 'update'])->name('ganti-kata-sandi.update');
 
     Route::get('/ujian', [UjianController::class, 'index'])->name('ujian.index');
+
+    Route::get('/peringkat', [PeringkatController::class, 'index'])->name('peringkat.index');
 
     Route::get('/latihan', [LatihanController::class, 'index'])->name('latihan.index');
     Route::get('/latihan/{subject}', LatihanAdaptif::class)
