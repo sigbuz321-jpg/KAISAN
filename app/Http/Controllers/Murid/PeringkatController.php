@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\LeaderboardEntry;
 use App\Models\Season;
 use App\Models\Subject;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
@@ -50,7 +51,7 @@ class PeringkatController extends Controller
     }
 
     /**
-     * @return array{0: \Illuminate\Support\Collection<int, LeaderboardEntry>, 1: LeaderboardEntry|null}
+     * @return array{0: Collection<int, LeaderboardEntry>, 1: LeaderboardEntry|null}
      */
     private function board(Season $season, ?int $subjectId, int $studentId): array
     {
