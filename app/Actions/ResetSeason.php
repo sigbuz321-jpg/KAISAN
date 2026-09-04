@@ -34,7 +34,10 @@ class ResetSeason
                 // that are about to become permanent.
                 $this->calculator->recalculate($ending);
 
-                $ending->update(['ended_at' => now(), 'is_active' => false]);
+                // The column is ends_at, per docs/03-DATABASE.md and the table
+                // created in M4. The skill text calls it ended_at; the schema
+                // is the one that already exists, so it wins.
+                $ending->update(['ends_at' => now(), 'is_active' => false]);
 
                 Log::info('season ended', ['season_id' => $ending->id]);
             }

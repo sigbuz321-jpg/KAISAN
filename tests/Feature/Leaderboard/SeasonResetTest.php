@@ -40,7 +40,7 @@ it('opens a new season and closes the old one', function () {
     expect($baru->name)->toBe('Semester Genap')
         ->and($baru->is_active)->toBeTrue()
         ->and($this->season->refresh()->is_active)->toBeFalse()
-        ->and($this->season->ended_at)->not->toBeNull();
+        ->and($this->season->ends_at)->not->toBeNull();
 });
 
 it('leaves the new season standings empty', function () {
