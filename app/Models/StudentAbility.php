@@ -29,6 +29,17 @@ class StudentAbility extends Model
 
     protected $fillable = ['user_id', 'subject_id', 'rating', 'answers_count', 'last_practiced_at'];
 
+    /**
+     * Mirrors the column defaults so a freshly created model reports them
+     * rather than null. See coding-style.md.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'rating' => EloRating::START,
+        'answers_count' => 0,
+    ];
+
     protected function casts(): array
     {
         return [

@@ -8,6 +8,7 @@ use App\Enums\QuestionSource;
 use App\Enums\QuestionStatus;
 use App\Exceptions\QuestionWorkflowException;
 use App\Models\Question;
+use App\Services\Adaptive\QuestionDifficulty;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
@@ -16,8 +17,10 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
 class QuestionsTable
@@ -48,12 +51,32 @@ class QuestionsTable
                     ->toggleable(),
 
                 TextColumn::make('difficulty')->label('Kesulitan')->sortable()->toggleable(),
+
+                // Fed by adaptive practice. A question almost nobody gets right
+                // is usually ambiguous or mis-keyed rather than hard, and only
+                // a teacher can tell those apart.
+                TextColumn::make('tingkat_benar')
+                    ->label('Dijawab benar')
+                    ->badge()
+                    ->state(fn (Question $record) => $record->correctRate() === null
+                        ? 'Belum dikerjakan'
+                        : round($record->correctRate() * 100).'% dari '.$record->times_answered)
+                    ->color(fn (Question $record) => app(QuestionDifficulty::class)
+                        ->looksSuspect($record->times_answered, $record->times_correct) ? 'danger' : 'gray'),
+
                 TextColumn::make('author.name')->label('Dibuat oleh')->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('status')->label('Status')->options(QuestionStatus::options()),
                 SelectFilter::make('source')->label('Asal')->options(QuestionSource::options()),
                 SelectFilter::make('subject')->label('Mata pelajaran')->relationship('subject', 'name'),
+
+                Filter::make('bermasalah')
+                    ->label('Perlu ditinjau')
+                    ->toggle()
+                    ->query(fn (Builder $query) => $query
+                        ->where('times_answered', '>=', QuestionDifficulty::SUSPECT_AFTER_ANSWERS)
+                        ->whereRaw('times_correct::float / times_answered < ?', [QuestionDifficulty::SUSPECT_CORRECT_RATE])),
             ])
             ->defaultSort('created_at', 'desc')
             ->recordActions([

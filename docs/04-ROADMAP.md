@@ -69,7 +69,7 @@ dan menyetujui — dan admin bisa melihat berapa biayanya.
 ---
 
 ## M4 — Ujian terjadwal
-**Status:** belum mulai
+**Status:** selesai — menunggu penerimaan (tag `v0.4.0`)
 
 Baca `.claude/skills/exam-leaderboard/SKILL.md` sebelum mulai.
 
@@ -88,7 +88,7 @@ kehilangan jawaban, dan nilai muncul otomatis.
 ---
 
 ## M5 — Latihan adaptif
-**Status:** belum mulai
+**Status:** selesai — menunggu penerimaan (tag `v0.5.0`)
 
 Baca `.claude/skills/adaptive-difficulty/SKILL.md` sebelum mulai.
 

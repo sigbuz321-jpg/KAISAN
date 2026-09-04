@@ -49,6 +49,19 @@ class AiGenerationJob extends Model
         'status',
     ];
 
+    /**
+     * Mirrors the column defaults so a freshly created model reports them
+     * rather than null. See coding-style.md.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'status' => 'queued',
+        'prompt_tokens' => 0,
+        'completion_tokens' => 0,
+        'estimated_cost' => '0.0000',
+    ];
+
     protected function casts(): array
     {
         return [

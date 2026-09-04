@@ -265,8 +265,10 @@ it('does not show a student anyone else score', function () {
         'score' => '93.00',
     ]);
 
+    // "Nilai kamu" appears only where the viewing student has a mark of their
+    // own. Looking for the bare number would match any digits in the page.
     $this->actingAs($this->murid)
         ->get(route('ujian.index'))
         ->assertOk()
-        ->assertDontSee('93');
+        ->assertDontSee('Nilai kamu');
 });

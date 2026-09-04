@@ -31,6 +31,17 @@ class PracticeSession extends Model
 
     protected $fillable = ['user_id', 'subject_id', 'started_at', 'ended_at', 'questions_count', 'correct_count'];
 
+    /**
+     * Mirrors the column defaults so a freshly created model reports them
+     * rather than null. See coding-style.md: this bug has appeared three times.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'questions_count' => 0,
+        'correct_count' => 0,
+    ];
+
     protected function casts(): array
     {
         return [
