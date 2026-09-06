@@ -226,11 +226,11 @@ it('enables the check button once an option is chosen', function () {
     $component = Livewire::actingAs($this->murid)
         ->test(LatihanAdaptif::class, ['subject' => $this->mapel]);
 
-    expect(tagTombolPeriksa($component->html()))->toContain('disabled');
+    expect(tombolNonaktif($component->html(), 'jawab'))->toBeTrue();
 
     $component->set('pilihan', 'A');
 
-    expect(tagTombolPeriksa($component->html()))->not->toContain('disabled');
+    expect(tombolNonaktif($component->html(), 'jawab'))->toBeFalse();
 });
 
 it('marks the chosen option as checked in the markup', function () {
@@ -246,12 +246,17 @@ it('marks the chosen option as checked in the markup', function () {
         ->and(tagOpsi($html, 'A'))->not->toContain('checked');
 });
 
-/** The opening tag of the "Periksa jawaban" button, whatever order its attributes land in. */
-function tagTombolPeriksa(string $html): string
+/**
+ * Whether the button behind a wire:click carries the boolean disabled attribute.
+ *
+ * Not a substring check: the class list contains disabled:opacity-70 and
+ * friends, so "disabled" appears on the tag whatever its actual state.
+ */
+function tombolNonaktif(string $html, string $action): bool
 {
-    preg_match('/<button[^>]*wire:click="jawab"[^>]*>/s', $html, $m);
+    preg_match('/<button[^>]*wire:click="'.$action.'"[^>]*>/s', $html, $m);
 
-    return $m[0] ?? '';
+    return (bool) preg_match('/\sdisabled(\s|>|=)/', $m[0] ?? '');
 }
 
 /** The radio input for one option letter. */
