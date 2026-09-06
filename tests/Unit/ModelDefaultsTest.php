@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\AiJobStatus;
 use App\Enums\AttemptStatus;
 use App\Enums\ExamStatus;
 use App\Enums\QuestionSource;
@@ -80,7 +81,7 @@ it('gives a new ability its rating and counter', function () {
 });
 
 it('gives a new AI job its status and counters', function () {
-    expect((new AiGenerationJob)->status)->toBe(App\Enums\AiJobStatus::Queued)
+    expect((new AiGenerationJob)->status)->toBe(AiJobStatus::Queued)
         ->and((new AiGenerationJob)->prompt_tokens)->toBe(0)
         ->and((new AiGenerationJob)->completion_tokens)->toBe(0);
 });
