@@ -15,7 +15,9 @@ use App\Models\User;
  * These assert the content actually reaches the page.
  */
 it('renders the practice component inside the layout', function () {
-    $subject = Subject::factory()->create(['name' => 'Matematika', 'is_active' => true]);
+    // No fixed name or slug: these run against a database that already
+    // carries seeded subjects, and the slug is unique.
+    $subject = Subject::factory()->create(['is_active' => true]);
     Question::factory()->published()->count(3)->create(['subject_id' => $subject->id]);
 
     $murid = User::factory()->murid()->create();
@@ -30,7 +32,8 @@ it('renders the practice component inside the layout', function () {
 it('renders the exam component inside the layout', function () {
     $kelas = Classroom::factory()->create();
     $murid = User::factory()->murid()->create(['classroom_id' => $kelas->id]);
-    $season = Season::factory()->active()->create();
+    // Only one season may be active at a time, so reuse the running one.
+    $season = Season::current() ?? Season::factory()->active()->create();
 
     $exam = examWithQuestions(3, ['season_id' => $season->id]);
     $exam->classrooms()->sync([$kelas->id]);
