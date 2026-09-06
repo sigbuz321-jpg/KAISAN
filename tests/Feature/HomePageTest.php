@@ -33,3 +33,12 @@ it('shows a signed-in student their way on instead of the three doors', function
         ->assertSee('Lanjutkan belajar')
         ->assertDontSee('/admin/login', escape: false);
 });
+
+it('does not repeat a sign-in button in the header', function () {
+    // The three doors below are the way in; a header button would compete.
+    $html = $this->get('/')->assertOk()->getContent();
+
+    expect(substr_count($html, 'Masuk sebagai'))->toBe(1)
+        ->and(preg_match('/<header.*?<\/header>/s', $html, $m))->toBe(1)
+        ->and($m[0])->not->toContain('>Masuk<');
+});

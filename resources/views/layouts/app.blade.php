@@ -58,9 +58,13 @@
                     </form>
                 </div>
             @else
-                <a href="{{ route('masuk') }}"
-                   class="ms-auto inline-flex min-h-11 items-center rounded-md px-3 text-sm font-medium text-muted
-                          transition-colors duration-150 hover:bg-surface-muted hover:text-fg">Masuk</a>
+                {{-- The front page already lists all three ways in, so a second
+                     button up here would only compete with them. --}}
+                @unless (request()->routeIs('beranda'))
+                    <a href="{{ route('masuk') }}"
+                       class="ms-auto inline-flex min-h-11 items-center rounded-md px-3 text-sm font-medium text-muted
+                              transition-colors duration-150 hover:bg-surface-muted hover:text-fg">Masuk</a>
+                @endunless
             @endauth
         </div>
     </header>
