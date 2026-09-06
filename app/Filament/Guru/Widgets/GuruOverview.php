@@ -9,8 +9,9 @@ use App\Models\AiGenerationJob;
 use App\Models\Exam;
 use App\Models\Question;
 use Filament\Widgets\Widget;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * The one thing a teacher should see on opening the panel: what is waiting for
@@ -23,21 +24,25 @@ use Illuminate\Support\Collection;
  */
 class GuruOverview extends Widget
 {
+    /** How long the review queue count may lag. Short enough to feel live. */
+    private const COUNT_TTL = 30;
+
     protected string $view = 'filament.guru.widgets.guru-overview';
 
     protected int|string|array $columnSpan = 'full';
 
     /**
-     * Memoised because the navigation badge asks for the same number as the
-     * widget, and a teacher should not pay for that query twice per request.
+     * Cached because the navigation badge asks for the same number as the
+     * widget, on every panel request. A static property would do it too, but
+     * would go stale under a persistent worker.
      */
-    private static ?int $reviewCount = null;
-
     public static function antrianCount(): int
     {
-        return self::$reviewCount ??= Question::query()
-            ->where('status', QuestionStatus::Review)
-            ->count();
+        return Cache::remember(
+            'questions:review-count',
+            self::COUNT_TTL,
+            fn () => Question::query()->where('status', QuestionStatus::Review)->count(),
+        );
     }
 
     public function antrianBaruMingguIni(): int
@@ -66,16 +71,37 @@ class GuruOverview extends Widget
             ->first();
     }
 
+    /**
+     * Whether this viewer may see money at all.
+     *
+     * The monthly recap is the owner's business, not a teacher's, per
+     * AiGenerationJobPolicy::viewCostReport(). A teacher still sees what their
+     * own requests cost, because that is the figure they can actually act on.
+     */
+    public function bolehLihatTotalBiaya(): bool
+    {
+        return auth()->user()?->can('viewCostReport', AiGenerationJob::class) ?? false;
+    }
+
     public function biayaAiBulanIni(): float
     {
+        $user = auth()->user();
+
         return (float) AiGenerationJob::query()
             ->where('status', AiJobStatus::Done)
             ->where('created_at', '>=', now()->startOfMonth())
+            ->unless($this->bolehLihatTotalBiaya(),
+                fn ($query) => $query->where('requested_by', $user?->id))
             ->sum('estimated_cost');
     }
 
+    /** The budget is a whole-bimbel figure, so only whoever pays it sees it. */
     public function batasBiayaAi(): ?float
     {
+        if (! $this->bolehLihatTotalBiaya()) {
+            return null;
+        }
+
         $budget = config('services.ai_router.monthly_budget');
 
         return is_numeric($budget) ? (float) $budget : null;

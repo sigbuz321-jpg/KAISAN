@@ -5,6 +5,7 @@ namespace App\Actions;
 use App\Models\Season;
 use App\Services\Leaderboard\LeaderboardCalculator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 
 class ResetSeason
@@ -25,6 +26,12 @@ class ResetSeason
      */
     public function handle(string $newSeasonName): Season
     {
+        // The guard belongs here, not only on the button. SeasonPolicy::viewAny
+        // lets a teacher onto the seasons screen, so the Filament action is
+        // reachable by anyone who can render that page; hiding it is not
+        // authorisation (.claude/rules/security.md).
+        Gate::authorize('reset', Season::class);
+
         return DB::transaction(function () use ($newSeasonName) {
             $ending = Season::current();
 

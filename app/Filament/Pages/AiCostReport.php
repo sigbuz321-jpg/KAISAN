@@ -29,8 +29,6 @@ class AiCostReport extends Page
 
     protected static ?string $title = 'Rekap biaya AI';
 
-    protected static ?int $navigationSort = 4;
-
     protected string $view = 'filament.pages.ai-cost-report';
 
     public static function canAccess(): bool

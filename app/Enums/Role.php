@@ -23,7 +23,13 @@ enum Role: string
      */
     public function canAccessPanel(): bool
     {
-        return $this !== self::Murid;
+        // An allowlist, not a denylist: match without a default throws on a
+        // role added later, so a new case fails closed and loudly instead of
+        // silently inheriting the run of the teacher panel.
+        return match ($this) {
+            self::Admin, self::Guru => true,
+            self::Murid => false,
+        };
     }
 
     /** @return array<string, string> */

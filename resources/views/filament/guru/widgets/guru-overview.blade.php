@@ -5,6 +5,7 @@
     $berikutnya = $this->ujianBerikutnya();
     $biaya = $this->biayaAiBulanIni();
     $batas = $this->batasBiayaAi();
+    $totalSemua = $this->bolehLihatTotalBiaya();
     $lewatAnggaran = $batas !== null && $batas > 0 && $biaya > $batas;
     $daftar = $this->antrianList();
 @endphp
@@ -40,7 +41,9 @@
         </x-filament::section>
 
         <x-filament::section>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Biaya AI {{ $this->bulanIni() }}</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+                {{ $totalSemua ? 'Biaya AI' : 'Biaya AI dari permintaan kamu' }} {{ $this->bulanIni() }}
+            </p>
             <p @class([
                 'mt-1 text-3xl font-semibold tabular-nums tracking-tight',
                 'text-danger-600 dark:text-danger-400' => $lewatAnggaran,
@@ -48,8 +51,10 @@
             <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 @if ($batas !== null && $batas > 0)
                     dari anggaran {{ number_format($batas, 2) }}{{ $lewatAnggaran ? ' — sudah terlampaui' : '' }}
-                @else
+                @elseif ($totalSemua)
                     Anggaran bulanan belum diatur
+                @else
+                    Hanya permintaan soal AI yang kamu buat sendiri
                 @endif
             </p>
         </x-filament::section>
