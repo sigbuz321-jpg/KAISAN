@@ -226,28 +226,38 @@ it('enables the check button once an option is chosen', function () {
     $component = Livewire::actingAs($this->murid)
         ->test(LatihanAdaptif::class, ['subject' => $this->mapel]);
 
-    expect(tombolPeriksa($component->html()))->toContain('disabled');
+    expect(tagTombolPeriksa($component->html()))->toContain('disabled');
 
     $component->set('pilihan', 'A');
 
-    expect(tombolPeriksa($component->html()))->not->toContain('disabled');
+    expect(tagTombolPeriksa($component->html()))->not->toContain('disabled');
 });
 
-it('marks the chosen option as selected in the markup', function () {
+it('marks the chosen option as checked in the markup', function () {
     latihanSoal();
 
-    $component = Livewire::actingAs($this->murid)
+    $html = Livewire::actingAs($this->murid)
         ->test(LatihanAdaptif::class, ['subject' => $this->mapel])
-        ->set('pilihan', 'B');
+        ->set('pilihan', 'B')
+        ->html();
 
     // A student has to be able to see which option they picked.
-    expect($component->html())->toContain('value="B" class="sr-only" checked');
+    expect(tagOpsi($html, 'B'))->toContain('checked')
+        ->and(tagOpsi($html, 'A'))->not->toContain('checked');
 });
 
-/** The opening tag of the "Periksa jawaban" button, so we can inspect its state. */
-function tombolPeriksa(string $html): string
+/** The opening tag of the "Periksa jawaban" button, whatever order its attributes land in. */
+function tagTombolPeriksa(string $html): string
 {
-    preg_match('/<button[^>]*>\s*Periksa jawaban/s', $html, $m);
+    preg_match('/<button[^>]*wire:click="jawab"[^>]*>/s', $html, $m);
+
+    return $m[0] ?? '';
+}
+
+/** The radio input for one option letter. */
+function tagOpsi(string $html, string $letter): string
+{
+    preg_match('/<input[^>]*value="'.$letter.'"[^>]*>/s', $html, $m);
 
     return $m[0] ?? '';
 }

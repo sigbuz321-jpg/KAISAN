@@ -71,7 +71,10 @@
             :highlight="$umpanBalik['kunci'] ?? null"
             :name="'latihan-'.$soal['id']"
             :interactive="$umpanBalik === null"
-            wire:model="pilihan"
+            {{-- .live, not deferred: the radio is sr-only and the selected
+                 styling comes from server state, so a deferred bind would leave
+                 the choice invisible and the check button disabled forever. --}}
+            wire:model.live="pilihan"
             wire:key="soal-{{ $soal['id'] }}"
         />
 
