@@ -41,16 +41,18 @@ class ClassroomResource extends Resource
      * teacher's own classes. The list carries a headcount per class, and the
      * class list itself says who is enrolled where, so the filter belongs here
      * and not only on the pages that show names.
-     *
-     * @return Builder<Classroom>
      */
     public static function getEloquentQuery(): Builder
     {
+        $query = parent::getEloquentQuery();
+
         $user = auth()->user();
 
-        return parent::getEloquentQuery()
-            ->when($user !== null && ! $user->isAdmin(),
-                fn (Builder $query) => $query->whereIn('id', $user->taughtClassrooms()->select('classrooms.id')));
+        if ($user !== null && ! $user->isAdmin()) {
+            $query->whereIn('id', $user->taughtClassrooms()->select('classrooms.id'));
+        }
+
+        return $query;
     }
 
     public static function form(Schema $schema): Schema
