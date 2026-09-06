@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Button — KAISAN</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="k-back" href="./index.html">← Kit</a>
+  <header class="k-header">
+    <h1>Button</h1>
+    <p>Four variants across five states. Hit-target ≥40 px tall. Only one <code>k-btn--primary</code> per visual region.</p>
+  </header>
+
+  <section class="k-section">
+    <h2>Variants</h2>
+    <p class="k-lead">default · hover · focus · disabled · processing</p>
+    <div class="k-grid">
+      <button type="button" class="k-btn k-btn--primary">Mulai Latihan</button>
+      <button type="button" class="k-btn k-btn--primary k-btn--processing" disabled>Memuat…</button>
+      <button type="button" class="k-btn k-btn--primary" disabled>Tidak tersedia</button>
+
+      <button type="button" class="k-btn k-btn--secondary">Lihat bank soal</button>
+      <button type="button" class="k-btn k-btn--secondary" disabled>Pilih kelas dulu</button>
+
+      <button type="button" class="k-btn k-btn--ghost">Lewati</button>
+
+      <button type="button" class="k-btn k-btn--danger">Hapus sesi</button>
+    </div>
+  </section>
+
+  <section class="k-section">
+    <h2>Sizes</h2>
+    <p class="k-lead">md (default) · sm</p>
+    <div class="k-grid">
+      <button type="button" class="k-btn k-btn--primary">Mulai Latihan (md)</button>
+      <button type="button" class="k-btn k-btn--primary k-btn--sm">Simpan (sm)</button>
+      <button type="button" class="k-btn k-btn--secondary k-btn--sm">Batal</button>
+    </div>
+  </section>
+
+  <section class="k-section">
+    <h2>Hover / focus preview</h2>
+    <p class="k-lead">rendered statically · the actual hover and focus rings appear only when interacted with</p>
+    <div class="k-grid">
+      <button type="button" class="k-btn k-btn--primary" style="background: var(--accent-hover);">Hovered primary</button>
+      <button type="button" class="k-btn k-btn--secondary" style="outline: 2px solid var(--accent); outline-offset: 2px;">Focused secondary</button>
+    </div>
+  </section>
+
+  <section class="k-section">
+    <h2>HTML</h2>
+    <pre class="k-code">&lt;button type="button" class="k-btn k-btn--primary"&gt;Mulai Latihan&lt;/button&gt;
+&lt;button type="button" class="k-btn k-btn--secondary"&gt;Lihat bank soal&lt;/button&gt;
+&lt;button type="button" class="k-btn k-btn--ghost"&gt;Lewati&lt;/button&gt;
+&lt;button type="button" class="k-btn k-btn--danger"&gt;Hapus sesi&lt;/button&gt;
+
+&lt;!-- sm --&gt;
+&lt;button type="button" class="k-btn k-btn--primary k-btn--sm"&gt;Simpan&lt;/button&gt;
+
+&lt;!-- processing: pair disabled + k-btn--processing to lock double-submit --&gt;
+&lt;button type="button" class="k-btn k-btn--primary k-btn--processing" disabled&gt;Memuat…&lt;/button&gt;</pre>
+    <div class="k-callout">
+      Anti-pattern: do not place two <code>k-btn--primary</code> buttons in the same visual region. Demote the second action to <code>k-btn--ghost</code> or <code>k-btn--secondary</code>.
+    </div>
+  </section>
+</body>
+</html>

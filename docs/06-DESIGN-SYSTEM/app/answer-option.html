@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Answer-option — KAISAN</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="k-back" href="./index.html">← Kit</a>
+  <header class="k-header">
+    <h1>Answer-option</h1>
+    <p>The student-answer pill. Five states: default → selected → correct | wrong → locked after reveal.</p>
+  </header>
+
+  <section class="k-section">
+    <h2>States</h2>
+    <p class="k-lead">default · selected · correct · wrong · locked</p>
+    <div class="k-stack" style="max-width: 360px;">
+      <button type="button" class="k-answer">
+        <span class="k-answer__letter">A</span>
+        <span class="k-answer__body">22</span>
+        <span class="k-answer__trail"></span>
+      </button>
+      <button type="button" class="k-answer k-answer--selected">
+        <span class="k-answer__letter">B</span>
+        <span class="k-answer__body">24</span>
+        <span class="k-answer__trail"></span>
+      </button>
+      <button type="button" class="k-answer k-answer--correct">
+        <span class="k-answer__letter">C</span>
+        <span class="k-answer__body">26</span>
+        <span class="k-answer__trail"></span>
+      </button>
+      <button type="button" class="k-answer k-answer--wrong">
+        <span class="k-answer__letter">D</span>
+        <span class="k-answer__body">28</span>
+        <span class="k-answer__trail"></span>
+      </button>
+      <button type="button" class="k-answer k-answer--locked" disabled>
+        <span class="k-answer__letter">E</span>
+        <span class="k-answer__body">30</span>
+        <span class="k-answer__trail"></span>
+      </button>
+    </div>
+  </section>
+
+  <section class="k-section">
+    <h2>HTML</h2>
+    <pre class="k-code">&lt;button type="button" class="k-answer"&gt;
+  &lt;span class="k-answer__letter"&gt;A&lt;/span&gt;
+  &lt;span class="k-answer__body"&gt;22&lt;/span&gt;
+  &lt;span class="k-answer__trail"&gt;&lt;/span&gt;
+&lt;/button&gt;
+
+&lt;button type="button" class="k-answer k-answer--selected"&gt;...&lt;/button&gt;
+&lt;button type="button" class="k-answer k-answer--correct"&gt;...&lt;/button&gt;
+&lt;button type="button" class="k-answer k-answer--wrong"&gt;...&lt;/button&gt;
+&lt;button type="button" class="k-answer k-answer--locked" disabled&gt;...&lt;/button&gt;</pre>
+    <div class="k-callout">
+      Transition: default → selected on click. After "Kirim jawaban" the chosen row locks (<code>k-answer--locked disabled</code>) and the correct row reveals via <code>k-answer--correct</code> or <code>k-answer--wrong</code>.
+    </div>
+  </section>
+</body>
+</html>

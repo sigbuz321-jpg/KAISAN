@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Field — KAISAN</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="k-back" href="./index.html">← Kit</a>
+  <header class="k-header">
+    <h1>Field</h1>
+    <p>Vertical stack of label → control (input/textarea/select) → helper / error message. Focus ring uses <code>--accent</code>.</p>
+  </header>
+
+  <section class="k-section">
+    <h2>States</h2>
+    <p class="k-lead">default · focused · error · disabled · with prefix</p>
+    <div class="k-cols-2" style="max-width: 760px;">
+      <div>
+        <label class="k-field">
+          <span class="k-field__label">Nama lengkap</span>
+          <span class="k-field__control">
+            <input class="k-field__input" type="text" placeholder="Contoh: Aulia Rahma" />
+          </span>
+          <span class="k-field__helper">Ditampilkan ke teman sekelas.</span>
+        </label>
+      </div>
+
+      <div>
+        <label class="k-field">
+          <span class="k-field__label">Email sekolah</span>
+          <span class="k-field__control" style="border-color: var(--accent); box-shadow: 0 0 0 3px oklch(from var(--accent) l c h / 0.18);">
+            <input class="k-field__input" type="email" value="aulia.rahma@smanda.sch.id" />
+          </span>
+          <span class="k-field__helper">Verifikasi otomatis oleh admin.</span>
+        </label>
+      </div>
+
+      <label class="k-field k-field--error">
+        <span class="k-field__label">Nomor telepon</span>
+        <span class="k-field__control">
+          <input class="k-field__input" type="tel" value="08123" />
+        </span>
+        <span class="k-field__helper">Nomor tidak valid. Minimal 10 digit.</span>
+      </label>
+
+      <label class="k-field">
+        <span class="k-field__label">Sekolah</span>
+        <span class="k-field__control">
+          <span class="k-field__prefix">@</span>
+          <input class="k-field__input" type="text" placeholder="smanda" />
+        </span>
+        <span class="k-field__helper">Bisa diketik tanpa awalan @.</span>
+      </label>
+
+      <label class="k-field k-field__disabled">
+        <span class="k-field__label">Kelas</span>
+        <span class="k-field__control">
+          <input class="k-field__input" type="text" value="IX - A" disabled />
+        </span>
+        <span class="k-field__helper">Berkaitan dengan wali kelas.</span>
+      </label>
+    </div>
+  </section>
+
+  <section class="k-section">
+    <h2>HTML</h2>
+    <pre class="k-code">&lt;label class="k-field"&gt;
+  &lt;span class="k-field__label"&gt;Nama lengkap&lt;/span&gt;
+  &lt;span class="k-field__control"&gt;
+    &lt;input class="k-field__input" type="text" placeholder="..." /&gt;
+  &lt;/span&gt;
+  &lt;span class="k-field__helper"&gt;Ditampilkan ke teman sekelas.&lt;/span&gt;
+&lt;/label&gt;
+
+&lt;!-- error --&gt;
+&lt;label class="k-field k-field--error"&gt;
+  &lt;span class="k-field__label"&gt;Nomor telepon&lt;/span&gt;
+  &lt;span class="k-field__control"&gt;
+    &lt;input class="k-field__input" type="tel" /&gt;
+  &lt;/span&gt;
+  &lt;span class="k-field__helper"&gt;Nomor tidak valid. Minimal 10 digit.&lt;/span&gt;
+&lt;/label&gt;
+
+&lt;!-- with prefix --&gt;
+&lt;label class="k-field"&gt;
+  &lt;span class="k-field__label"&gt;Sekolah&lt;/span&gt;
+  &lt;span class="k-field__control"&gt;
+    &lt;span class="k-field__prefix"&gt;@&lt;/span&gt;
+    &lt;input class="k-field__input" type="text" /&gt;
+  &lt;/span&gt;
+&lt;/label&gt;</pre>
+  </section>
+</body>
+</html>

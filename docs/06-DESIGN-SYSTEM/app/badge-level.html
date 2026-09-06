@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Badge-level — KAISAN</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="k-back" href="./index.html">← Kit</a>
+  <header class="k-header">
+    <h1>Badge-level</h1>
+    <p>Tri-state mastery indicator. Always paired next to the subject name. Uses success/warning/info to communicate progress.</p>
+  </header>
+
+  <section class="k-section">
+    <h2>States</h2>
+    <p class="k-lead">Mahir · Berkembang · Mulai</p>
+    <div class="k-grid">
+      <span class="k-badge k-badge-level--mahir">Mahir</span>
+      <span class="k-badge k-badge-level--berkembang">Berkembang</span>
+      <span class="k-badge k-badge-level--mulai">Mulai</span>
+    </div>
+  </section>
+
+  <section class="k-section">
+    <h2>With subject</h2>
+    <p class="k-lead">use one badge-level per subject row</p>
+    <div class="k-stack" style="max-width: 360px;">
+      <div style="display: flex; gap: var(--sp-2); align-items: center;">
+        <span style="flex:1; font-weight: var(--fw-semibold);">Matematika</span>
+        <span class="k-badge k-badge-level--mahir">Mahir</span>
+      </div>
+      <div style="display: flex; gap: var(--sp-2); align-items: center;">
+        <span style="flex:1; font-weight: var(--fw-semibold);">Bahasa Indonesia</span>
+        <span class="k-badge k-badge-level--berkembang">Berkembang</span>
+      </div>
+      <div style="display: flex; gap: var(--sp-2); align-items: center;">
+        <span style="flex:1; font-weight: var(--fw-semibold);">IPA</span>
+        <span class="k-badge k-badge-level--mulai">Mulai</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="k-section">
+    <h2>HTML</h2>
+    <pre class="k-code">&lt;span class="k-badge k-badge-level--mahir"&gt;Mahir&lt;/span&gt;
+&lt;span class="k-badge k-badge-level--berkembang"&gt;Berkembang&lt;/span&gt;
+&lt;span class="k-badge k-badge-level--mulai"&gt;Mulai&lt;/span&gt;</pre>
+  </section>
+</body>
+</html>

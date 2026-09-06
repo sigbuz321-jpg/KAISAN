@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaderboard-row — KAISAN</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="k-back" href="./index.html">← Kit</a>
+  <header class="k-header">
+    <h1>Leaderboard-row</h1>
+    <p>Single row in the Peringkat screen. Ranks 1–3 receive a colored rank badge; ranks 4+ inherit muted foreground.</p>
+  </header>
+
+  <section class="k-section">
+    <h2>States</h2>
+    <p class="k-lead">ranks 1, 2, 3 colored · rank ≥ 4 muted</p>
+    <div style="max-width: 480px;">
+      <div class="k-lb k-lb--1">
+        <div class="k-lb__rank">1</div>
+        <div class="k-lb__avatar">AR</div>
+        <div class="k-lb__body">
+          <div class="k-lb__name">Aulia Rahma</div>
+          <div class="k-lb__meta">Kelas 9 - A</div>
+        </div>
+        <div>
+          <div class="k-lb__score">1 248</div>
+          <div class="k-lb__delta k-lb__delta--up">+12</div>
+        </div>
+      </div>
+      <div class="k-lb k-lb--2">
+        <div class="k-lb__rank">2</div>
+        <div class="k-lb__avatar">BP</div>
+        <div class="k-lb__body">
+          <div class="k-lb__name">Bintang Pratama</div>
+          <div class="k-lb__meta">Kelas 9 - B</div>
+        </div>
+        <div>
+          <div class="k-lb__score">1 191</div>
+          <div class="k-lb__delta">—</div>
+        </div>
+      </div>
+      <div class="k-lb k-lb--3">
+        <div class="k-lb__rank">3</div>
+        <div class="k-lb__avatar">CN</div>
+        <div class="k-lb__body">
+          <div class="k-lb__name">Citra Nirmala</div>
+          <div class="k-lb__meta">Kelas 9 - A</div>
+        </div>
+        <div>
+          <div class="k-lb__score">1 142</div>
+          <div class="k-lb__delta k-lb__delta--down">−3</div>
+        </div>
+      </div>
+      <div class="k-lb">
+        <div class="k-lb__rank">4</div>
+        <div class="k-lb__avatar">DS</div>
+        <div class="k-lb__body">
+          <div class="k-lb__name">Daffa Saputra</div>
+          <div class="k-lb__meta">Kelas 9 - C</div>
+        </div>
+        <div>
+          <div class="k-lb__score">1 098</div>
+          <div class="k-lb__delta k-lb__delta--up">+24</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="k-section">
+    <h2>HTML</h2>
+    <pre class="k-code">&lt;div class="k-lb k-lb--1"&gt;
+  &lt;div class="k-lb__rank"&gt;1&lt;/div&gt;
+  &lt;div class="k-lb__avatar"&gt;AR&lt;/div&gt;
+  &lt;div class="k-lb__body"&gt;
+    &lt;div class="k-lb__name"&gt;Aulia Rahma&lt;/div&gt;
+    &lt;div class="k-lb__meta"&gt;Kelas 9 - A&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div&gt;
+    &lt;div class="k-lb__score"&gt;1 248&lt;/div&gt;
+    &lt;div class="k-lb__delta k-lb__delta--up"&gt;+12&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre>
+    <div class="k-callout">
+      Rank 1 reuses the accent amber (via <code>--master</code>) so the top of the table visually connects to the brand. Ranks 2 &amp; 3 lean cyan and green so they recede.
+    </div>
+  </section>
+</body>
+</html>

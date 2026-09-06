@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KAISAN — Component kit</title>
+  <link rel="stylesheet" href="../colors_and_type.css">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .k-index-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: var(--sp-4);
+    }
+    .k-index {
+      display: block;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      padding: var(--sp-5);
+      text-decoration: none;
+      color: var(--fg);
+      transition: box-shadow var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease);
+    }
+    .k-index:hover { box-shadow: var(--shadow-overlay); transform: translateY(-1px); }
+    .k-index__count {
+      font-size: var(--fs-caption);
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: var(--sp-2);
+    }
+    .k-index__name {
+      font-weight: var(--fw-semibold);
+      font-size: var(--fs-h2);
+      line-height: var(--lh-h2);
+      margin-bottom: var(--sp-2);
+    }
+    .k-index__desc {
+      color: var(--muted);
+      font-size: var(--fs-body-sm);
+      line-height: var(--lh-body-sm);
+    }
+    .k-footer {
+      margin-top: var(--sp-8);
+      padding-top: var(--sp-6);
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: var(--fs-caption);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: var(--sp-4);
+    }
+    .k-footer a { color: var(--accent-text); }
+
+    /* ── Entry motion ────────────────────────────── */
+    @keyframes k-enter {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .k-header h1,
+    .k-header p {
+      animation: k-enter var(--dur-base) var(--ease) both;
+    }
+    .k-header p {
+      animation-delay: 60ms;
+    }
+
+    .k-index {
+      animation: k-enter var(--dur-base) var(--ease) both;
+    }
+
+    /* Stagger cards in rows of 4 — each row starts 50ms after the previous.
+       16 cards → 4 rows → last row starts at 200ms.
+       Header finishes ~300ms; cards start at 120ms so they overlap gently. */
+    .k-index:nth-child(n)      { animation-delay: 120ms; }
+    .k-index:nth-child(n+5)    { animation-delay: 170ms; }
+    .k-index:nth-child(n+9)    { animation-delay: 220ms; }
+    .k-index:nth-child(n+13)   { animation-delay: 270ms; }
+
+    .k-footer {
+      animation: k-enter var(--dur-base) var(--ease) both;
+      animation-delay: 320ms;
+    }
+
+    /* ── Reduced-motion: strip all entry animation ── */
+    @media (prefers-reduced-motion: reduce) {
+      .k-header h1,
+      .k-header p,
+      .k-index,
+      .k-footer {
+        animation: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="k-header">
+    <h1>KAISAN — Component kit</h1>
+    <p>Sixteen named UI primitives. Each card opens a single-page spec showing variants, states, and the Blade/Vue bind-snippet.</p>
+  </header>
+
+  <div class="k-index-grid">
+    <a class="k-index" href="./button.html"><div class="k-index__count">01</div><div class="k-index__name">Button</div><div class="k-index__desc">primary · secondary · ghost · danger × default/hover/focus/disabled/processing</div></a>
+    <a class="k-index" href="./badge.html"><div class="k-index__count">02</div><div class="k-index__name">Badge</div><div class="k-index__desc">accent · neutral · success · warning · info · danger</div></a>
+    <a class="k-index" href="./badge-level.html"><div class="k-index__count">03</div><div class="k-index__name">Badge-level</div><div class="k-index__desc">Mahir · Berkembang · Mulai — paired with subject name</div></a>
+    <a class="k-index" href="./progress.html"><div class="k-index__count">04</div><div class="k-index__name">Progress</div><div class="k-index__desc">horizontal fill bar with meta label and complete state</div></a>
+    <a class="k-index" href="./banner.html"><div class="k-index__count">05</div><div class="k-index__name">Banner</div><div class="k-index__desc">info · success · warning · danger; optional close action</div></a>
+    <a class="k-index" href="./field.html"><div class="k-index__count">06</div><div class="k-index__name">Field</div><div class="k-index__desc">label, input, helper, error; prefix and disabled states</div></a>
+    <a class="k-index" href="./answer-option.html"><div class="k-index__count">07</div><div class="k-index__name">Answer-option</div><div class="k-index__desc">default · selected · correct · wrong · locked</div></a>
+    <a class="k-index" href="./question-card.html"><div class="k-index__count">08</div><div class="k-index__name">Question-card</div><div class="k-index__desc">header (level + counter + timer), prompt, option stack, hint</div></a>
+    <a class="k-index" href="./question-map.html"><div class="k-index__count">09</div><div class="k-index__name">Question-map</div><div class="k-index__desc">5-column grid with current/correct/wrong/ghost states + legend</div></a>
+    <a class="k-index" href="./timer.html"><div class="k-index__count">10</div><div class="k-index__name">Timer</div><div class="k-index__desc">default · danger · success; blinking dot under 60s</div></a>
+    <a class="k-index" href="./tab-pill.html"><div class="k-index__count">11</div><div class="k-index__name">Tab-pill</div><div class="k-index__desc">segmented pills with active state and shadow ring</div></a>
+    <a class="k-index" href="./list-card.html"><div class="k-index__count">12</div><div class="k-index__name">List-card</div><div class="k-index__desc">icon · title · meta · trail; hover lift</div></a>
+    <a class="k-index" href="./save-indicator.html"><div class="k-index__count">13</div><div class="k-index__name">Save-indicator</div><div class="k-index__desc">saving · saved · failed; always labeled</div></a>
+    <a class="k-index" href="./leaderboard-row.html"><div class="k-index__count">14</div><div class="k-index__name">Leaderboard-row</div><div class="k-index__desc">rank 1–3 highlighted · meta · delta-vs-yesterday</div></a>
+    <a class="k-index" href="./app-header.html"><div class="k-index__count">15</div><div class="k-index__name">App-header</div><div class="k-index__desc">sticky top bar, leading + trailing actions, save indicator slot</div></a>
+    <a class="k-index" href="./tab-bar.html"><div class="k-index__count">16</div><div class="k-index__name">Tab-bar</div><div class="k-index__desc">4-tab bottom navigation, active state in accent</div></a>
+  </div>
+
+  <div class="k-footer">
+    <span>Tokens: <a href="../colors_and_type.css">colors_and_type.css</a></span>
+    <span>Spec: <a href="../../DESIGN.md">DESIGN.md</a> · <a href="../../README.md">README</a> · <a href="../../SKILL.md">SKILL</a></span>
+  </div>
+</body>
+</html>

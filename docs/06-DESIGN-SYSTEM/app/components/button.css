@@ -1,0 +1,12 @@
+/*
+ * KAISAN Component Module — Button
+ * Modular CSS for the button component.
+ * Loaded by ui_kits/app/index.html via components/ directory.
+ * Source basis: kaisan-tahap-2-komponen.html button state grid.
+ *
+ * This file re-exports the button-specific subset of styles.css
+ * for modular loading. The canonical definitions live in styles.css.
+ */
+
+/* Button styles are defined in ../styles.css under the k-btn section.
+   This file exists to support modular import patterns. */

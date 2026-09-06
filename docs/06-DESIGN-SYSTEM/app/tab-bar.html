@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tab-bar — KAISAN</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="k-back" href="./index.html">← Kit</a>
+  <header class="k-header">
+    <h1>Tab-bar</h1>
+    <p>Bottom navigation, 64 px tall, four tabs. Active tab uses <code>--accent</code>; inactive stays muted. Icons are stroke-based SVGs that inherit color from the parent.</p>
+  </header>
+
+  <section class="k-section">
+    <h2>Default — Latihan active</h2>
+    <div class="k-tabbar" style="position: relative; max-width: 480px;">
+      <button class="k-tab k-tab--active" type="button" aria-current="page">
+        <span class="k-tab__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><!-- book / practice -->
+            <path d="M5 5 H11 V20 H5 Z"/>
+            <path d="M13 5 H19 V20 H13 Z"/>
+            <path d="M5 5 V20"/>
+            <path d="M13 5 V20"/>
+          </svg>
+        </span>
+        Latihan
+      </button>
+      <button class="k-tab" type="button">
+        <span class="k-tab__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><!-- clipboard / exam -->
+            <rect x="6" y="5" width="12" height="16" rx="1.5"/>
+            <rect x="9.5" y="3" width="5" height="4" rx="0.8"/>
+            <path d="M9 12 H15"/>
+            <path d="M9 15.5 H15"/>
+            <path d="M9 18 H13"/>
+          </svg>
+        </span>
+        Ujian
+      </button>
+      <button class="k-tab" type="button">
+        <span class="k-tab__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><!-- podium / leaderboard -->
+            <rect x="3" y="13" width="5.5" height="7"/>
+            <rect x="9.25" y="8.5" width="5.5" height="11.5"/>
+            <rect x="15.5" y="11" width="5.5" height="9"/>
+          </svg>
+        </span>
+        Peringkat
+      </button>
+      <button class="k-tab" type="button">
+        <span class="k-tab__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><!-- person / me -->
+            <circle cx="12" cy="8" r="3.6"/>
+            <path d="M4.5 20.5 C5 16 8 14.5 12 14.5 C16 14.5 19 16 19.5 20.5"/>
+          </svg>
+        </span>
+        Saya
+      </button>
+    </div>
+  </section>
+
+  <section class="k-section">
+    <h2>Other states</h2>
+    <p class="k-lead">Ujian active · Peringkat active · Saya active</p>
+
+    <div class="k-tabbar" style="position: relative; max-width: 480px; margin-bottom: var(--sp-4);">
+      <button class="k-tab" type="button">
+        <span class="k-tab__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M5 5 H11 V20 H5 Z"/><path d="M13 5 H19 V20 H13 Z"/><path d="M5 5 V20"/><path d="M13 5 V20"/></svg>
+        </span>
+        Latihan
+      </button>
+      <button class="k-tab k-tab--active" type="button" aria-current="page">
+        <span class="k-tab__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><rect x="6" y="5" width="12" height="16" rx="1.5"/><rect x="9.5" y="3" width="5" height="4" rx="0.8"/><path d="M9 12 H15"/><path d="M9 15.5 H15"/><path d="M9 18 H13"/></svg>
+        </span>
+        Ujian
+      </button>
+      <button class="k-tab" type="button">
+        <span class="k-tab__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><rect x="3" y="13" width="5.5" height="7"/><rect x="9.25" y="8.5" width="5.5" height="11.5"/><rect x="15.5" y="11" width="5.5" height="9"/></svg>
+        </span>
+        Peringkat
+      </button>
+      <button class="k-tab" type="button">
+        <span class="k-tab__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20.5 C5 16 8 14.5 12 14.5 C16 14.5 19 16 19.5 20.5"/></svg>
+        </span>
+        Saya
+      </button>
+    </div>
+
+    <div class="k-tabbar" style="position: relative; max-width: 480px;">
+      <button class="k-tab" type="button">
+        <span class="k-tab__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M5 5 H11 V20 H5 Z"/><path d="M13 5 H19 V20 H13 Z"/><path d="M5 5 V20"/><path d="M13 5 V20"/></svg>
+        </span>
+        Latihan
+      </button>
+      <button class="k-tab" type="button">
+        <span class="k-tab__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><rect x="6" y="5" width="12" height="16" rx="1.5"/><rect x="9.5" y="3" width="5" height="4" rx="0.8"/><path d="M9 12 H15"/><path d="M9 15.5 H15"/><path d="M9 18 H13"/></svg>
+        </span>
+        Ujian
+      </button>
+      <button class="k-tab k-tab--active" type="button" aria-current="page">
+        <span class="k-tab__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><rect x="3" y="13" width="5.5" height="7"/><rect x="9.25" y="8.5" width="5.5" height="11.5"/><rect x="15.5" y="11" width="5.5" height="9"/></svg>
+        </span>
+        Peringkat
+      </button>
+      <button class="k-tab" type="button">
+        <span class="k-tab__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20.5 C5 16 8 14.5 12 14.5 C16 14.5 19 16 19.5 20.5"/></svg>
+        </span>
+        Saya
+      </button>
+    </div>
+  </section>
+
+  <section class="k-section">
+    <h2>HTML</h2>
+    <pre class="k-code">&lt;nav class="k-tabbar"&gt;
+  &lt;button class="k-tab k-tab--active" type="button" aria-current="page"&gt;
+    &lt;span class="k-tab__icon" aria-hidden="true"&gt;
+      &lt;svg viewBox="0 0 24 24"&gt;
+        &lt;!-- book icon (Latihan) --&gt;
+        &lt;path d="M5 5 H11 V20 H5 Z"/&gt;
+        &lt;path d="M13 5 H19 V20 H13 Z"/&gt;
+        &lt;path d="M5 5 V20"/&gt;
+        &lt;path d="M13 5 V20"/&gt;
+      &lt;/svg&gt;
+    &lt;/span&gt;
+    Latihan
+  &lt;/button&gt;
+  &lt;!-- Ujian / Peringkat / Saya follow the same shape --&gt;
+&lt;/nav&gt;</pre>
+    <div class="k-callout">
+      Only one tab carries <code>k-tab--active</code> at a time. Mirror the same value in <code>aria-current="page"</code> for assistive tech. Icons inherit color from the tab; <code>currentColor</code> on the SVG keeps state changes automatic.
+    </div>
+  </section>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Progress — KAISAN</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="k-back" href="./index.html">← Kit</a>
+  <header class="k-header">
+    <h1>Progress</h1>
+    <p>Horizontal bar, 6 px tall. Track uses <code>--surface-muted</code>; fill uses <code>--accent</code> (or <code>--success</code> when complete).</p>
+  </header>
+
+  <section class="k-section">
+    <h2>States</h2>
+    <p class="k-lead">in-progress · complete</p>
+    <div class="k-stack" style="max-width: 360px;">
+      <div>
+        <div class="k-progress"><span class="k-progress__fill" style="width: 62%;"></span></div>
+        <div class="k-progress__meta"><span>12 dari 20 soal</span><span>62%</span></div>
+      </div>
+      <div>
+        <div class="k-progress k-progress--complete"><span class="k-progress__fill" style="width: 100%;"></span></div>
+        <div class="k-progress__meta"><span>Sesi selesai</span><span>100%</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="k-section">
+    <h2>HTML</h2>
+    <pre class="k-code">&lt;div class="k-progress"&gt;
+  &lt;span class="k-progress__fill" style="width: 62%;"&gt;&lt;/span&gt;
+&lt;/div&gt;
+&lt;div class="k-progress__meta"&gt;
+  &lt;span&gt;12 dari 20 soal&lt;/span&gt;
+  &lt;span&gt;62%&lt;/span&gt;
+&lt;/div&gt;
+
+&lt;!-- complete --&gt;
+&lt;div class="k-progress k-progress--complete"&gt;
+  &lt;span class="k-progress__fill" style="width: 100%;"&gt;&lt;/span&gt;
+&lt;/div&gt;</pre>
+  </section>
+</body>
+</html>

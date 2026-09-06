@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Question-map — KAISAN</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="k-back" href="./index.html">← Kit</a>
+  <header class="k-header">
+    <h1>Question-map</h1>
+    <p>Numbered grid; current question uses <code>--accent</code>, answered correct uses <code>--success-soft</code>, wrong uses <code>--danger-soft</code>.</p>
+  </header>
+
+  <section class="k-section">
+    <h2>States</h2>
+    <p class="k-lead">current · correct · wrong · ghost</p>
+    <div class="k-qmap" aria-label="Peta soal">
+      <span class="k-qmap__cell k-qmap__cell--correct">1</span>
+      <span class="k-qmap__cell k-qmap__cell--correct">2</span>
+      <span class="k-qmap__cell k-qmap__cell--current">3</span>
+      <span class="k-qmap__cell k-qmap__cell--ghost">4</span>
+      <span class="k-qmap__cell k-qmap__cell--ghost">5</span>
+      <span class="k-qmap__cell k-qmap__cell--ghost">6</span>
+      <span class="k-qmap__cell k-qmap__cell--wrong">7</span>
+      <span class="k-qmap__cell k-qmap__cell--ghost">8</span>
+      <span class="k-qmap__cell k-qmap__cell--ghost">9</span>
+      <span class="k-qmap__cell k-qmap__cell--ghost">10</span>
+    </div>
+    <div class="k-qmap__legend">
+      <span class="is-current">Soal aktif</span>
+      <span class="is-correct">Benar</span>
+      <span class="is-wrong">Salah</span>
+      <span>Belum dijawab</span>
+    </div>
+  </section>
+
+  <section class="k-section">
+    <h2>As button (navigates questions)</h2>
+    <p class="k-lead">clicking a non-current cell jumps to that question</p>
+    <div class="k-qmap">
+      <button type="button" class="k-qmap__cell k-qmap__cell--correct">1</button>
+      <button type="button" class="k-qmap__cell k-qmap__cell--current">2</button>
+      <button type="button" class="k-qmap__cell">3</button>
+      <button type="button" class="k-qmap__cell">4</button>
+      <button type="button" class="k-qmap__cell">5</button>
+    </div>
+  </section>
+
+  <section class="k-section">
+    <h2>HTML</h2>
+    <pre class="k-code">&lt;div class="k-qmap"&gt;
+  &lt;button type="button" class="k-qmap__cell k-qmap__cell--correct"&gt;1&lt;/button&gt;
+  &lt;button type="button" class="k-qmap__cell k-qmap__cell--current"&gt;2&lt;/button&gt;
+  &lt;button type="button" class="k-qmap__cell"&gt;3&lt;/button&gt;
+  &lt;button type="button" class="k-qmap__cell k-qmap__cell--ghost"&gt;4&lt;/button&gt;
+  &lt;button type="button" class="k-qmap__cell k-qmap__cell--wrong"&gt;5&lt;/button&gt;
+  ...
+&lt;/div&gt;</pre>
+  </section>
+</body>
+</html>

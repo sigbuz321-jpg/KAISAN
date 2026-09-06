@@ -86,3 +86,4 @@ npm run build
 - `docs/03-DATABASE.md` — skema database
 - `docs/04-ROADMAP.md` — urutan pengerjaan per modul
 - `docs/05-DEPLOYMENT.md` — deploy & serah terima ke klien
+- `docs/06-DESIGN-SYSTEM/` — design system: token, komponen, layar (baca README-nya dulu)

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Save-indicator — KAISAN</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="k-back" href="./index.html">← Kit</a>
+  <header class="k-header">
+    <h1>Save-indicator</h1>
+    <p>Always labeled. No spinner-only state — every async write ends in <em>Menyimpan…</em>, <em>Tersimpan · hh:mm</em>, or a danger banner.</p>
+  </header>
+
+  <section class="k-section">
+    <h2>States</h2>
+    <p class="k-lead">saving · saved · failed</p>
+    <div class="k-grid">
+      <span class="k-save k-save--saving"><span class="k-save__dot"></span>Menyimpan…</span>
+      <span class="k-save k-save--saved"><span class="k-save__dot"></span>Tersimpan · 13:42</span>
+      <span class="k-save k-save--failed"><span class="k-save__dot"></span>Gagal · Coba lagi</span>
+    </div>
+  </section>
+
+  <section class="k-section">
+    <h2>In app-header</h2>
+    <p class="k-lead">right side slot before the trailing action</p>
+    <div class="k-appheader" style="position: relative; max-width: 480px;">
+      <button class="k-appheader__btn" aria-label="Kembali">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M14.5 6 L8.5 12 L14.5 18"/>
+        </svg>
+      </button>
+      <div class="k-appheader__title k-appheader__title--left">Latihan</div>
+      <span class="k-save k-save--saved k-appheader__saving"><span class="k-save__dot"></span>Tersimpan · 13:42</span>
+      <button class="k-appheader__btn" aria-label="Filter">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="6" r="1.5" fill="currentColor" stroke="none"/>
+          <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/>
+          <circle cx="12" cy="18" r="1.5" fill="currentColor" stroke="none"/>
+        </svg>
+      </button>
+    </div>
+  </section>
+
+  <section class="k-section">
+    <h2>HTML</h2>
+    <pre class="k-code">&lt;span class="k-save k-save--saving"&gt;&lt;span class="k-save__dot"&gt;&lt;/span&gt;Menyimpan…&lt;/span&gt;
+&lt;span class="k-save k-save--saved"&gt;&lt;span class="k-save__dot"&gt;&lt;/span&gt;Tersimpan · 13:42&lt;/span&gt;
+&lt;span class="k-save k-save--failed"&gt;&lt;span class="k-save__dot"&gt;&lt;/span&gt;Gagal · Coba lagi&lt;/span&gt;</pre>
+    <div class="k-callout">
+      Use 24-hour clock. Indonesian time format: <code>13:42</code>, never <code>1:42 PM</code>.
+    </div>
+  </section>
+</body>
+</html>
