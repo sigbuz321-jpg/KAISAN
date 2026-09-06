@@ -1,9 +1,10 @@
 @extends('layouts.app')
 
 @section('title', 'Ganti kata sandi')
+@section('tab', 'akun')
 
 @section('content')
-    <h1 class="text-2xl font-semibold sm:text-3xl">Ganti kata sandi</h1>
+    <h1 class="text-[1.75rem] font-semibold leading-tight tracking-[-0.015em] text-fg">Ganti kata sandi</h1>
 
     <x-ui.status />
 
@@ -16,5 +17,10 @@
         <x-ui.input name="password_confirmation" label="Ulangi kata sandi baru" type="password" required />
 
         <x-ui.button>Simpan</x-ui.button>
+    </form>
+
+    <form method="POST" action="{{ route('keluar') }}" class="mt-8 max-w-md border-t border-border pt-6">
+        @csrf
+        <x-ui.button variant="secondary">Keluar dari akun</x-ui.button>
     </form>
 @endsection

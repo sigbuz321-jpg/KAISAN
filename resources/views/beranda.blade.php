@@ -3,12 +3,17 @@
 @section('title', __('app.name'))
 
 @section('content')
-    <h1 class="text-2xl font-semibold sm:text-3xl">{{ __('app.home.heading') }}</h1>
+    <h1 class="text-[1.75rem] font-semibold leading-tight tracking-[-0.015em] text-fg">{{ __('app.home.heading') }}</h1>
 
-    <p class="mt-3 text-base leading-relaxed text-slate-700">{{ __('app.home.body') }}</p>
+    <p class="mt-3 text-base leading-relaxed text-muted">{{ __('app.home.body') }}</p>
 
-    <p class="mt-6 inline-block rounded border border-emerald-300 bg-emerald-50 px-3 py-2
-              text-sm font-medium text-emerald-900">
-        {{ __('app.home.status') }}
-    </p>
+    <div class="mt-6">
+        <x-ui.badge tone="success">{{ __('app.home.status') }}</x-ui.badge>
+    </div>
+
+    @guest
+        <div class="mt-8 max-w-xs">
+            <x-ui.button :href="route('masuk')">Masuk</x-ui.button>
+        </div>
+    @endguest
 @endsection

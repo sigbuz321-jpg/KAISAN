@@ -1,53 +1,69 @@
-<div class="space-y-6">
-    <div class="rounded-lg border border-slate-200 bg-white p-4 sm:p-6">
-        <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-            <p class="text-sm text-slate-600">
-                Levelmu sekarang:
-                <strong class="text-base text-slate-900">{{ $level }}</strong>
-            </p>
+@php
+    // $level arrives as a label string from the component; map it back to a
+    // tone so the band reads the same here as it does on the index screen.
+    $levelTone = match (strtolower($level)) {
+        'pemula' => 'info',
+        'berkembang' => 'warning',
+        'mahir' => 'success',
+        'ahli' => 'accent',
+        default => 'neutral',
+    };
+@endphp
 
-            <p class="text-sm text-slate-600">
-                Dijawab {{ $dijawab }} &middot; benar {{ $benar }}
-            </p>
-        </div>
+<div class="space-y-5">
+    @if (! $selesai)
+        <section class="rounded-lg border border-border bg-surface p-4 sm:p-5">
+            <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-medium uppercase tracking-[0.06em] text-muted">Levelmu</span>
+                    <x-ui.badge :tone="$levelTone">{{ $level }}</x-ui.badge>
+                </div>
 
-        <div class="mt-3 h-2 w-full overflow-hidden rounded-full bg-slate-200">
-            <div class="h-full rounded-full bg-slate-900 transition-all duration-500"
-                 style="width: {{ $progres }}%"></div>
-        </div>
+                <p class="text-sm text-muted">
+                    Dijawab {{ $dijawab }} &middot; benar {{ $benar }}
+                </p>
+            </div>
 
-        <p class="mt-2 text-sm text-slate-600">{{ $levelKeterangan }}</p>
-    </div>
+            <x-ui.progress :value="$progres" class="mt-4" />
+
+            <p class="mt-3 text-sm leading-relaxed text-muted">{{ $levelKeterangan }}</p>
+        </section>
+    @endif
 
     @if ($selesai)
-        <div class="rounded-lg border border-slate-200 bg-white p-6 text-center">
-            <h1 class="text-xl font-semibold text-slate-900">Latihan selesai</h1>
-            <p class="mt-2 text-base text-slate-700">
+        {{-- A satisfying close, not a hook: the primary action ends the
+             session rather than baiting another one. --}}
+        <section class="rounded-lg border border-border bg-surface p-6 text-center">
+            <h1 class="text-[1.375rem] font-semibold tracking-[-0.01em] text-fg">Latihan selesai</h1>
+
+            <p class="mt-3 text-base leading-relaxed text-fg">
                 Kamu menjawab {{ $dijawab }} soal, {{ $benar }} di antaranya benar.
             </p>
-            <p class="mt-1 text-sm text-slate-600">
-                Latihan tidak mempengaruhi peringkat. Yang dihitung untuk peringkat hanya ujian.
+
+            <div class="mt-4 flex justify-center">
+                <x-ui.badge :tone="$levelTone">Level {{ $level }}</x-ui.badge>
+            </div>
+
+            <p class="mt-4 text-sm leading-relaxed text-muted">
+                Latihan tidak menambah poin peringkat. Yang dihitung untuk peringkat hanya ujian.
             </p>
 
-            <a href="{{ route('latihan.index') }}" wire:navigate
-               class="mt-6 inline-block min-h-11 rounded bg-slate-900 px-5 py-2.5 text-base font-medium text-white hover:bg-slate-800">
-                Kembali ke daftar mata pelajaran
-            </a>
-        </div>
+            <div class="mt-6">
+                <x-ui.button :href="route('latihan.index')" :block="false">Selesai</x-ui.button>
+            </div>
+        </section>
     @elseif ($habis || $soal === null)
-        <div class="rounded-lg border border-slate-200 bg-white p-6">
-            <h1 class="text-lg font-semibold text-slate-900">Belum ada soal untuk dilatih</h1>
-            <p class="mt-2 text-base text-slate-700">
-                Mata pelajaran ini belum punya soal yang bisa dilatih. Beri tahu gurumu, ya.
-            </p>
+        <x-ui.empty title="Belum ada soal untuk dilatih">
+            Mata pelajaran ini belum punya soal yang bisa dilatih. Coba tanyakan ke gurumu.
 
-            <a href="{{ route('latihan.index') }}" wire:navigate
-               class="mt-5 inline-block min-h-11 rounded border border-slate-300 bg-white px-5 py-2.5 text-base font-medium text-slate-900">
-                Kembali
-            </a>
-        </div>
+            <x-slot:action>
+                <x-ui.button :href="route('latihan.index')" variant="secondary" :block="false">
+                    Kembali
+                </x-ui.button>
+            </x-slot:action>
+        </x-ui.empty>
     @else
-        <x-question-body
+        <x-ui.question-card
             :number="$dijawab + 1"
             :stem="$soal['stem']"
             :options="$soal['options']"
@@ -60,52 +76,34 @@
         />
 
         @error('pilihan')
-            <p class="rounded border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">{{ $message }}</p>
+            <x-ui.banner tone="warning">{{ $message }}</x-ui.banner>
         @enderror
 
         @if ($umpanBalik === null)
-            <button type="button" wire:click="jawab" @disabled($pilihan === null)
-                    class="min-h-11 w-full rounded bg-slate-900 px-4 py-2.5 text-base font-medium text-white
-                           hover:bg-slate-800 disabled:opacity-40">
+            <x-ui.button wire:click="jawab" type="button" :disabled="$pilihan === null">
                 Periksa jawaban
-            </button>
+            </x-ui.button>
         @else
-            <div @class([
-                'rounded-lg border p-4',
-                'border-emerald-300 bg-emerald-50' => $umpanBalik['benar'],
-                'border-amber-300 bg-amber-50' => ! $umpanBalik['benar'],
-            ])>
-                <p class="text-base font-semibold @if ($umpanBalik['benar']) text-emerald-900 @else text-amber-900 @endif">
-                    @if ($umpanBalik['benar'])
-                        Benar.
-                    @else
-                        Belum tepat. Jawaban yang benar: {{ $umpanBalik['kunci'] }}.
-                    @endif
-                </p>
-
+            <x-ui.banner :tone="$umpanBalik['benar'] ? 'success' : 'danger'"
+                         :title="$umpanBalik['benar'] ? 'Benar.' : 'Belum tepat. Jawaban yang benar: '.$umpanBalik['kunci'].'.'">
                 @if ($umpanBalik['pembahasan'])
-                    <p class="mt-2 whitespace-pre-line text-sm leading-relaxed
-                              @if ($umpanBalik['benar']) text-emerald-900 @else text-amber-900 @endif">
-                        {{ $umpanBalik['pembahasan'] }}
-                    </p>
+                    <p class="whitespace-pre-line leading-relaxed">{{ $umpanBalik['pembahasan'] }}</p>
                 @endif
 
                 @if ($umpanBalik['naikLevel'])
-                    <p class="mt-3 rounded bg-white/70 p-2 text-sm font-medium text-slate-900">
-                        Levelmu berubah menjadi {{ $level }}.
-                    </p>
+                    <p class="mt-3 font-medium">Levelmu berubah menjadi {{ $level }}.</p>
                 @endif
-            </div>
 
-            <button type="button" wire:click="berikutnya"
-                    class="min-h-11 w-full rounded bg-slate-900 px-4 py-2.5 text-base font-medium text-white hover:bg-slate-800">
-                Soal berikutnya
-            </button>
+                @unless ($umpanBalik['benar'])
+                    {{-- Point 3 of 3: the contract line also lands right where a
+                         student is most likely to feel a wrong answer costs them. --}}
+                    <p class="mt-3">Tenang, latihan tidak menambah atau mengurangi poin peringkat.</p>
+                @endunless
+            </x-ui.banner>
+
+            <x-ui.button wire:click="berikutnya" type="button">Soal berikutnya</x-ui.button>
         @endif
 
-        <button type="button" wire:click="akhiri"
-                class="min-h-11 w-full rounded border border-slate-300 bg-white px-4 py-2.5 text-base font-medium text-slate-900">
-            Sudahi latihan
-        </button>
+        <x-ui.button wire:click="akhiri" type="button" variant="secondary">Sudahi latihan</x-ui.button>
     @endif
 </div>

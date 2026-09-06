@@ -3,9 +3,9 @@
 @section('title', 'Lupa kata sandi')
 
 @section('content')
-    <h1 class="text-2xl font-semibold sm:text-3xl">Lupa kata sandi</h1>
+    <h1 class="text-[1.75rem] font-semibold leading-tight tracking-[-0.015em] text-fg">Lupa kata sandi</h1>
 
-    <p class="mt-3 text-base text-slate-700">
+    <p class="mt-3 text-base leading-relaxed text-muted">
         Masukkan email Anda. Kami kirimkan tautan untuk membuat kata sandi baru.
     </p>
 
@@ -18,6 +18,7 @@
     </form>
 
     <p class="mt-6 text-sm">
-        <a href="{{ route('masuk') }}" class="text-slate-700 underline hover:text-slate-900">Kembali ke halaman masuk</a>
+        <a href="{{ route('masuk') }}"
+           class="font-medium text-accent-text underline-offset-2 hover:underline">Kembali ke halaman masuk</a>
     </p>
 @endsection
