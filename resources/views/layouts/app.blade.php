@@ -16,7 +16,11 @@
 
     @php
         $murid = auth()->check() && auth()->user()->isMurid();
-        $tab = trim($__env->yieldContent('tab')) ?: null;
+
+        // Blade pages name their tab with @section('tab'); a full-page Livewire
+        // component passes it as layout data instead, because sections do not
+        // survive that render path.
+        $tab = $tab ?? (trim($__env->yieldContent('tab')) ?: null);
     @endphp
 
     <header class="sticky top-0 z-10 border-b border-border bg-surface">
@@ -61,8 +65,18 @@
         </div>
     </header>
 
+    {{--
+        Two ways in. A Blade page arrives through @extends and fills the
+        'content' section; a full-page Livewire component is handed to this
+        layout as $slot. Printing only the section left every Livewire screen
+        with an empty <main> -- a blank page in the browser.
+    --}}
     <main id="konten" class="mx-auto w-full max-w-3xl flex-1 px-4 py-8">
-        @yield('content')
+        @isset($slot)
+            {{ $slot }}
+        @else
+            @yield('content')
+        @endisset
     </main>
 
     @if ($murid)
