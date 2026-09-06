@@ -1,3 +1,18 @@
+{
+	servers {
+		# In dev this Caddy is published to 127.0.0.1:8080 and reached either
+		# through an SSH tunnel or through the host's edge proxy, which
+		# terminates TLS and forwards over plain HTTP.
+		#
+		# Without trusting that hop, Caddy overwrites X-Forwarded-Proto with
+		# "http", so Laravel builds http:// asset URLs on an https:// page and
+		# the browser blocks them as mixed content. It also collapses every
+		# visitor onto the proxy's own IP, which would make the 5-per-minute
+		# login throttle a single global bucket instead of per visitor.
+		trusted_proxies static private_ranges
+	}
+}
+
 # Dev: plain HTTP on :80, published only to 127.0.0.1 by compose.
 # TLS and the real hostname live in docker-compose.prod.yml.
 :80 {
