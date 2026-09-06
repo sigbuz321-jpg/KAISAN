@@ -14,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class QuestionResource extends Resource
 {
@@ -29,7 +30,7 @@ class QuestionResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $navigationGroup = 'Akademik';
+    protected static string|UnitEnum|null $navigationGroup = 'Akademik';
 
     protected static ?int $navigationSort = 1;
 

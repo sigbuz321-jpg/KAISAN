@@ -9,6 +9,7 @@ use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class SeasonResource extends Resource
 {
@@ -24,7 +25,7 @@ class SeasonResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTrophy;
 
-    protected static ?string $navigationGroup = 'Referensi';
+    protected static string|UnitEnum|null $navigationGroup = 'Referensi';
 
     protected static ?int $navigationSort = 3;
 

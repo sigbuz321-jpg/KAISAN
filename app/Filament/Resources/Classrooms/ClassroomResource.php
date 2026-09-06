@@ -14,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class ClassroomResource extends Resource
 {
@@ -29,7 +30,7 @@ class ClassroomResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    protected static ?string $navigationGroup = 'Referensi';
+    protected static string|UnitEnum|null $navigationGroup = 'Referensi';
 
     protected static ?int $navigationSort = 2;
 
