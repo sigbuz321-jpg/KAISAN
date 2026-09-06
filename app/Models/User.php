@@ -102,7 +102,13 @@ class User extends Authenticatable implements FilamentUser
      */
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->is_active && $this->role->canAccessPanel();
+        if (! $this->is_active || ! $this->role->canAccessPanel()) {
+            return false;
+        }
+
+        // Teachers land in their own panel; an admin may open either, because
+        // the admin panel is where accounts, subjects and billing live.
+        return $panel->getId() === 'guru' || $this->isAdmin();
     }
 
     /** @param Builder<User> $query */

@@ -24,7 +24,9 @@ class SeasonResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedTrophy;
 
-    protected static ?int $navigationSort = 5;
+    protected static ?string $navigationGroup = 'Referensi';
+
+    protected static ?int $navigationSort = 3;
 
     public static function table(Table $table): Table
     {

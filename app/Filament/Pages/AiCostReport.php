@@ -23,6 +23,10 @@ class AiCostReport extends Page
 
     protected static ?string $navigationLabel = 'Biaya AI';
 
+    protected static ?string $navigationGroup = 'Pengguna';
+
+    protected static ?int $navigationSort = 2;
+
     protected static ?string $title = 'Rekap biaya AI';
 
     protected static ?int $navigationSort = 4;

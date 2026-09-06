@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Questions;
 
+use App\Filament\Guru\Widgets\GuruOverview;
 use App\Filament\Resources\Questions\Pages\CreateQuestion;
 use App\Filament\Resources\Questions\Pages\EditQuestion;
 use App\Filament\Resources\Questions\Pages\ListQuestions;
@@ -27,6 +28,24 @@ class QuestionResource extends Resource
     protected static ?string $recordTitleAttribute = 'stem';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+
+    protected static ?string $navigationGroup = 'Akademik';
+
+    protected static ?int $navigationSort = 1;
+
+    /** How many questions are waiting to be reviewed. Shared with the
+     *  dashboard widget so the count is queried once per request. */
+    public static function getNavigationBadge(): ?string
+    {
+        $count = GuruOverview::antrianCount();
+
+        return $count > 0 ? (string) $count : null;
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return GuruOverview::antrianCount() > 0 ? 'warning' : null;
+    }
 
     public static function form(Schema $schema): Schema
     {

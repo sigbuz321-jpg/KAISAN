@@ -1,0 +1,49 @@
+@import '../../../vendor/filament/filament/resources/css/theme.css';
+
+/*
+ * Theme entry shared by both Filament panels.
+ *
+ * It carries the design tokens so anything the panel renders from our own
+ * Blade views -- the dashboard widget, the question preview modal -- speaks the
+ * same colour vocabulary as the student pages. Filament's own components are
+ * left alone: the panel is themed through its primary colour, not by targeting
+ * fi- classes.
+ */
+@source '../../../app/Filament';
+@source '../../../resources/views/filament';
+@source '../../../resources/views/components';
+
+@theme {
+    --color-accent: oklch(0.65 0.15 65);
+    --color-accent-hover: oklch(0.58 0.15 65);
+    --color-accent-text: oklch(0.5 0.14 60);
+    --color-accent-soft: oklch(0.95 0.04 65);
+    --color-accent-fg: oklch(1 0 0);
+
+    --color-surface: oklch(1 0 0);
+    --color-surface-muted: oklch(0.97 0.006 80);
+    --color-fg: oklch(0.25 0.02 250);
+    --color-muted: oklch(0.55 0.01 250);
+    --color-border: oklch(0.92 0.005 250);
+    --color-border-strong: oklch(0.85 0.008 250);
+
+    --color-success: oklch(0.48 0.14 145);
+    --color-success-soft: oklch(0.95 0.04 145);
+    --color-success-fg: oklch(1 0 0);
+    --color-success-text: oklch(0.3 0.1 145);
+
+    --color-warning: oklch(0.55 0.13 65);
+    --color-warning-soft: oklch(0.95 0.04 65);
+    --color-warning-text: oklch(0.35 0.1 65);
+
+    --color-danger: oklch(0.49 0.2 25);
+    --color-danger-soft: oklch(0.95 0.04 25);
+    --color-danger-fg: oklch(1 0 0);
+    --color-danger-text: oklch(0.35 0.16 25);
+
+    --color-info-soft: oklch(0.95 0.03 260);
+    --color-info-text: oklch(0.3 0.14 260);
+
+    --color-neutral-soft: oklch(0.95 0.005 250);
+    --color-neutral-text: oklch(0.35 0.01 250);
+}

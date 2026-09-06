@@ -23,6 +23,8 @@ class AiGenerationJobResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedSparkles;
 
+    protected static ?string $navigationGroup = 'Akademik';
+
     protected static ?int $navigationSort = 3;
 
     public static function table(Table $table): Table
