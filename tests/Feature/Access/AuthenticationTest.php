@@ -15,10 +15,17 @@ it('signs a student in and sends them to the front page', function () {
     expect(auth()->id())->toBe($murid->id);
 });
 
-it('sends staff to the panel after signing in', function () {
+it('sends a teacher to the teacher panel after signing in', function () {
     $guru = User::factory()->guru()->create(['password' => 'rahasia12345']);
 
     $this->post('/masuk', ['email' => $guru->email, 'password' => 'rahasia12345'])
+        ->assertRedirect('/guru');
+});
+
+it('sends an admin to the admin panel after signing in', function () {
+    $admin = User::factory()->admin()->create(['password' => 'rahasia12345']);
+
+    $this->post('/masuk', ['email' => $admin->email, 'password' => 'rahasia12345'])
         ->assertRedirect('/admin');
 });
 

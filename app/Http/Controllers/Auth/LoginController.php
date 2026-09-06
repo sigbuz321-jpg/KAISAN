@@ -57,8 +57,18 @@ class LoginController extends Controller
         return redirect()->route('beranda');
     }
 
+    /**
+     * Where signing in lands you.
+     *
+     * Teachers get their own panel, so sending them to /admin would be a 403
+     * on the first screen after a successful login.
+     */
     private function homeFor(mixed $user): string
     {
-        return $user instanceof User && $user->role->canAccessPanel() ? '/admin' : '/';
+        if (! $user instanceof User || ! $user->role->canAccessPanel()) {
+            return '/';
+        }
+
+        return $user->isAdmin() ? '/admin' : '/guru';
     }
 }

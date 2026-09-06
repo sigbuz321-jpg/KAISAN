@@ -31,7 +31,9 @@
 
                 <div class="ms-auto flex items-center gap-1">
                     @if (auth()->user()->role->canAccessPanel())
-                        <a href="/admin"
+                        {{-- Staff each have their own panel; sending a teacher
+                             to /admin would be a 403. --}}
+                        <a href="{{ auth()->user()->isAdmin() ? '/admin' : '/guru' }}"
                            class="inline-flex min-h-11 items-center rounded-md px-3 text-sm font-medium text-muted
                                   transition-colors duration-150 hover:bg-surface-muted hover:text-fg">Panel</a>
                     @endif
