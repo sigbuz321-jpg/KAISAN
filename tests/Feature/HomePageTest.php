@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\User;
+
 // Proves the whole chain is wired: Caddy -> PHP-FPM -> Laravel -> views -> lang/id.
 it('serves the home page', function () {
     $this->get('/')
@@ -25,7 +27,7 @@ it('offers a way in for each of the three roles', function () {
 });
 
 it('shows a signed-in student their way on instead of the three doors', function () {
-    $this->actingAs(App\Models\User::factory()->murid()->create())
+    $this->actingAs(User::factory()->murid()->create())
         ->get('/')
         ->assertOk()
         ->assertSee('Lanjutkan belajar')
