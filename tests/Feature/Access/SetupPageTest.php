@@ -3,6 +3,12 @@
 use App\Enums\Role;
 use App\Models\User;
 
+
+beforeEach(function () {
+    // A deployed instance turns the installer off once an admin exists, so
+    // the suite states what it needs instead of inheriting the server's .env.
+    config(['kaisan.setup_enabled' => true]);
+});
 it('shows the installer when no admin exists yet', function () {
     $this->get('/setup')->assertOk()->assertSee('Buat akun admin pertama');
 });
