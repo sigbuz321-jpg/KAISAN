@@ -18,9 +18,9 @@ beforeEach(function () {
     $this->subject = Subject::factory()->create();
 });
 
-it('lets a teacher open the AI request list', function () {
+it('lets a teacher open the AI request list in their own panel', function () {
     $this->actingAs($this->guru)
-        ->get(AiGenerationJobResource::getUrl('index'))
+        ->get(AiGenerationJobResource::getUrl('index', panel: 'guru'))
         ->assertOk();
 });
 
