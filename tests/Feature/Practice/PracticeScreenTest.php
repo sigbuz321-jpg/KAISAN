@@ -195,3 +195,59 @@ it('keeps staff off the practice list', function () {
 it('sends a guest to the sign-in page', function () {
     $this->get(route('latihan.index'))->assertRedirect(route('masuk'));
 });
+
+/*
+|--------------------------------------------------------------------------
+| Regression: the answer could be chosen but never registered
+|--------------------------------------------------------------------------
+|
+| The radio is visually hidden and the selected styling is rendered from
+| server state, so a deferred wire:model deadlocked the screen: the choice
+| never reached the server, nothing re-rendered, the option never looked
+| selected, and "Periksa jawaban" stayed disabled forever.
+|
+*/
+
+it('sends the chosen option to the server as soon as it is picked', function () {
+    latihanSoal();
+
+    $html = Livewire::actingAs($this->murid)
+        ->test(LatihanAdaptif::class, ['subject' => $this->mapel])
+        ->html();
+
+    // Deferred binding leaves the student unable to submit at all, because the
+    // only control that would flush it is the button this value enables.
+    expect($html)->toContain('wire:model.live="pilihan"');
+});
+
+it('enables the check button once an option is chosen', function () {
+    latihanSoal();
+
+    $component = Livewire::actingAs($this->murid)
+        ->test(LatihanAdaptif::class, ['subject' => $this->mapel]);
+
+    expect(tombolPeriksa($component->html()))->toContain('disabled');
+
+    $component->set('pilihan', 'A');
+
+    expect(tombolPeriksa($component->html()))->not->toContain('disabled');
+});
+
+it('marks the chosen option as selected in the markup', function () {
+    latihanSoal();
+
+    $component = Livewire::actingAs($this->murid)
+        ->test(LatihanAdaptif::class, ['subject' => $this->mapel])
+        ->set('pilihan', 'B');
+
+    // A student has to be able to see which option they picked.
+    expect($component->html())->toContain('value="B" class="sr-only" checked');
+});
+
+/** The opening tag of the "Periksa jawaban" button, so we can inspect its state. */
+function tombolPeriksa(string $html): string
+{
+    preg_match('/<button[^>]*>\s*Periksa jawaban/s', $html, $m);
+
+    return $m[0] ?? '';
+}
