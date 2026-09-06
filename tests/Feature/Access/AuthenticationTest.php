@@ -144,3 +144,52 @@ it('sends an anonymous visitor away from an exam', function () {
 
     $this->get(route('ujian.kerjakan', $exam))->assertRedirect(route('masuk'));
 });
+
+/*
+|--------------------------------------------------------------------------
+| Regression: a leftover intended URL threw people at the wrong door
+|--------------------------------------------------------------------------
+|
+| Filament stores url.intended when a guest touches a panel. Signing in then
+| honoured it whatever the role, so a browser that had once opened /guru sent
+| the next student who signed in straight to a panel that refuses them. It
+| looked like the login had failed.
+|
+*/
+
+it('does not send a student to a panel they cannot open', function () {
+    $murid = User::factory()->murid()->create(['password' => 'rahasia12345']);
+
+    // A guest touching the panel is what stores the intended URL.
+    $this->get('/guru')->assertRedirect();
+
+    $this->post('/masuk', ['email' => $murid->email, 'password' => 'rahasia12345'])
+        ->assertRedirect('/');
+});
+
+it('does not send a teacher to the admin panel', function () {
+    $guru = User::factory()->guru()->create(['password' => 'rahasia12345']);
+
+    $this->get('/admin')->assertRedirect();
+
+    $this->post('/masuk', ['email' => $guru->email, 'password' => 'rahasia12345'])
+        ->assertRedirect('/guru');
+});
+
+it('still returns a student to the page they asked for', function () {
+    $murid = User::factory()->murid()->create(['password' => 'rahasia12345']);
+
+    $this->get(route('peringkat.index'))->assertRedirect(route('masuk'));
+
+    $this->post('/masuk', ['email' => $murid->email, 'password' => 'rahasia12345'])
+        ->assertRedirect(route('peringkat.index'));
+});
+
+it('lets an admin keep the panel they were heading for', function () {
+    $admin = User::factory()->admin()->create(['password' => 'rahasia12345']);
+
+    $this->get('/admin')->assertRedirect();
+
+    $this->post('/masuk', ['email' => $admin->email, 'password' => 'rahasia12345'])
+        ->assertRedirect('/admin');
+});
