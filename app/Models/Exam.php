@@ -49,6 +49,19 @@ class Exam extends Model
         'status',
     ];
 
+    /**
+     * Mirrors the column defaults so a freshly created model reports them
+     * rather than null. See coding-style.md.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'status' => 'draft',
+        'difficulty_weight' => '1.00',
+        'shuffle_questions' => true,
+        'shuffle_options' => true,
+    ];
+
     protected function casts(): array
     {
         return [

@@ -22,6 +22,16 @@ class Topic extends Model
 
     protected $fillable = ['subject_id', 'name', 'order'];
 
+    /**
+     * Mirrors the column defaults so a freshly created model reports them
+     * rather than null. See coding-style.md.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'order' => 0,
+    ];
+
     protected function casts(): array
     {
         return ['order' => 'integer'];

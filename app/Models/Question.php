@@ -65,6 +65,8 @@ class Question extends Model
         'difficulty' => 1200,
         'times_answered' => 0,
         'times_correct' => 0,
+        'status' => 'draft',
+        'source' => 'manual',
     ];
 
     protected function casts(): array
