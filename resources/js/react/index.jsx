@@ -1,6 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { MotionProbe } from './components/MotionProbe';
+import { SoundToggle } from './components/SoundToggle';
 
 /**
  * Registry of available React micro-island components.
@@ -8,6 +9,7 @@ import { MotionProbe } from './components/MotionProbe';
  */
 const registry = {
     'motion-probe': MotionProbe,
+    'sound-toggle': SoundToggle,
 };
 
 /**

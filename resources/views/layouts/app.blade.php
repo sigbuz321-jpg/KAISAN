@@ -34,6 +34,8 @@
                 @endif
 
                 <div class="ms-auto flex items-center gap-1">
+                    <div data-react-island="sound-toggle" class="flex items-center me-1"></div>
+
                     @if (auth()->user()->role->canAccessPanel())
                         {{-- Staff each have their own panel; sending a teacher
                              to /admin would be a 403. --}}
@@ -58,13 +60,17 @@
                     </form>
                 </div>
             @else
-                {{-- The front page already lists all three ways in, so a second
-                     button up here would only compete with them. --}}
-                @unless (request()->routeIs('beranda'))
-                    <a href="{{ route('masuk') }}"
-                       class="ms-auto inline-flex min-h-11 items-center rounded-md px-3 text-sm font-medium text-muted
-                              transition-colors duration-150 hover:bg-surface-muted hover:text-fg">Masuk</a>
-                @endunless
+                <div class="ms-auto flex items-center gap-2">
+                    <div data-react-island="sound-toggle" class="flex items-center"></div>
+
+                    {{-- The front page already lists all three ways in, so a second
+                         button up here would only compete with them. --}}
+                    @unless (request()->routeIs('beranda'))
+                        <a href="{{ route('masuk') }}"
+                           class="inline-flex min-h-11 items-center rounded-md px-3 text-sm font-medium text-muted
+                                  transition-colors duration-150 hover:bg-surface-muted hover:text-fg">Masuk</a>
+                    @endunless
+                </div>
             @endauth
         </div>
     </header>
