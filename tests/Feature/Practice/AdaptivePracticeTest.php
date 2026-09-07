@@ -215,6 +215,19 @@ it('reports when a level changes', function () {
         ->and($outcome->levelChanged())->toBeTrue();
 });
 
+it('handles duplicate answers idempotently without crashing', function () {
+    $session = $this->start->handle($this->murid, $this->mapel);
+    $question = soal(1200);
+
+    $first = $this->answer->handle($session, $question, $question->answer_key);
+    $second = $this->answer->handle($session, $question, $question->answer_key);
+
+    expect($second->correct)->toBe($first->correct)
+        ->and($second->ratingAfter)->toBe($first->ratingAfter)
+        ->and(PracticeAnswer::count())->toBe(1)
+        ->and($session->refresh()->questions_count)->toBe(1);
+});
+
 /** Any option that is not the answer key. */
 function wrongOption(Question $question): string
 {

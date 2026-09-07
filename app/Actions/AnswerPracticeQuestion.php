@@ -33,6 +33,24 @@ class AnswerPracticeQuestion
         $this->guard($session, $question);
 
         return DB::transaction(function () use ($session, $question, $option) {
+            // Idempotent guard: if this question has already been recorded in
+            // this session (e.g. from rapid double-clicks or slow network retry),
+            // return the existing outcome without double-counting the rating.
+            $existing = PracticeAnswer::query()
+                ->where('practice_session_id', $session->id)
+                ->where('question_id', $question->id)
+                ->first();
+
+            if ($existing !== null) {
+                return new PracticeOutcome(
+                    correct: $existing->is_correct,
+                    answerKey: $question->answer_key,
+                    explanation: $question->explanation,
+                    ratingBefore: $existing->rating_before,
+                    ratingAfter: $existing->rating_after,
+                );
+            }
+
             // Locked for the length of the transaction: two tabs answering at
             // once must not both read the same rating and each apply their own
             // change to it.
