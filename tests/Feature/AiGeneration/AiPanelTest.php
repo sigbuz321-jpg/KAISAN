@@ -138,3 +138,66 @@ it('adds up the monthly spend on the cost report', function () {
         // The done() factory state records five saved questions per job.
         ->and($page->rows()[0]['questions'])->toBe(15);
 });
+
+it('rejects grade outside SD range when SD is selected', function () {
+    $sd = Subject::factory()->sd()->create();
+    $this->actingAs($this->guru);
+
+    Livewire::test(ListAiGenerationJobs::class)
+        ->callAction('buatSoalAi', data: [
+            'school_level' => 'sd',
+            'grade' => 7,
+            'subject_id' => $sd->id,
+            'topic_id' => null,
+            'difficulty' => DifficultyBand::Medium->value,
+            'count' => 3,
+        ])
+        ->assertHasActionErrors(['grade']);
+});
+
+it('rejects grade outside SMP range when SMP is selected', function () {
+    $smp = Subject::factory()->smp()->create();
+    $this->actingAs($this->guru);
+
+    Livewire::test(ListAiGenerationJobs::class)
+        ->callAction('buatSoalAi', data: [
+            'school_level' => 'smp',
+            'grade' => 5,
+            'subject_id' => $smp->id,
+            'topic_id' => null,
+            'difficulty' => DifficultyBand::Medium->value,
+            'count' => 3,
+        ])
+        ->assertHasActionErrors(['grade']);
+});
+
+it('accepts valid grade for SD and SMP levels', function () {
+    Queue::fake();
+
+    $sd = Subject::factory()->sd()->create();
+    $smp = Subject::factory()->smp()->create();
+
+    $this->actingAs($this->guru);
+
+    Livewire::test(ListAiGenerationJobs::class)
+        ->callAction('buatSoalAi', data: [
+            'school_level' => 'sd',
+            'grade' => 4,
+            'subject_id' => $sd->id,
+            'topic_id' => null,
+            'difficulty' => DifficultyBand::Medium->value,
+            'count' => 2,
+        ])
+        ->assertHasNoActionErrors();
+
+    Livewire::test(ListAiGenerationJobs::class)
+        ->callAction('buatSoalAi', data: [
+            'school_level' => 'smp',
+            'grade' => 8,
+            'subject_id' => $smp->id,
+            'topic_id' => null,
+            'difficulty' => DifficultyBand::Medium->value,
+            'count' => 2,
+        ])
+        ->assertHasNoActionErrors();
+});

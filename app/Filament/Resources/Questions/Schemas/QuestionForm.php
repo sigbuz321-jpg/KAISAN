@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Questions\Schemas;
 
+use App\Enums\SchoolLevel;
 use App\Models\Question;
 use App\Models\Subject;
 use App\Models\Topic;
@@ -18,9 +19,31 @@ class QuestionForm
         return $schema->components([
             Section::make('Penempatan')
                 ->schema([
+                    Select::make('school_level_filter')
+                        ->label('Jenjang sekolah')
+                        ->placeholder('Semua jenjang')
+                        ->options(SchoolLevel::options())
+                        ->native(false)
+                        ->dehydrated(false)
+                        ->live()
+                        ->afterStateUpdated(function (callable $set) {
+                            $set('subject_id', null);
+                            $set('topic_id', null);
+                        }),
+
                     Select::make('subject_id')
                         ->label('Mata pelajaran')
-                        ->options(fn () => Subject::query()->where('is_active', true)->orderBy('name')->get()->mapWithKeys(fn (Subject $s) => [$s->id => $s->displayName()])->all())
+                        ->options(function (callable $get) {
+                            $level = $get('school_level_filter');
+
+                            return Subject::query()
+                                ->where('is_active', true)
+                                ->when($level, fn ($q) => $q->where('school_level', $level))
+                                ->orderBy('name')
+                                ->get()
+                                ->mapWithKeys(fn (Subject $s) => [$s->id => $s->displayName()])
+                                ->all();
+                        })
                         ->required()
                         ->searchable()
                         ->native(false)

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Exams\Schemas;
 
+use App\Enums\SchoolLevel;
 use App\Models\Exam;
 use App\Models\Season;
 use App\Models\Subject;
@@ -26,9 +27,29 @@ class ExamForm
                         ->maxLength(180)
                         ->columnSpanFull(),
 
+                    Select::make('school_level_filter')
+                        ->label('Jenjang sekolah')
+                        ->placeholder('Semua jenjang')
+                        ->options(SchoolLevel::options())
+                        ->native(false)
+                        ->dehydrated(false)
+                        ->disabled(fn (?object $record) => $record !== null)
+                        ->live()
+                        ->afterStateUpdated(fn (callable $set) => $set('subject_id', null)),
+
                     Select::make('subject_id')
                         ->label('Mata pelajaran')
-                        ->options(fn () => Subject::query()->where('is_active', true)->orderBy('name')->get()->mapWithKeys(fn (Subject $s) => [$s->id => $s->displayName()])->all())
+                        ->options(function (callable $get) {
+                            $level = $get('school_level_filter');
+
+                            return Subject::query()
+                                ->where('is_active', true)
+                                ->when($level, fn ($q) => $q->where('school_level', $level))
+                                ->orderBy('name')
+                                ->get()
+                                ->mapWithKeys(fn (Subject $s) => [$s->id => $s->displayName()])
+                                ->all();
+                        })
                         ->required()
                         ->searchable()
                         ->native(false)

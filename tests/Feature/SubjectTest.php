@@ -18,8 +18,8 @@ it('formats display name with school level', function () {
     $smp = new Subject(['name' => 'Matematika', 'school_level' => SchoolLevel::SMP]);
 
     expect($general->displayName())->toBe('Matematika')
-        ->and($sd->displayName())->toBe('Matematika (SD)')
-        ->and($smp->displayName())->toBe('Matematika (SMP)');
+        ->and($sd->displayName())->toBe('Matematika SD')
+        ->and($smp->displayName())->toBe('Matematika SMP');
 });
 
 it('formats grade range label correctly', function () {

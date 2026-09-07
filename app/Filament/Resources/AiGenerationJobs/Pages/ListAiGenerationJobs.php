@@ -4,6 +4,7 @@ namespace App\Filament\Resources\AiGenerationJobs\Pages;
 
 use App\Actions\RequestQuestionGeneration;
 use App\Enums\DifficultyBand;
+use App\Enums\SchoolLevel;
 use App\Exceptions\AiQuotaException;
 use App\Filament\Resources\AiGenerationJobs\AiGenerationJobResource;
 use App\Models\AiGenerationJob;
@@ -14,6 +15,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
+use Illuminate\Validation\ValidationException;
 
 class ListAiGenerationJobs extends ListRecords
 {
@@ -39,9 +41,53 @@ class ListAiGenerationJobs extends ListRecords
         $max = (int) config('kaisan.ai.max_questions_per_job', AiGenerationJob::MAX_QUESTIONS_PER_JOB);
 
         return [
+            Select::make('school_level')
+                ->label('Jenjang sekolah')
+                ->placeholder('Pilih jenjang sekolah...')
+                ->options(SchoolLevel::options())
+                ->native(false)
+                ->live()
+                ->afterStateUpdated(function (callable $set) {
+                    $set('subject_id', null);
+                    $set('topic_id', null);
+                    $set('grade', null);
+                }),
+
+            TextInput::make('grade')
+                ->label('Kelas')
+                ->numeric()
+                ->minValue(fn (callable $get) => match ($get('school_level')) {
+                    SchoolLevel::SD->value => 1,
+                    SchoolLevel::SMP->value => 7,
+                    default => 1,
+                })
+                ->maxValue(fn (callable $get) => match ($get('school_level')) {
+                    SchoolLevel::SD->value => 6,
+                    SchoolLevel::SMP->value => 9,
+                    default => 12,
+                })
+                ->helperText(fn (callable $get) => match ($get('school_level')) {
+                    SchoolLevel::SD->value => 'Kelas 1 sampai 6 untuk tingkat SD.',
+                    SchoolLevel::SMP->value => 'Kelas 7, 8, atau 9 untuk tingkat SMP.',
+                    default => 'Boleh dikosongkan. Pilih jenjang terlebih dahulu untuk batasan kelas.',
+                })
+                ->live(),
+
             Select::make('subject_id')
                 ->label('Mata pelajaran')
-                ->options(fn () => Subject::query()->where('is_active', true)->orderBy('name')->get()->mapWithKeys(fn (Subject $s) => [$s->id => $s->displayName()])->all())
+                ->options(function (callable $get) {
+                    $level = $get('school_level');
+                    $grade = $get('grade');
+
+                    return Subject::query()
+                        ->where('is_active', true)
+                        ->when($level, fn ($q) => $q->where('school_level', $level))
+                        ->when(filled($grade), fn ($q) => $q->forGrade((int) $grade))
+                        ->orderBy('name')
+                        ->get()
+                        ->mapWithKeys(fn (Subject $s) => [$s->id => $s->displayName()])
+                        ->all();
+                })
                 ->required()
                 ->searchable()
                 ->native(false)
@@ -72,19 +118,30 @@ class ListAiGenerationJobs extends ListRecords
                 ->maxValue($max)
                 ->required()
                 ->helperText("Paling banyak {$max} soal sekali minta. Setiap soal menambah biaya pemakaian AI."),
-
-            TextInput::make('grade')
-                ->label('Jenjang kelas')
-                ->numeric()
-                ->minValue(1)
-                ->maxValue(12)
-                ->helperText('Boleh dikosongkan. Membantu AI menyesuaikan bahasa dengan usia murid.'),
         ];
     }
 
-    /** @param array<string, mixed> $data */
+    /**
+     * Validate that grade sits inside the selected school level, then dispatch.
+     *
+     * @param  array<string, mixed>  $data
+     */
     private function request(array $data): void
     {
+        $level = $data['school_level'] ?? null;
+        $gradeRaw = $data['grade'] ?? null;
+        $grade = $gradeRaw === null || $gradeRaw === '' ? null : (int) $gradeRaw;
+
+        if ($grade !== null) {
+            if ($level === SchoolLevel::SD->value && ($grade < 1 || $grade > 6)) {
+                $this->reject('Kelas untuk jenjang SD hanya kelas 1 sampai 6.');
+            }
+
+            if ($level === SchoolLevel::SMP->value && ($grade < 7 || $grade > 9)) {
+                $this->reject('Kelas untuk jenjang SMP hanya kelas 7, 8, atau 9.');
+            }
+        }
+
         $subject = Subject::findOrFail($data['subject_id']);
         $topic = $data['topic_id'] ? Topic::find($data['topic_id']) : null;
 
@@ -95,7 +152,7 @@ class ListAiGenerationJobs extends ListRecords
                 $topic,
                 DifficultyBand::from($data['difficulty']),
                 (int) $data['count'],
-                $data['grade'] === null || $data['grade'] === '' ? null : (int) $data['grade'],
+                $grade,
             );
         } catch (AiQuotaException $e) {
             Notification::make()
@@ -114,5 +171,18 @@ class ListAiGenerationJobs extends ListRecords
             ->body('Soal sedang dibuat di latar belakang. Anda akan diberi tahu saat selesai, biasanya dalam satu sampai dua menit.')
             ->success()
             ->send();
+    }
+
+    private function reject(string $message): never
+    {
+        Notification::make()
+            ->title('Permintaan tidak bisa diproses')
+            ->body($message)
+            ->danger()
+            ->send();
+
+        // Livewire action callers expect a thrown exception; redirect-back flashes
+        // the validation error rather than silently swallowing it.
+        throw ValidationException::withMessages(['grade' => $message]);
     }
 }

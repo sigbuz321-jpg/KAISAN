@@ -64,7 +64,7 @@ class Subject extends Model
     }
 
     /**
-     * Human-readable label that includes school level when present.
+     * Human-readable label that includes school level when present (without parentheses).
      */
     public function displayName(): string
     {
@@ -72,7 +72,7 @@ class Subject extends Model
             return $this->name;
         }
 
-        return "{$this->name} ({$this->school_level->label()})";
+        return "{$this->name} {$this->school_level->label()}";
     }
 
     /**
