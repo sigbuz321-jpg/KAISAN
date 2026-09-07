@@ -157,7 +157,7 @@ class PengerjaanUjian extends Component
     public function render(): View
     {
         return view('livewire.murid.pengerjaan-ujian')
-            ->layout('layouts.app');
+            ->layout('layouts.app', ['tab' => 'ujian']);
     }
 
     private function attempt(): ExamAttempt

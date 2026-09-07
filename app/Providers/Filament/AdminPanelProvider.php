@@ -28,13 +28,22 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->brandName('KAISAN · Admin')
             ->colors([
-                'primary' => Color::Amber,
+                // The same amber the student pages use, so the two halves of
+                // the product read as one. See config/design.php.
+                'primary' => Color::hex(config('design.colors.primary')),
             ])
+            ->viteTheme('resources/css/filament/panel.css')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
                 Dashboard::class,
+            ])
+            ->navigationGroups([
+                'Akademik',
+                'Referensi',
+                'Pengguna',
             ])
             // Question generation runs on a queue, so the teacher who asked is
             // told through the panel's bell when the batch is ready.

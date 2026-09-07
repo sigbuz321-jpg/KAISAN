@@ -22,7 +22,7 @@ class ListSeasons extends ListRecords
                 ->label('Mulai musim baru')
                 ->icon('heroicon-o-arrow-path')
                 ->color('danger')
-                ->visible(fn () => auth()->user()?->can('reset', Season::class) ?? false)
+                ->authorize('reset', Season::class)
                 ->modalHeading('Mulai musim baru?')
                 ->modalDescription(
                     'Papan peringkat akan dikosongkan dan dihitung ulang dari nol. '

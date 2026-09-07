@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tab-pill — KAISAN</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="k-back" href="./index.html">← Kit</a>
+  <header class="k-header">
+    <h1>Tab-pill</h1>
+    <p>Segmented horizontal pills. Active pill uses <code>--surface</code> with a 1 px border ring; inactive pills stay muted.</p>
+  </header>
+
+  <section class="k-section">
+    <h2>Default</h2>
+    <p class="k-lead">subject filter on Latihan</p>
+    <div class="k-pills" role="tablist">
+      <button class="k-pill k-pill--active" type="button">Semua</button>
+      <button class="k-pill" type="button">Matematika</button>
+      <button class="k-pill" type="button">Bahasa</button>
+      <button class="k-pill" type="button">IPA</button>
+    </div>
+  </section>
+
+  <section class="k-section">
+    <h2>Five options</h2>
+    <div class="k-pills" role="tablist">
+      <button class="k-pill" type="button">Semua</button>
+      <button class="k-pill k-pill--active" type="button">Matematika</button>
+      <button class="k-pill" type="button">Bahasa Indonesia</button>
+      <button class="k-pill" type="button">IPA</button>
+      <button class="k-pill" type="button">IPS</button>
+    </div>
+  </section>
+
+  <section class="k-section">
+    <h2>HTML</h2>
+    <pre class="k-code">&lt;div class="k-pills" role="tablist"&gt;
+  &lt;button class="k-pill" type="button"&gt;Semua&lt;/button&gt;
+  &lt;button class="k-pill k-pill--active" type="button"&gt;Matematika&lt;/button&gt;
+  &lt;button class="k-pill" type="button"&gt;Bahasa&lt;/button&gt;
+&lt;/div&gt;</pre>
+    <div class="k-callout">
+      Keep option count between 2 and 6. Beyond 6, switch to a horizontal scroll container with chevrons instead of crowding the pill row.
+    </div>
+  </section>
+</body>
+</html>

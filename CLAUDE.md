@@ -81,8 +81,12 @@ npm run build
 
 ## Dokumen pendukung
 
+- `HANDOVER.md` — **baca ini dulu** kalau baru bergabung di proyek
+
 - `docs/01-PRD.md` — spesifikasi produk & user story
 - `docs/02-ARCHITECTURE.md` — keputusan arsitektur
 - `docs/03-DATABASE.md` — skema database
 - `docs/04-ROADMAP.md` — urutan pengerjaan per modul
 - `docs/05-DEPLOYMENT.md` — deploy & serah terima ke klien
+- `docs/06-DESIGN-SYSTEM/` — design system: token, komponen, layar (baca README-nya dulu)
+- `docs/07-ONBOARDING-DEV.md` — onboarding developer: akses VPS, deploy, jebakan yang sudah diketahui

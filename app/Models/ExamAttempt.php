@@ -43,6 +43,16 @@ class ExamAttempt extends Model
         'status',
     ];
 
+    /**
+     * Mirrors the column defaults so a freshly created model reports them
+     * rather than null. See coding-style.md.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'status' => 'in_progress',
+    ];
+
     protected function casts(): array
     {
         return [

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Question-card — KAISAN</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="k-back" href="./index.html">← Kit</a>
+  <header class="k-header">
+    <h1>Question-card</h1>
+    <p>Wraps a question body for the Ujian screen. Header row holds the level badge, a counter, and the timer; the prompt and option stack follow.</p>
+  </header>
+
+  <section class="k-section">
+    <h2>Default composition</h2>
+    <p class="k-lead">level + counter + timer + prompt + 4 options</p>
+    <article class="k-qcard">
+      <header class="k-qcard__header">
+        <span class="k-badge k-badge-level--berkembang">Berkembang</span>
+        <span class="k-badge k-badge--neutral">Matematika</span>
+        <span class="k-qcard__counter">Soal 3 dari 20</span>
+        <span class="k-timer"><span class="k-timer__dot"></span>13:42</span>
+      </header>
+      <div class="k-qcard__prompt">Berapa hasil dari 4x + 7 = 31?</div>
+      <div class="k-stack">
+        <button type="button" class="k-answer"><span class="k-answer__letter">A</span><span class="k-answer__body">x = 4</span><span class="k-answer__trail"></span></button>
+        <button type="button" class="k-answer k-answer--selected"><span class="k-answer__letter">B</span><span class="k-answer__body">x = 6</span><span class="k-answer__trail"></span></button>
+        <button type="button" class="k-answer"><span class="k-answer__letter">C</span><span class="k-answer__body">x = 8</span><span class="k-answer__trail"></span></button>
+        <button type="button" class="k-answer"><span class="k-answer__letter">D</span><span class="k-answer__body">x = 10</span><span class="k-answer__trail"></span></button>
+      </div>
+      <p class="k-qcard__hint">Pilih satu jawaban. Tekan "Kirim" untuk mengunci pilihan.</p>
+    </article>
+  </section>
+
+  <section class="k-section">
+    <h2>After reveal (locked)</h2>
+    <p class="k-lead">selected + correct row highlighted, others locked</p>
+    <article class="k-qcard">
+      <header class="k-qcard__header">
+        <span class="k-badge k-badge-level--mahir">Mahir</span>
+        <span class="k-badge k-badge--neutral">Matematika</span>
+        <span class="k-qcard__counter">Soal 3 / 20</span>
+        <span class="k-timer"><span class="k-timer__dot"></span>13:18</span>
+      </header>
+      <div class="k-qcard__prompt">Berapa hasil dari 4x + 7 = 31?</div>
+      <div class="k-stack">
+        <button type="button" class="k-answer k-answer--locked" disabled><span class="k-answer__letter">A</span><span class="k-answer__body">x = 4</span><span class="k-answer__trail"></span></button>
+        <button type="button" class="k-answer k-answer--wrong k-answer--locked" disabled><span class="k-answer__letter">B</span><span class="k-answer__body">x = 6</span><span class="k-answer__trail"></span></button>
+        <button type="button" class="k-answer k-answer--correct k-answer--locked" disabled><span class="k-answer__letter">C</span><span class="k-answer__body">x = 8</span><span class="k-answer__trail"></span></button>
+        <button type="button" class="k-answer k-answer--locked" disabled><span class="k-answer__letter">D</span><span class="k-answer__body">x = 10</span><span class="k-answer__trail"></span></button>
+      </div>
+      <p class="k-qcard__hint">Jawaban benar: x = 6 → 4(6) + 7 = 31.</p>
+    </article>
+  </section>
+
+  <section class="k-section">
+    <h2>HTML</h2>
+    <pre class="k-code">&lt;article class="k-qcard"&gt;
+  &lt;header class="k-qcard__header"&gt;
+    &lt;span class="k-badge k-badge-level--berkembang"&gt;Berkembang&lt;/span&gt;
+    &lt;span class="k-badge k-badge--neutral"&gt;Matematika&lt;/span&gt;
+    &lt;span class="k-qcard__counter"&gt;Soal 3 dari 20&lt;/span&gt;
+    &lt;span class="k-timer"&gt;&lt;span class="k-timer__dot"&gt;&lt;/span&gt;13:42&lt;/span&gt;
+  &lt;/header&gt;
+  &lt;div class="k-qcard__prompt"&gt;Berapa hasil dari 4x + 7 = 31?&lt;/div&gt;
+  &lt;div class="k-stack"&gt;
+    &lt;button type="button" class="k-answer"&gt;...&lt;/button&gt;
+    &lt;button type="button" class="k-answer k-answer--selected"&gt;...&lt;/button&gt;
+    ...
+  &lt;/div&gt;
+&lt;/article&gt;</pre>
+  </section>
+</body>
+</html>

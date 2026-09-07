@@ -1,0 +1,2173 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KAISAN · Tahap 2 — Komponen Inti</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root {
+    --bg: oklch(0.985 0.005 80);
+    --surface: oklch(1 0 0);
+    --surface-muted: oklch(0.97 0.006 80);
+    --fg: oklch(0.25 0.02 250);
+    --muted: oklch(0.55 0.01 250);
+    --border: oklch(0.92 0.005 250);
+    --border-strong: oklch(0.85 0.008 250);
+    --accent: oklch(0.65 0.15 65);
+    --accent-hover: oklch(0.58 0.15 65);
+    --accent-text: oklch(0.50 0.14 60);
+    --accent-soft: oklch(0.95 0.04 65);
+    --accent-fg: oklch(1 0 0);
+    --success: oklch(0.48 0.14 145);
+    --success-soft: oklch(0.95 0.04 145);
+    --success-fg: oklch(1 0 0);
+    --success-text: oklch(0.30 0.10 145);
+    --warning: oklch(0.55 0.13 65);
+    --warning-soft: oklch(0.95 0.04 65);
+    --warning-fg: oklch(1 0 0);
+    --warning-text: oklch(0.35 0.10 65);
+    --danger: oklch(0.49 0.20 25);
+    --danger-soft: oklch(0.95 0.04 25);
+    --danger-fg: oklch(1 0 0);
+    --danger-text: oklch(0.35 0.16 25);
+    --info: oklch(0.45 0.18 260);
+    --info-soft: oklch(0.95 0.03 260);
+    --info-fg: oklch(1 0 0);
+    --info-text: oklch(0.30 0.14 260);
+    --neutral-soft: oklch(0.95 0.005 250);
+    --neutral-text: oklch(0.35 0.01 250);
+    --master: oklch(0.55 0.12 65);
+    --master-soft: oklch(0.92 0.06 80);
+    --master-text: oklch(0.35 0.10 65);
+    --master-border: oklch(0.75 0.12 65);
+    --rank-2: oklch(0.75 0.05 80);
+    --rank-3: oklch(0.78 0.06 60);
+    --shadow-elevated: 0 1px 2px 0 oklch(0.25 0.02 250 / 0.06), 0 1px 3px 0 oklch(0.25 0.02 250 / 0.04);
+    --shadow-modal: 0 10px 25px -5px oklch(0.25 0.02 250 / 0.08), 0 8px 10px -6px oklch(0.25 0.02 250 / 0.04);
+  }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .kbd {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 11px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .code-block {
+    background: oklch(0.18 0.02 250);
+    color: oklch(0.95 0.01 80);
+    border-radius: 0.5rem;
+    padding: 1rem 1.25rem;
+    overflow-x: auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 12.5px;
+    line-height: 1.65;
+  }
+  .code-block .tk-comment { color: oklch(0.62 0.02 250); }
+  .code-block .tk-key { color: oklch(0.78 0.12 200); }
+  .code-block .tk-val { color: oklch(0.92 0.10 80); }
+  .code-block .tk-fn { color: oklch(0.85 0.13 145); }
+
+  /* ====== COMPONENT BUILDING BLOCKS ====== */
+
+  /* Tombol */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+    min-height: 44px; padding: 0 1.25rem;
+    font-size: 15px; font-weight: 550; letter-spacing: 0.005em;
+    border-radius: 0.5rem; border: 1px solid transparent;
+    transition: background-color 150ms, color 150ms, border-color 150ms, transform 150ms;
+    cursor: pointer; user-select: none;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .btn-primary { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+  .btn-primary:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
+  .btn-secondary { background: var(--surface); color: var(--fg); border-color: var(--border-strong); }
+  .btn-secondary:hover:not(:disabled) { background: var(--surface-muted); }
+  .btn-ghost { background: transparent; color: var(--accent-text); border-color: transparent; }
+  .btn-ghost:hover:not(:disabled) { background: var(--accent-soft); }
+  .btn-danger { background: var(--danger); color: var(--danger-fg); border-color: var(--danger); }
+  .btn-danger:hover:not(:disabled) { filter: brightness(0.95); }
+  .btn:disabled { background: var(--surface-muted); color: var(--muted); border-color: var(--border); cursor: not-allowed; }
+  .btn-block { width: 100%; }
+  .btn-sm { min-height: 36px; padding: 0 0.875rem; font-size: 13px; }
+
+  /* Badge status */
+  .badge {
+    display: inline-flex; align-items: center; gap: 0.375rem;
+    padding: 0.1875rem 0.5rem; border-radius: 9999px;
+    font-size: 12px; font-weight: 550; letter-spacing: 0.02em;
+    border: 1px solid transparent; line-height: 1.4;
+  }
+  .badge-neutral { background: var(--neutral-soft); color: var(--neutral-text); border-color: var(--border); }
+  .badge-success { background: var(--success-soft); color: var(--success-text); border-color: var(--success); }
+  .badge-warning { background: var(--warning-soft); color: var(--warning-text); border-color: var(--warning); }
+  .badge-danger  { background: var(--danger-soft);  color: var(--danger-text);  border-color: var(--danger); }
+  .badge-info    { background: var(--info-soft);    color: var(--info-text);    border-color: var(--info); }
+  .badge-accent  { background: var(--accent-soft);  color: var(--accent-text);  border-color: var(--accent); }
+  .badge-master  { background: var(--master-soft);  color: var(--master-text);  border-color: var(--master-border); }
+  .badge-dot { width: 6px; height: 6px; border-radius: 9999px; background: currentColor; }
+
+  /* Bar progres */
+  .progress { height: 8px; background: var(--surface-muted); border-radius: 9999px; overflow: hidden; }
+  .progress > .fill { height: 100%; border-radius: 9999px; transition: width 300ms ease-out; }
+  .fill-neutral { background: var(--muted); }
+  .fill-info { background: var(--info); }
+  .fill-accent { background: var(--accent); }
+  .fill-success { background: var(--success); }
+  .fill-master { background: var(--accent-text); }
+
+  /* Banner */
+  .banner { display: flex; gap: 0.75rem; padding: 0.875rem 1rem; border-radius: 0.5rem; border: 1px solid; }
+  .banner-success { background: var(--success-soft); border-color: var(--success); color: var(--success-text); }
+  .banner-warning { background: var(--warning-soft); border-color: var(--warning); color: var(--warning-text); }
+  .banner-danger  { background: var(--danger-soft);  border-color: var(--danger);  color: var(--danger-text); }
+  .banner-info    { background: var(--info-soft);    border-color: var(--info);    color: var(--info-text); }
+  .banner-icon {
+    width: 28px; height: 28px; flex-shrink: 0; border-radius: 9999px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--surface); color: currentColor;
+    border: 1px solid currentColor; font-weight: 700;
+  }
+
+  /* Input */
+  .field-label { display: block; font-size: 13px; font-weight: 550; color: var(--fg); margin-bottom: 0.375rem; letter-spacing: 0.005em; }
+  .field-hint { font-size: 12px; color: var(--muted); margin-top: 0.375rem; }
+  .field-error { font-size: 12px; color: var(--danger-text); margin-top: 0.375rem; display: flex; align-items: center; gap: 0.25rem; }
+  .input {
+    width: 100%; min-height: 44px; padding: 0.625rem 0.875rem;
+    background: var(--surface); border: 1px solid var(--border-strong); border-radius: 0.5rem;
+    font-size: 15px; color: var(--fg);
+    transition: border-color 150ms;
+  }
+  .input::placeholder { color: var(--muted); }
+  .input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .input.is-error { border-color: var(--danger); }
+  .input.is-error:focus { box-shadow: 0 0 0 3px var(--danger-soft); }
+
+  /* Opsi jawaban */
+  .option {
+    display: flex; align-items: center; gap: 0.75rem;
+    min-height: 56px; padding: 0.875rem 1rem;
+    background: var(--surface); border: 1px solid var(--border-strong); border-radius: 0.5rem;
+    font-size: 15px; line-height: 1.45; color: var(--fg);
+    cursor: pointer; transition: background-color 150ms, border-color 150ms;
+  }
+  .option:hover { background: var(--surface-muted); }
+  .option-letter {
+    width: 32px; height: 32px; flex-shrink: 0; border-radius: 0.5rem;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--surface-muted); color: var(--fg); font-weight: 600; font-size: 14px;
+    border: 1px solid var(--border);
+  }
+  .option-text { flex: 1; }
+  /* Dipilih (belum dinilai) */
+  .option-selected { border-color: var(--accent); background: var(--accent-soft); }
+  .option-selected .option-letter { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+  /* Kunci benar (setelah dinilai / pratinjau guru) */
+  .option-correct { border-color: var(--success); background: var(--success-soft); }
+  .option-correct .option-letter { background: var(--success); color: var(--success-fg); border-color: var(--success); }
+  .option-correct .option-text::after { content: "Benar"; margin-left: 0.5rem; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--success-text); }
+  /* Salah dipilih (BARU) */
+  .option-wrong { border-color: var(--danger); background: var(--danger-soft); }
+  .option-wrong .option-letter { background: var(--danger); color: var(--danger-fg); border-color: var(--danger); }
+  .option-wrong .option-text::after { content: "Salah"; margin-left: 0.5rem; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--danger-text); }
+  /* Terkunci (ujian sudah dikumpulkan / soal berikutnya) */
+  .option-locked { opacity: 0.6; cursor: not-allowed; background: var(--surface-muted); }
+  .option-locked:hover { background: var(--surface-muted); }
+  /* Aksesibel: fokus */
+  .option:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* Kartu soal */
+  .qcard {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 1rem; padding: 1.25rem 1.25rem 1.5rem;
+    box-shadow: var(--shadow-elevated);
+  }
+  .qcard-locked {
+    background: var(--surface-muted); border: 1px solid var(--border);
+    border-radius: 1rem; padding: 1.25rem; opacity: 0.85;
+  }
+
+  /* Peta nomor soal */
+  .qmap { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; }
+  .qmap-cell {
+    aspect-ratio: 1 / 1; min-height: 44px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 0.5rem; font-size: 14px; font-weight: 550;
+    background: var(--surface); color: var(--fg); border: 1px solid var(--border-strong);
+    cursor: pointer; transition: background-color 150ms;
+  }
+  .qmap-cell:hover { background: var(--surface-muted); }
+  .qmap-answered { background: var(--accent-soft); color: var(--accent-text); border-color: var(--accent); }
+  .qmap-active { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .qmap-flagged { background: var(--warning-soft); color: var(--warning-text); border-color: var(--warning); }
+
+  /* Timer ujian */
+  .timer {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.5rem 0.875rem; border-radius: 0.5rem;
+    background: var(--surface); border: 1px solid var(--border-strong);
+    font-variant-numeric: tabular-nums; font-weight: 600; font-size: 15px;
+    color: var(--fg);
+  }
+  .timer-urgent {
+    background: var(--danger-soft); border-color: var(--danger); color: var(--danger-text);
+  }
+  .timer-urgent::before { content: ""; width: 8px; height: 8px; border-radius: 9999px; background: var(--danger); }
+
+  /* Tab pil */
+  .tab {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-height: 36px; padding: 0 1rem; border-radius: 9999px;
+    font-size: 13px; font-weight: 550; letter-spacing: 0.005em;
+    background: transparent; color: var(--muted); border: 1px solid transparent;
+    cursor: pointer; transition: background-color 150ms, color 150ms;
+  }
+  .tab:hover { color: var(--fg); }
+  .tab-active { background: var(--surface); color: var(--fg); border-color: var(--border-strong); }
+  .tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* Kartu daftar */
+  .list-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 0.75rem; padding: 1rem;
+    display: flex; align-items: center; gap: 0.875rem;
+    cursor: pointer; transition: background-color 150ms, border-color 150ms;
+  }
+  .list-card:hover { background: var(--surface-muted); }
+  .list-card-selected { background: var(--accent-soft); border-color: var(--accent); }
+  .list-card-empty {
+    background: var(--surface-muted); border: 1px dashed var(--border-strong);
+    border-radius: 0.75rem; padding: 1.25rem; text-align: center; color: var(--muted);
+  }
+
+  /* Leaderboard row */
+  .lb-row {
+    display: grid; grid-template-columns: 36px 1fr auto;
+    align-items: center; gap: 0.75rem;
+    min-height: 56px; padding: 0.75rem 1rem;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem;
+  }
+  .lb-rank {
+    width: 28px; height: 28px; border-radius: 9999px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--surface-muted); color: var(--fg); font-size: 13px; font-weight: 600;
+  }
+  .lb-rank-1 { background: var(--accent); color: var(--accent-fg); }
+  .lb-rank-2 { background: var(--rank-2); color: var(--fg); }
+  .lb-rank-3 { background: var(--rank-3); color: var(--fg); }
+  .lb-me { background: var(--accent-soft); border-color: var(--accent); }
+  .lb-me .lb-rank { background: var(--accent); color: var(--accent-fg); }
+  .lb-divider {
+    text-align: center; padding: 0.625rem 0; color: var(--muted);
+    font-size: 12px; letter-spacing: 0.02em;
+  }
+
+  /* Header mobile */
+  .app-bar {
+    display: flex; align-items: center; gap: 0.75rem;
+    min-height: 56px; padding: 0 1rem;
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 10;
+  }
+  .tab-bar {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    background: var(--surface); border-top: 1px solid var(--border);
+    padding: 0.25rem 0.5rem calc(0.25rem + env(safe-area-inset-bottom, 0));
+    position: sticky; bottom: 0; z-index: 10;
+  }
+  .tab-bar-item {
+    min-height: 52px; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+    font-size: 11px; font-weight: 550; letter-spacing: 0.02em;
+    color: var(--muted); cursor: pointer; transition: color 150ms;
+    border-radius: 0.5rem;
+  }
+  .tab-bar-item:hover { color: var(--fg); }
+  .tab-bar-active { color: var(--accent-text); }
+  .tab-bar-active .tab-bar-dot { background: var(--accent); }
+
+  /* Phone frame (visualization only) */
+  .phone {
+    width: 390px; max-width: 100%;
+    border-radius: 28px;
+    background: var(--bg);
+    border: 1px solid var(--border-strong);
+    overflow: hidden;
+    box-shadow: var(--shadow-modal);
+  }
+  .phone-frame {
+    background: linear-gradient(180deg, oklch(0.94 0.005 250), oklch(0.96 0.005 250));
+    padding: 2rem 1.25rem;
+    display: flex; justify-content: center;
+  }
+  .label-tag {
+    font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted); font-weight: 550;
+  }
+  .swatch-card { background: var(--surface); border: 1px solid var(--border); border-radius: 0.75rem; padding: 1rem; }
+
+  /* Indikator simpan otomatis */
+  .save-pill {
+    display: inline-flex; align-items: center; gap: 0.375rem;
+    padding: 0.25rem 0.625rem; border-radius: 9999px;
+    background: var(--neutral-soft); border: 1px solid var(--border);
+    font-size: 12px; color: var(--muted); font-weight: 500;
+  }
+  .save-dot { width: 6px; height: 6px; border-radius: 9999px; background: var(--success); }
+  .save-saving { background: var(--info-soft); border-color: var(--info); color: var(--info-text); }
+  .save-saving .save-dot { background: var(--info); }
+
+  /* Livewire/Alpine helper classes */
+  [x-cloak] { display: none !important; }
+</style>
+</head>
+<body class="min-h-screen">
+
+<header class="border-b" style="border-color: var(--border); background: var(--surface);" data-od-id="doc-header">
+  <div class="max-w-6xl mx-auto px-6 py-5 flex items-baseline justify-between gap-4">
+    <div>
+      <p class="text-xs uppercase tracking-[0.08em]" style="color: var(--muted);">KAISAN · Design System</p>
+      <h1 class="text-xl font-semibold mt-1" style="letter-spacing: -0.01em;">Tahap 2 — Komponen Inti</h1>
+    </div>
+    <div class="text-xs text-right" style="color: var(--muted);">
+      <div>15 komponen · Mobile-first 390 px · System stack · Tanpa CDN</div>
+      <div class="mt-0.5">Sentuh min. 44×44 px · Kontras WCAG AA</div>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-6xl mx-auto px-6 py-10 space-y-14">
+
+  <!-- RINGKASAN KEPUTUSAN BARU -->
+  <section data-od-id="ringkasan-keputusan">
+    <h2 class="text-lg font-semibold">Keputusan baru yang dikunci di Tahap 2</h2>
+    <p class="mt-1 text-sm" style="color: var(--muted);">
+      Empat hal yang tidak ditentukan di Tahap 1 dan kini sudah diputuskan agar semua komponen konsisten.
+    </p>
+
+    <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="text-xs uppercase tracking-[0.08em]" style="color: var(--muted);">1 · Warna per level kemampuan</p>
+        <table class="mt-3 w-full text-sm">
+          <tr><td class="py-1 pr-3"><span class="badge badge-info">Pemula</span></td><td class="py-1"><code>bg-info</code> · biru netral, baru mulai.</td></tr>
+          <tr><td class="py-1 pr-3"><span class="badge badge-accent">Berkembang</span></td><td class="py-1"><code>bg-accent</code> · amber hangat, di tengah jalan.</td></tr>
+          <tr><td class="py-1 pr-3"><span class="badge badge-success">Mahir</span></td><td class="py-1"><code>bg-success</code> · hijau, pencapaian jelas.</td></tr>
+          <tr><td class="py-1 pr-3"><span class="badge badge-master">Ahli</span></td><td class="py-1">amber gelap · master, finish.</td></tr>
+          <tr><td class="py-1 pr-3"><span class="badge badge-neutral">Belum dimulai</span></td><td class="py-1"><code>bg-neutral</code> · abu-abu, tanpa penekanan.</td></tr>
+        </table>
+        <p class="mt-3 text-xs" style="color: var(--muted);">
+          Angka Elo tidak pernah dipakai sebagai warna. Tidak ada level "Expert" merah atau
+          "Starter" hijau murahan.
+        </p>
+      </article>
+
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="text-xs uppercase tracking-[0.08em]" style="color: var(--muted);">2 · Mobile navigation (sebelumnya tidak ada)</p>
+        <p class="mt-3 text-sm">
+          Bottom tab bar 4 menu: <strong>Beranda</strong>, <strong>Latihan</strong>, <strong>Ujian</strong>, <strong>Peringkat</strong>.
+          Di atasnya app bar dengan judul halaman dan ikon menu (akun/panel guru).
+        </p>
+        <p class="mt-3 text-xs" style="color: var(--muted);">
+          Pola ini mengikuti konvensi Android &amp; iOS. Jempol di tengah layar bisa mencapai semua
+          tab di layar 6". Hamburger di app-bar adalah escape hatch (akun, sign out, tautan ke panel guru).
+        </p>
+      </article>
+
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="text-xs uppercase tracking-[0.08em]" style="color: var(--muted);">3 · Indikator simpan otomatis (sebelumnya tidak ada)</p>
+        <p class="mt-3 text-sm">
+          Pill kecil di header kartu soal: <code class="kbd">Tersimpan · 13:42</code>.
+          Berubah jadi <code class="kbd">Menyimpan…</code> selama 300–500 ms saat jawaban dikirim ke server.
+        </p>
+        <p class="mt-3 text-xs" style="color: var(--muted);">
+          Tanpa toast. Tanpa modal. Tanpa banner di tengah layar. Hanya satu pill kecil yang
+          diam-diam mengkonfirmasi: "Kami dengar kamu, jawaban kamu aman."
+        </p>
+      </article>
+
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="text-xs uppercase tracking-[0.08em]" style="color: var(--muted);">4 · Blade components baru (Tahap 2)</p>
+        <p class="mt-3 text-sm">
+          Akan ditambahkan di <code>resources/views/components/ui/</code>:
+          <code>button</code>, <code>badge</code>, <code>badge-level</code>, <code>progress</code>,
+          <code>banner</code>, <code>field</code> (label + input + hint/error),
+          <code>answer-option</code>, <code>question-card</code>, <code>question-map</code>,
+          <code>timer</code>, <code>tab-pill</code>, <code>list-card</code>, <code>save-indicator</code>,
+          <code>leaderboard-row</code>, <code>app-header</code>, <code>tab-bar</code>.
+        </p>
+        <p class="mt-3 text-xs" style="color: var(--muted);">
+          Blade component Filament (untuk panel guru) tidak disentuh. Hanya theme color yang di-override.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============================================== -->
+  <!-- 1. TOMBOL -->
+  <!-- ============================================== -->
+  <section data-od-id="komponen-tombol">
+    <div class="flex items-baseline justify-between gap-4">
+      <div>
+        <p class="label-tag">01 / Tombol</p>
+        <h2 class="text-lg font-semibold mt-1">Tombol</h2>
+      </div>
+      <span class="chip" style="background: var(--accent-soft); color: var(--accent-text); border-color: var(--accent);">resources/views/components/ui/button.blade.php</span>
+    </div>
+    <p class="mt-1 text-sm" style="color: var(--muted);">
+      Empat varian tampilan (primer, sekunder, ghost, danger) × empat state (default, hover,
+      disabled, processing). Sentuh minimum 44 px. Tekan: 1 px ke bawah, 150 ms.
+    </p>
+
+    <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Primer -->
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-3">Primer — aksi utama satu-satunya per layar</p>
+        <div class="flex flex-wrap items-center gap-3">
+          <button class="btn btn-primary">Mulai latihan</button>
+          <button class="btn btn-primary" disabled>Kamu sudah di sesi ini</button>
+          <button class="btn btn-primary" aria-busy="true" disabled>
+            <span class="inline-flex items-center gap-1" aria-hidden="true">
+              <span style="width: 4px; height: 4px; border-radius: 9999px; background: currentColor; opacity: 0.4;"></span>
+              <span style="width: 4px; height: 4px; border-radius: 9999px; background: currentColor; opacity: 0.7;"></span>
+              <span style="width: 4px; height: 4px; border-radius: 9999px; background: currentColor;"></span>
+            </span>
+            Memproses…
+          </button>
+        </div>
+      </article>
+
+      <!-- Sekunder -->
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-3">Sekunder — aksi pendukung</p>
+        <div class="flex flex-wrap items-center gap-3">
+          <button class="btn btn-secondary">Lihat pembahasan</button>
+          <button class="btn btn-secondary" disabled>Tidak tersedia</button>
+          <button class="btn btn-ghost">Lewati</button>
+        </div>
+      </article>
+
+      <!-- Danger -->
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-3">Danger — aksi yang tidak bisa dibatalkan</p>
+        <div class="flex flex-wrap items-center gap-3">
+          <button class="btn btn-danger">Kumpulkan ujian</button>
+          <button class="btn btn-danger" disabled>Kumpulkan ujian</button>
+        </div>
+        <p class="mt-3 text-xs" style="color: var(--muted);">
+          Dipakai hanya untuk "Kumpulkan ujian" dan "Keluar sesi". Tidak untuk batal/hapus biasa.
+        </p>
+      </article>
+
+      <!-- Penuh-lebar mobile -->
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-3">Penuh-lebar — default pada mobile 390 px</p>
+        <div class="phone-frame" style="padding: 1rem; background: transparent;">
+          <div class="phone">
+            <div class="p-4 space-y-3">
+              <button class="btn btn-primary btn-block">Soal berikutnya</button>
+              <button class="btn btn-secondary btn-block">Lewati soal ini</button>
+              <p class="text-xs" style="color: var(--muted); text-align: center;">
+                Tombol aksi utama di mobile selalu <code>.btn-block</code> (penuh 1 kolom).
+              </p>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <details class="mt-5 rounded-lg p-4" style="background: var(--surface-muted); border: 1px solid var(--border);">
+      <summary class="cursor-pointer text-sm font-medium">Catatan implementasi</summary>
+      <pre class="code-block mt-3"><span class="tk-comment">// resources/views/components/ui/button.blade.php</span>
+<span class="tk-fn">@props</span>([
+  <span class="tk-key">'variant'</span> =&gt; <span class="tk-val">'primary'</span>,  <span class="tk-comment">// primary | secondary | ghost | danger</span>
+  <span class="tk-key">'type'</span> =&gt; <span class="tk-val">'button'</span>,
+  <span class="tk-key">'block'</span> =&gt; <span class="tk-val">false</span>,
+  <span class="tk-key">'loading'</span> =&gt; <span class="tk-val">false</span>,
+  <span class="tk-key">'disabled'</span> =&gt; <span class="tk-val">false</span>,
+])
+
+&lt;button
+  type=<span class="tk-val">"{{ $type }}"</span>
+  {{ $attributes-&gt;<span class="tk-fn">class</span>([
+    <span class="tk-val">'btn'</span>,
+    <span class="tk-val">'btn-'</span> . $variant,
+    <span class="tk-val">'btn-block'</span> =&gt; $block,
+  ])-&gt;<span class="tk-fn">merge</span>([
+    <span class="tk-val">'disabled'</span> =&gt; $disabled || $loading,
+    <span class="tk-val">'aria-busy'</span> =&gt; $loading ? <span class="tk-val">'true'</span> : <span class="tk-val">'false'</span>,
+  ]) }}
+&gt;
+  {{ $slot }}
+&lt;/button&gt;</pre>
+      <p class="mt-3 text-sm" style="color: var(--muted);">
+        Di Livewire: gunakan <code>wire:click</code> untuk aksi utama. <code>wire:target</code>
+        + <code>wire:loading</code> untuk memicu state <em>memproses</em>:
+      </p>
+      <pre class="code-block mt-2"><span class="tk-comment">&lt;!-- Di Blade view --&gt;</span>
+&lt;<span class="tk-fn">x-ui.button</span>
+  variant=<span class="tk-val">"primary"</span>
+  block
+  wire:click=<span class="tk-val">"submit"</span>
+  wire:loading.attr=<span class="tk-val">"disabled"</span>
+  wire:target=<span class="tk-val">"submit"</span>
+&gt;
+  &lt;<span class="tk-fn">span</span> wire:loading.remove wire:target=<span class="tk-val">"submit"</span>&gt;Kumpulkan&lt;/<span class="tk-fn">span</span>&gt;
+  &lt;<span class="tk-fn">span</span> wire:loading wire:target=<span class="tk-val">"submit"</span> class=<span class="tk-val">"inline-flex items-center gap-2"</span>&gt;
+    Menyimpan…
+  &lt;/<span class="tk-fn">span</span>&gt;
+&lt;/<span class="tk-fn">x-ui.button</span>&gt;</pre>
+    </details>
+  </section>
+
+  <!-- ============================================== -->
+  <!-- 2. BADGE STATUS -->
+  <!-- ============================================== -->
+  <section data-od-id="komponen-badge-status">
+    <div class="flex items-baseline justify-between gap-4">
+      <div>
+        <p class="label-tag">02 / Badge status</p>
+        <h2 class="text-lg font-semibold mt-1">Badge status</h2>
+      </div>
+      <span class="chip" style="background: var(--accent-soft); color: var(--accent-text); border-color: var(--accent);">components/ui/badge.blade.php</span>
+    </div>
+    <p class="mt-1 text-sm" style="color: var(--muted);">
+      Enam varian — netral, sukses, peringatan, bahaya, info, aksen. Dipakai murid &amp; guru.
+      Selalu sertakan teks; titik berwarna opsional untuk konsistensi pemindaian mata.
+    </p>
+
+    <div class="mt-6 rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+      <p class="label-tag mb-3">Contoh penerapan</p>
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="badge badge-neutral"><span class="badge-dot"></span>Terjadwal</span>
+        <span class="badge badge-success"><span class="badge-dot"></span>Sudah dinilai</span>
+        <span class="badge badge-warning"><span class="badge-dot"></span>Belum dinilai</span>
+        <span class="badge badge-danger"><span class="badge-dot"></span>Ditutup</span>
+        <span class="badge badge-info"><span class="badge-dot"></span>Sedang berlangsung</span>
+        <span class="badge badge-accent"><span class="badge-dot"></span>Tidak menambah poin</span>
+      </div>
+      <p class="mt-3 text-xs" style="color: var(--muted);">
+        Badge dengan <code>dot</code> untuk status yang berubah (ujian, penilaian).
+        Tanpa dot untuk label kategori (mis. "Latihan", "Ujian").
+      </p>
+    </div>
+
+    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-2">Yang benar</p>
+        <p class="text-sm"><span class="badge badge-success"><span class="badge-dot"></span>Sudah dinilai</span></p>
+        <p class="mt-2 text-sm"><span class="badge badge-warning"><span class="badge-dot"></span>Belum dinilai</span></p>
+        <p class="mt-3 text-xs" style="color: var(--muted);">
+          Teks menjelaskan status. Titik hanya mempercepat pemindaian.
+        </p>
+      </article>
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-2">Yang dihindari</p>
+        <p class="text-sm"><span class="badge badge-success"><span class="badge-dot"></span></span></p>
+        <p class="mt-3 text-xs" style="color: var(--muted);">
+          Badge tanpa teks. Murid buta warna atau yang buram membaca butuh tulisan.
+        </p>
+      </article>
+    </div>
+
+    <details class="mt-5 rounded-lg p-4" style="background: var(--surface-muted); border: 1px solid var(--border);">
+      <summary class="cursor-pointer text-sm font-medium">Catatan implementasi</summary>
+      <pre class="code-block mt-3"><span class="tk-comment">// resources/views/components/ui/badge.blade.php</span>
+<span class="tk-fn">@props</span>([
+  <span class="tk-key">'tone'</span> =&gt; <span class="tk-val">'neutral'</span>,  <span class="tk-comment">// neutral|success|warning|danger|info|accent</span>
+  <span class="tk-key">'dot'</span> =&gt; <span class="tk-val">false</span>,
+])
+
+&lt;<span class="tk-fn">span</span> {{ $attributes-&gt;<span class="tk-fn">class</span>([<span class="tk-val">'badge'</span>, <span class="tk-val">'badge-'</span> . $tone]) }}&gt;
+  @if ($dot) &lt;<span class="tk-fn">span</span> class=<span class="tk-val">"badge-dot"</span> aria-hidden=<span class="tk-val">"true"</span>&gt;&lt;/<span class="tk-fn">span</span>&gt; @endif
+  {{ $slot }}
+&lt;/<span class="tk-fn">span</span>&gt;</pre>
+      <p class="mt-3 text-sm" style="color: var(--muted);">
+        Pemakaian: <code>&lt;x-ui.badge tone="warning" dot&gt;Belum dinilai&lt;/x-ui.badge&gt;</code>.
+        Untuk filter/tab pill, gunakan <code>x-ui.tab-pill</code> (lihat §11) — berbeda secara visual.
+      </p>
+    </details>
+  </section>
+
+  <!-- ============================================== -->
+  <!-- 3. BADGE LEVEL KEMAMPUAN -->
+  <!-- ============================================== -->
+  <section data-od-id="komponen-badge-level">
+    <div class="flex items-baseline justify-between gap-4">
+      <div>
+        <p class="label-tag">03 / Badge level kemampuan</p>
+        <h2 class="text-lg font-semibold mt-1">Badge level kemampuan</h2>
+      </div>
+      <span class="chip" style="background: var(--accent-soft); color: var(--accent-text); border-color: var(--accent);">components/ui/badge-level.blade.php</span>
+    </div>
+    <p class="mt-1 text-sm" style="color: var(--muted);">
+      Lima band dari schema. <strong>Tidak ada angka Elo.</strong> Hanya label &amp; warna.
+      Dipakai di kartu mapel, header sesi latihan, dan rekap nilai.
+    </p>
+
+    <div class="mt-6 rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+      <p class="label-tag mb-3">Lima band</p>
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="badge" style="background: var(--neutral-soft); color: var(--neutral-text); border: 1px solid var(--border);">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9 12h6"/></svg>
+          Belum dimulai
+        </span>
+        <span class="badge badge-info">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l4-4 4 4 7-7"/><path d="M14 6h7v7"/></svg>
+          Pemula
+        </span>
+        <span class="badge badge-accent">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l4-4 4 4 7-7"/><path d="M14 6h7v7"/></svg>
+          Berkembang
+        </span>
+        <span class="badge badge-success">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+          Mahir
+        </span>
+        <span class="badge badge-master">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+          Ahli
+        </span>
+      </div>
+      <p class="mt-4 text-sm" style="color: var(--muted);">
+        Ikon kecil menambah redundansi visual (untuk buta warna). Tidak ada ikon "exp" atau "lvl up" — terlalu gamey.
+      </p>
+    </div>
+
+    <div class="mt-4 rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+      <p class="label-tag mb-2">Pemakaian di kartu mapel</p>
+      <div class="space-y-2">
+        <div class="flex items-center justify-between gap-3 p-3 rounded-lg" style="background: var(--surface-muted); border: 1px solid var(--border);">
+          <div>
+            <p class="text-sm font-medium">Matematika</p>
+            <p class="text-xs" style="color: var(--muted);">42 soal dikerjakan · akurasi 78%</p>
+          </div>
+          <span class="badge badge-accent">Berkembang</span>
+        </div>
+        <div class="flex items-center justify-between gap-3 p-3 rounded-lg" style="background: var(--surface-muted); border: 1px solid var(--border);">
+          <div>
+            <p class="text-sm font-medium">Bahasa Indonesia</p>
+            <p class="text-xs" style="color: var(--muted);">8 soal dikerjakan · 2 hari lalu</p>
+          </div>
+          <span class="badge" style="background: var(--neutral-soft); color: var(--neutral-text); border: 1px solid var(--border);">Belum dimulai</span>
+        </div>
+      </div>
+    </div>
+
+    <details class="mt-5 rounded-lg p-4" style="background: var(--surface-muted); border: 1px solid var(--border);">
+      <summary class="cursor-pointer text-sm font-medium">Catatan implementasi</summary>
+      <pre class="code-block mt-3"><span class="tk-comment">// resources/views/components/ui/badge-level.blade.php</span>
+<span class="tk-fn">@props</span>([
+  <span class="tk-key">'level'</span>,  <span class="tk-comment">// 'belum' | 'pemula' | 'berkembang' | 'mahir' | 'ahli'</span>
+])
+
+<span class="tk-fn">@php</span>
+  $config = [
+    <span class="tk-val">'belum'</span>      =&gt; [<span class="tk-val">'neutral'</span>, <span class="tk-val">'Belum dimulai'</span>],
+    <span class="tk-val">'pemula'</span>     =&gt; [<span class="tk-val">'info'</span>,    <span class="tk-val">'Pemula'</span>],
+    <span class="tk-val">'berkembang'</span> =&gt; [<span class="tk-val">'accent'</span>,  <span class="tk-val">'Berkembang'</span>],
+    <span class="tk-val">'mahir'</span>      =&gt; [<span class="tk-val">'success'</span>, <span class="tk-val">'Mahir'</span>],
+    <span class="tk-val">'ahli'</span>       =&gt; [<span class="tk-val">'master'</span>,  <span class="tk-val">'Ahli'</span>],
+  ];
+  [$tone, $label] = $config[$level] ?? [<span class="tk-val">'neutral'</span>, <span class="tk-val">'Belum dimulai'</span>];
+<span class="tk-fn">@endphp</span>
+
+&lt;<span class="tk-fn">x-ui.badge</span> :tone=<span class="tk-val">"$tone"</span>&gt;{{ $label }}&lt;/<span class="tk-fn">x-ui.badge</span>&gt;</pre>
+      <p class="mt-3 text-sm" style="color: var(--muted);">
+        Pemakaian: <code>&lt;x-ui.badge-level :level="$subject-&gt;band" /&gt;</code>.
+        Band ditentukan dari query, bukan dari nilai Elo yang ditampilkan ke murid.
+      </p>
+    </details>
+  </section>
+
+  <!-- ============================================== -->
+  <!-- 4. BAR PROGRES -->
+  <!-- ============================================== -->
+  <section data-od-id="komponen-progress">
+    <div class="flex items-baseline justify-between gap-4">
+      <div>
+        <p class="label-tag">04 / Bar progres</p>
+        <h2 class="text-lg font-semibold mt-1">Bar progres</h2>
+      </div>
+      <span class="chip" style="background: var(--accent-soft); color: var(--accent-text); border-color: var(--accent);">components/ui/progress.blade.php</span>
+    </div>
+    <p class="mt-1 text-sm" style="color: var(--muted);">
+      Dua konteks: <strong>progres dalam level</strong> (0–100%) dan <strong>jumlah soal
+      terhadap target sesi</strong>. Warna <strong>tidak</strong> berubah mengikuti level —
+      konsisten dengan brand. Pertumbuhan visual cukup jadi motivasi.
+    </p>
+
+    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-3">Statis — saat halaman dimuat</p>
+        <div class="space-y-4">
+          <div>
+            <div class="flex items-baseline justify-between mb-1.5">
+              <span class="text-sm font-medium">Progres dalam level</span>
+              <span class="text-sm" style="color: var(--muted); font-variant-numeric: tabular-nums;">42%</span>
+            </div>
+            <div class="progress"><div class="fill fill-accent" style="width: 42%;"></div></div>
+          </div>
+          <div>
+            <div class="flex items-baseline justify-between mb-1.5">
+              <span class="text-sm font-medium">Soal sesi ini</span>
+              <span class="text-sm" style="color: var(--muted); font-variant-numeric: tabular-nums;">7 / 10</span>
+            </div>
+            <div class="progress"><div class="fill fill-accent" style="width: 70%;"></div></div>
+          </div>
+          <div>
+            <div class="flex items-baseline justify-between mb-1.5">
+              <span class="text-sm font-medium">Baru mulai</span>
+              <span class="text-sm" style="color: var(--muted); font-variant-numeric: tabular-nums;">0%</span>
+            </div>
+            <div class="progress"><div class="fill fill-accent" style="width: 0%;"></div></div>
+          </div>
+        </div>
+      </article>
+
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-3">Bergerak — berpindah setelah nilai jawaban</p>
+        <p class="text-sm" style="color: var(--muted);">
+          Hanya <code>transition-[width] duration-300 ease-out</code> — tidak ada animasi
+          warna, tidak ada checkered pulse.
+        </p>
+        <div class="mt-4">
+          <div class="flex items-baseline justify-between mb-1.5">
+            <span class="text-sm font-medium">Progres dalam level</span>
+            <span class="text-sm" style="color: var(--muted); font-variant-numeric: tabular-nums;">42% → 51%</span>
+          </div>
+          <div class="progress"><div class="fill fill-accent" style="width: 51%; transition: width 300ms ease-out;"></div></div>
+          <p class="mt-2 text-xs" style="color: var(--success-text);">+9% setelah menjawab benar.</p>
+        </div>
+      </article>
+    </div>
+
+    <details class="mt-5 rounded-lg p-4" style="background: var(--surface-muted); border: 1px solid var(--border);">
+      <summary class="cursor-pointer text-sm font-medium">Catatan implementasi</summary>
+      <pre class="code-block mt-3"><span class="tk-comment">// resources/views/components/ui/progress.blade.php</span>
+<span class="tk-fn">@props</span>([
+  <span class="tk-key">'value'</span> =&gt; <span class="tk-val">0</span>,   <span class="tk-comment">// 0-100</span>
+  <span class="tk-key">'label'</span> =&gt; <span class="tk-val">''</span>,
+  <span class="tk-key">'caption'</span> =&gt; <span class="tk-val">''</span>,  <span class="tk-comment">// mis. "7 / 10" atau "42%"</span>
+])
+
+&lt;<span class="tk-fn">div</span>&gt;
+  @if ($label || $caption)
+    &lt;<span class="tk-fn">div</span> class=<span class="tk-val">"flex items-baseline justify-between mb-1.5"</span>&gt;
+      &lt;<span class="tk-fn">span</span> class=<span class="tk-val">"text-sm font-medium"</span>&gt;{{ $label }}&lt;/<span class="tk-fn">span</span>&gt;
+      &lt;<span class="tk-fn">span</span> class=<span class="tk-val">"text-sm text-muted"</span>&gt;{{ $caption }}&lt;/<span class="tk-fn">span</span>&gt;
+    &lt;/<span class="tk-fn">div</span>&gt;
+  @endif
+  &lt;<span class="tk-fn">div</span>
+    role=<span class="tk-val">"progressbar"</span>
+    aria-valuenow=<span class="tk-val">"{{ $value }}"</span>
+    aria-valuemin=<span class="tk-val">"0"</span>
+    aria-valuemax=<span class="tk-val">"100"</span>
+    aria-label=<span class="tk-val">"{{ $label }}"</span>
+    class=<span class="tk-val">"progress"</span>
+  &gt;
+    &lt;<span class="tk-fn">div</span> class=<span class="tk-val">"fill fill-accent"</span> style=<span class="tk-val">"width: {{ $value }}%;"</span>&gt;&lt;/<span class="tk-fn">div</span>&gt;
+  &lt;/<span class="tk-fn">div</span>&gt;
+&lt;/<span class="tk-fn">div</span>&gt;</pre>
+      <p class="mt-3 text-sm" style="color: var(--muted);">
+        Warna fill tunggal (<code>fill-accent</code>) untuk semua konteks progres.
+        Tidak berganti warna mengikuti level: nuansa level sudah cukup di badge.
+      </p>
+    </details>
+  </section>
+
+  <!-- ============================================== -->
+  <!-- 5. BANNER PESAN -->
+  <!-- ============================================== -->
+  <section data-od-id="komponen-banner">
+    <div class="flex items-baseline justify-between gap-4">
+      <div>
+        <p class="label-tag">05 / Banner pesan</p>
+        <h2 class="text-lg font-semibold mt-1">Banner pesan</h2>
+      </div>
+      <span class="chip" style="background: var(--accent-soft); color: var(--accent-text); border-color: var(--accent);">components/ui/banner.blade.php</span>
+    </div>
+    <p class="mt-1 text-sm" style="color: var(--muted);">
+      Tiga varian — sukses, peringatan, error. Selalu ikon + judul + (opsional) deskripsi.
+      Tidak ada banner "info" karena notifikasi info pakai pola lain (mis. simpan otomatis).
+    </p>
+
+    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="banner banner-success" role="status">
+        <span class="banner-icon" aria-hidden="true">✓</span>
+        <div class="flex-1">
+          <p class="text-sm font-semibold">Jawaban benar</p>
+          <p class="text-sm mt-0.5">Sel volta menghasilkan arus listrik dari reaksi redoks spontan.</p>
+        </div>
+      </div>
+
+      <div class="banner banner-warning" role="status">
+        <span class="banner-icon" aria-hidden="true">!</span>
+        <div class="flex-1">
+          <p class="text-sm font-semibold">3 soal belum kamu jawab</p>
+          <p class="text-sm mt-0.5">Selesaikan dulu, atau kumpulkan sekarang dan biarkan kosong.</p>
+        </div>
+      </div>
+
+      <div class="banner banner-danger" role="alert">
+        <span class="banner-icon" aria-hidden="true">✕</span>
+        <div class="flex-1">
+          <p class="text-sm font-semibold">Tidak bisa terhubung</p>
+          <p class="text-sm mt-0.5">Cek koneksi kamu lalu coba lagi. Jawaban yang sudah masuk tersimpan.</p>
+        </div>
+      </div>
+
+      <div class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-2">Yang dihindari</p>
+        <ul class="text-sm space-y-2" style="color: var(--muted);">
+          <li><span class="line-through">Banner yang menutupi konten tanpa tombol tutup.</span></li>
+          <li><span class="line-through">"Kamu sudah 3 hari tidak berlatih!"</span> — menyalahkan.</li>
+          <li><span class="line-through">Hitung mundur otomatis ke akhir sesi.</span></li>
+          <li><span class="line-through">Ikon emoji ✨ 🚀 🔥</span> — pakai bentuk geometris saja.</li>
+        </ul>
+      </div>
+    </div>
+
+    <details class="mt-5 rounded-lg p-4" style="background: var(--surface-muted); border: 1px solid var(--border);">
+      <summary class="cursor-pointer text-sm font-medium">Catatan implementasi</summary>
+      <pre class="code-block mt-3"><span class="tk-comment">// resources/views/components/ui/banner.blade.php</span>
+<span class="tk-fn">@props</span>([
+  <span class="tk-key">'tone'</span> =&gt; <span class="tk-val">'info'</span>,  <span class="tk-comment">// success | warning | danger</span>
+  <span class="tk-key">'role'</span> =&gt; <span class="tk-val">'status'</span>,
+])
+
+<span class="tk-fn">@php</span>
+  $icon = [<span class="tk-val">'success'</span> =&gt; <span class="tk-val">'✓'</span>, <span class="tk-val">'warning'</span> =&gt; <span class="tk-val">'!'</span>, <span class="tk-val">'danger'</span> =&gt; <span class="tk-val">'✕'</span>][$tone];
+<span class="tk-fn">@endphp</span>
+
+&lt;<span class="tk-fn">div</span> role=<span class="tk-val">"{{ $role }}"</span>
+     {{ $attributes-&gt;<span class="tk-fn">class</span>([<span class="tk-val">'banner'</span>, <span class="tk-val">'banner-'</span> . $tone]) }}&gt;
+  &lt;<span class="tk-fn">span</span> class=<span class="tk-val">"banner-icon"</span> aria-hidden=<span class="tk-val">"true"</span>&gt;{{ $icon }}&lt;/<span class="tk-fn">span</span>&gt;
+  &lt;<span class="tk-fn">div</span> class=<span class="tk-val">"flex-1"</span>&gt;{{ $slot }}&lt;/<span class="tk-fn">div</span>&gt;
+&lt;/<span class="tk-fn">div</span>&gt;</pre>
+      <p class="mt-3 text-sm" style="color: var(--muted);">
+        Pemakaian: <code>&lt;x-ui.banner tone="warning"&gt;…&lt;/x-ui.banner&gt;</code>.
+        Tone <code>danger</code> memakai <code>role="alert"</code> (screen reader langsung membaca).
+      </p>
+    </details>
+  </section>
+
+  <!-- ============================================== -->
+  <!-- 6. INPUT BERLABEL -->
+  <!-- ============================================== -->
+  <section data-od-id="komponen-input">
+    <div class="flex items-baseline justify-between gap-4">
+      <div>
+        <p class="label-tag">06 / Input berlabel</p>
+        <h2 class="text-lg font-semibold mt-1">Input berlabel</h2>
+      </div>
+      <span class="chip" style="background: var(--accent-soft); color: var(--accent-text); border-color: var(--accent);">components/ui/field.blade.php</span>
+    </div>
+    <p class="mt-1 text-sm" style="color: var(--muted);">
+      Tiga varian: normal, dengan hint, error. Tinggi 44 px. Label selalu di atas (bukan di dalam)
+      agar terbaca oleh screen reader dan tidak hilang saat diisi.
+    </p>
+
+    <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div>
+        <label class="field-label" for="demo-1">Nama panggilan</label>
+        <input class="input" id="demo-1" type="text" placeholder="Cth. Alya">
+      </div>
+
+      <div>
+        <label class="field-label" for="demo-2">Nama panggilan</label>
+        <input class="input" id="demo-2" type="text" value="Alya Putri">
+        <p class="field-hint">Nama yang akan dilihat teman sekelasmu di papan peringkat.</p>
+      </div>
+
+      <div>
+        <label class="field-label" for="demo-3">Nama panggilan</label>
+        <input class="input is-error" id="demo-3" type="text" value="A" aria-invalid="true" aria-describedby="demo-3-err">
+        <p class="field-error" id="demo-3-err">
+          <span aria-hidden="true">⚠</span>
+          Minimal 2 karakter, maksimal 24.
+        </p>
+      </div>
+    </div>
+
+    <div class="mt-6 rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+      <p class="label-tag mb-3">Contoh pada mobile 390 px</p>
+      <div class="phone-frame" style="padding: 1rem; background: transparent;">
+        <div class="phone">
+          <div class="p-4 space-y-4">
+            <div>
+              <label class="field-label" for="m-1">Kode soal</label>
+              <input class="input" id="m-1" type="text" inputmode="numeric" placeholder="Cth. MTK-042">
+              <p class="field-hint">Minta ke gurumu jika belum tahu.</p>
+            </div>
+            <div>
+              <label class="field-label" for="m-2">Alasan berhenti</label>
+              <textarea class="input" id="m-2" rows="3" placeholder="Ceritakan singkat…" style="min-height: 88px; padding-top: 0.625rem;"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <details class="mt-5 rounded-lg p-4" style="background: var(--surface-muted); border: 1px solid var(--border);">
+      <summary class="cursor-pointer text-sm font-medium">Catatan implementasi</summary>
+      <pre class="code-block mt-3"><span class="tk-comment">// resources/views/components/ui/field.blade.php</span>
+<span class="tk-fn">@props</span>([
+  <span class="tk-key">'label'</span>,
+  <span class="tk-key">'hint'</span> =&gt; <span class="tk-val">''</span>,
+  <span class="tk-key">'error'</span> =&gt; <span class="tk-val">''</span>,
+  <span class="tk-key">'id'</span> =&gt; <span class="tk-fn">uniqid</span>(<span class="tk-val">'f-'</span>),
+])
+
+&lt;<span class="tk-fn">div</span>&gt;
+  &lt;<span class="tk-fn">label</span> class=<span class="tk-val">"field-label"</span> for=<span class="tk-val">"{{ $id }}"</span>&gt;{{ $label }}&lt;/<span class="tk-fn">label</span>&gt;
+  {{ $slot }}
+  @if ($hint &amp;&amp; !$error)
+    &lt;<span class="tk-fn">p</span> class=<span class="tk-val">"field-hint"</span> id=<span class="tk-val">"{{ $id }}-hint"</span>&gt;{{ $hint }}&lt;/<span class="tk-fn">p</span>&gt;
+  @endif
+  @if ($error)
+    &lt;<span class="tk-fn">p</span> class=<span class="tk-val">"field-error"</span> id=<span class="tk-val">"{{ $id }}-err"</span> role=<span class="tk-val">"alert"</span>&gt;
+      &lt;<span class="tk-fn">span</span> aria-hidden=<span class="tk-val">"true"</span>&gt;⚠&lt;/<span class="tk-fn">span</span>&gt; {{ $error }}
+    &lt;/<span class="tk-fn">p</span>&gt;
+  @endif
+&lt;/<span class="tk-fn">div</span>&gt;</pre>
+      <p class="mt-3 text-sm" style="color: var(--muted);">
+        Pemakaian di Livewire: <code>wire:model.live.debounce.300ms</code> pada input.
+        Validasi server-side mengembalikan <code>$errors-&gt;first('field')</code>.
+      </p>
+    </details>
+  </section>
+
+  <!-- ============================================== -->
+  <!-- 7. OPSI JAWABAN A-D -->
+  <!-- ============================================== -->
+  <section data-od-id="komponen-opsi">
+    <div class="flex items-baseline justify-between gap-4">
+      <div>
+        <p class="label-tag">07 / Opsi jawaban A–D</p>
+        <h2 class="text-lg font-semibold mt-1">Opsi jawaban A–D</h2>
+      </div>
+      <span class="chip" style="background: var(--accent-soft); color: var(--accent-text); border-color: var(--accent);">components/ui/answer-option.blade.php</span>
+    </div>
+    <p class="mt-1 text-sm" style="color: var(--muted);">
+      Lima varian. <strong>Varian "salah dipilih"</strong> (border merah + label "Salah" +
+      ikon ✕) adalah yang baru — sebelumnya tidak ada. Benar &amp; salah <strong>wajib</strong>
+      punya label teks, bukan warna saja.
+    </p>
+
+    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-3">1 · Normal (belum dipilih)</p>
+        <label class="option">
+          <input type="radio" name="demo-n" class="sr-only">
+          <span class="option-letter">A</span>
+          <span class="option-text">Reaksi redoks spontan</span>
+        </label>
+      </article>
+
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-3">2 · Terpilih (belum dinilai)</p>
+        <label class="option option-selected">
+          <input type="radio" name="demo-s" checked class="sr-only">
+          <span class="option-letter">B</span>
+          <span class="option-text">Reaksi redoks spontan</span>
+        </label>
+      </article>
+
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-3">3 · Kunci benar (setelah dinilai / pratinjau)</p>
+        <label class="option option-correct" aria-label="Jawaban benar">
+          <span class="option-letter">C</span>
+          <span class="option-text">Reaksi redoks spontan</span>
+        </label>
+      </article>
+
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-3">4 · <span style="color: var(--danger-text);">Salah dipilih (BARU)</span></p>
+        <label class="option option-wrong" aria-label="Jawaban salah">
+          <span class="option-letter">D</span>
+          <span class="option-text">Kalor jenis</span>
+        </label>
+      </article>
+
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-3">5 · Terkunci (ujian sudah dikumpulkan)</p>
+        <label class="option option-locked">
+          <span class="option-letter">A</span>
+          <span class="option-text">Reaksi redoks spontan</span>
+        </label>
+      </article>
+
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-3">Pratinjau kombinasi (kunci + salah terlihat)</p>
+        <label class="option option-wrong mb-2">
+          <span class="option-letter">B</span>
+          <span class="option-text">Kalor jenis</span>
+        </label>
+        <label class="option option-correct">
+          <span class="option-letter">C</span>
+          <span class="option-text">Reaksi redoks spontan</span>
+        </label>
+        <p class="mt-3 text-xs" style="color: var(--muted);">
+          Saat pembahasan tampil, pilihan salah murid tetap ditandai merah
+          dan jawaban benar ditandai hijau — keduanya terlihat.
+        </p>
+      </article>
+    </div>
+
+    <details class="mt-5 rounded-lg p-4" style="background: var(--surface-muted); border: 1px solid var(--border);">
+      <summary class="cursor-pointer text-sm font-medium">Catatan implementasi</summary>
+      <pre class="code-block mt-3"><span class="tk-comment">// resources/views/components/ui/answer-option.blade.php</span>
+<span class="tk-fn">@props</span>([
+  <span class="tk-key">'letter'</span>,        <span class="tk-comment">// 'A' | 'B' | 'C' | 'D'</span>
+  <span class="tk-key">'state'</span>  =&gt; <span class="tk-val">'normal'</span>,  <span class="tk-comment">// normal|selected|correct|wrong|locked</span>
+  <span class="tk-key">'locked'</span> =&gt; <span class="tk-val">false</span>,
+  <span class="tk-key">'name'</span>   =&gt; <span class="tk-val">'answer'</span>,
+])
+
+&lt;<span class="tk-fn">label</span>
+  {{ $attributes-&gt;<span class="tk-fn">class</span>([
+    <span class="tk-val">'option'</span>,
+    <span class="tk-val">'option-selected'</span> =&gt; $state === <span class="tk-val">'selected'</span>,
+    <span class="tk-val">'option-correct'</span>  =&gt; $state === <span class="tk-val">'correct'</span>,
+    <span class="tk-val">'option-wrong'</span>    =&gt; $state === <span class="tk-val">'wrong'</span>,
+    <span class="tk-val">'option-locked'</span>   =&gt; $locked || $state === <span class="tk-val">'locked'</span>,
+  ]) }}
+&gt;
+  &lt;<span class="tk-fn">input</span> type=<span class="tk-val">"radio"</span> name=<span class="tk-val">"{{ $name }}"</span>
+         {{ $attributes-&gt;<span class="tk-fn">except</span>([<span class="tk-val">'class'</span>]) }}
+         :disabled=<span class="tk-val">"$locked"</span> class=<span class="tk-val">"sr-only"</span>&gt;
+  &lt;<span class="tk-fn">span</span> class=<span class="tk-val">"option-letter"</span> aria-hidden=<span class="tk-val">"true"</span>&gt;{{ $letter }}&lt;/<span class="tk-fn">span</span>&gt;
+  &lt;<span class="tk-fn">span</span> class=<span class="tk-val">"option-text"</span>&gt;{{ $slot }}&lt;/<span class="tk-fn">span</span>&gt;
+&lt;/<span class="tk-fn">label</span>&gt;</pre>
+      <p class="mt-3 text-sm" style="color: var(--muted);">
+        Aturan <strong>kunci: tidak boleh menampilkan kunci selama ujian</strong>. Blade menerima
+        state <code>'correct'</code> / <code>'wrong'</code> hanya saat <code>$revealed = true</code> —
+        Livewire tidak boleh mengirim <code>revealed</code> ke murid sampai ujian dikumpulkan.
+      </p>
+    </details>
+  </section>
+
+  <!-- ============================================== -->
+  <!-- 8. KARTU SOAL -->
+  <!-- ============================================== -->
+  <section data-od-id="komponen-kartu-soal">
+    <div class="flex items-baseline justify-between gap-4">
+      <div>
+        <p class="label-tag">08 / Kartu soal</p>
+        <h2 class="text-lg font-semibold mt-1">Kartu soal</h2>
+      </div>
+      <span class="chip" style="background: var(--accent-soft); color: var(--accent-text); border-color: var(--accent);">components/ui/question-card.blade.php</span>
+    </div>
+    <p class="mt-1 text-sm" style="color: var(--muted);">
+      Tiga kondisi tampilan: <strong>interaktif</strong> (latihan / ujian berlangsung),
+      <strong>dengan pembahasan</strong> (setelah dinilai), dan <strong>terkunci</strong>
+      (ujian ditutup / soal berikutnya belum waktunya). Plus pratinjau guru yang memperlihatkan kunci.
+    </p>
+
+    <!-- 1. Interaktif (latihan) -->
+    <article class="rounded-lg p-4 mt-6" style="background: var(--surface); border: 1px solid var(--border);">
+      <p class="label-tag mb-3">1 · Interaktif (latihan, soal ke-3 dari 10)</p>
+      <div class="phone-frame" style="padding: 1rem; background: transparent;">
+        <div class="phone">
+          <div class="p-4">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs" style="color: var(--muted);">Soal 3 / 10 · Matematika</span>
+              <span class="save-pill"><span class="save-dot"></span>Tersimpan</span>
+            </div>
+            <div>
+              <div class="flex items-baseline justify-between mb-1.5">
+                <span class="text-sm font-medium">Progres sesi</span>
+                <span class="text-sm" style="color: var(--muted); font-variant-numeric: tabular-nums;">3 / 10</span>
+              </div>
+              <div class="progress" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100" aria-label="Progres sesi"><div class="fill fill-accent" style="width: 30%;"></div></div>
+            </div>
+            <div class="qcard mt-4">
+              <p class="text-base font-semibold" style="line-height: 1.45;">
+                Hitunglah nilai dari 12 × (3 + 5). Tuliskan langkah penyelesaian sebelum menulis jawaban akhir.
+              </p>
+              <div class="mt-4 space-y-2">
+                <label class="option">
+                  <input type="radio" name="lat-1" class="sr-only">
+                  <span class="option-letter">A</span>
+                  <span class="option-text">96</span>
+                </label>
+                <label class="option option-selected">
+                  <input type="radio" name="lat-1" checked class="sr-only">
+                  <span class="option-letter">B</span>
+                  <span class="option-text">36</span>
+                </label>
+                <label class="option">
+                  <input type="radio" name="lat-1" class="sr-only">
+                  <span class="option-letter">C</span>
+                  <span class="option-text">60</span>
+                </label>
+                <label class="option">
+                  <input type="radio" name="lat-1" class="sr-only">
+                  <span class="option-letter">D</span>
+                  <span class="option-text">48</span>
+                </label>
+              </div>
+              <div class="mt-5 flex gap-2">
+                <button class="btn btn-secondary btn-sm">Lewati</button>
+                <button class="btn btn-primary btn-sm" style="flex: 1;">Kirim jawaban</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 2. Dengan pembahasan -->
+    <article class="rounded-lg p-4 mt-4" style="background: var(--surface); border: 1px solid var(--border);">
+      <p class="label-tag mb-3">2 · Dengan pembahasan (umpan balik benar)</p>
+      <div class="phone-frame" style="padding: 1rem; background: transparent;">
+        <div class="phone">
+          <div class="p-4">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs" style="color: var(--muted);">Soal 3 / 10 · Matematika</span>
+              <span class="save-pill"><span class="save-dot"></span>Tersimpan</span>
+            </div>
+            <div class="qcard">
+              <p class="text-base font-semibold" style="line-height: 1.45;">
+                Hitunglah nilai dari 12 × (3 + 5). Tuliskan langkah penyelesaian sebelum menulis jawaban akhir.
+              </p>
+              <div class="mt-4 space-y-2">
+                <label class="option option-correct">
+                  <span class="option-letter">B</span>
+                  <span class="option-text">36</span>
+                </label>
+              </div>
+              <div class="banner banner-success mt-4" role="status">
+                <span class="banner-icon" aria-hidden="true">✓</span>
+                <div class="flex-1">
+                  <p class="text-sm font-semibold">Benar</p>
+                  <p class="text-sm mt-0.5">Kerjakan operasi di dalam kurung dulu: 3 + 5 = 8. Lalu kalikan: 12 × 8 = 96. Jawaban: <strong>96</strong>, bukan 36. Coba lagi ya.</p>
+                </div>
+              </div>
+              <div class="mt-5 flex gap-2">
+                <button class="btn btn-primary btn-block">Lanjut ke soal 4</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 3. Terkunci -->
+    <article class="rounded-lg p-4 mt-4" style="background: var(--surface); border: 1px solid var(--border);">
+      <p class="label-tag mb-3">3 · Terkunci (ujian ditutup / rekap setelah dikumpulkan)</p>
+      <div class="phone-frame" style="padding: 1rem; background: transparent;">
+        <div class="phone">
+          <div class="p-4">
+            <div class="qcard-locked">
+              <p class="text-base font-semibold" style="color: var(--muted); line-height: 1.45;">
+                Soal 5 · [Tersembunyi karena ujian telah dikumpulkan]
+              </p>
+              <div class="mt-4 space-y-2">
+                <div class="option option-locked">
+                  <span class="option-letter">A</span>
+                  <span class="option-text" style="color: var(--muted);">—</span>
+                </div>
+                <div class="option option-locked">
+                  <span class="option-letter">B</span>
+                  <span class="option-text" style="color: var(--muted);">—</span>
+                </div>
+                <div class="option option-locked">
+                  <span class="option-letter">C</span>
+                  <span class="option-text" style="color: var(--muted);">—</span>
+                </div>
+                <div class="option option-locked">
+                  <span class="option-letter">D</span>
+                  <span class="option-text" style="color: var(--muted);">—</span>
+                </div>
+              </div>
+              <p class="mt-4 text-xs" style="color: var(--muted);">
+                Hasil nilai akan keluar setelah gurumu memeriksa jawaban.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 4. Mode pratinjau guru -->
+    <article class="rounded-lg p-4 mt-4" style="background: var(--surface); border: 1px solid var(--border);">
+      <p class="label-tag mb-3">4 · Mode pratinjau guru (kunci terlihat, badge penanda)</p>
+      <div class="phone-frame" style="padding: 1rem; background: transparent;">
+        <div class="phone">
+          <div class="p-4">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs" style="color: var(--muted);">Pratinjau · Soal 3</span>
+              <span class="badge badge-accent">Mode guru</span>
+            </div>
+            <div class="qcard">
+              <p class="text-base font-semibold" style="line-height: 1.45;">
+                Hitunglah nilai dari 12 × (3 + 5).
+              </p>
+              <div class="mt-4 space-y-2">
+                <label class="option">
+                  <span class="option-letter">A</span>
+                  <span class="option-text">96</span>
+                </label>
+                <label class="option">
+                  <span class="option-letter">B</span>
+                  <span class="option-text">36</span>
+                </label>
+                <label class="option option-correct">
+                  <span class="option-letter">C</span>
+                  <span class="option-text">60</span>
+                </label>
+                <label class="option">
+                  <span class="option-letter">D</span>
+                  <span class="option-text">48</span>
+                </label>
+              </div>
+              <div class="mt-4 flex items-center gap-2 text-xs" style="color: var(--muted);">
+                <span class="kbd">Kunci: C</span>
+                <span>·</span>
+                <span>Pembahasan: kerjakan kurung dulu (3+5=8), lalu 12×8=…</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <details class="mt-5 rounded-lg p-4" style="background: var(--surface-muted); border: 1px solid var(--border);">
+      <summary class="cursor-pointer text-sm font-medium">Catatan implementasi</summary>
+      <pre class="code-block mt-3"><span class="tk-comment">// resources/views/components/ui/question-card.blade.php</span>
+<span class="tk-fn">@props</span>([
+  <span class="tk-key">'question'</span>,
+  <span class="tk-key">'state'</span> =&gt; <span class="tk-val">'interactive'</span>,  <span class="tk-comment">// interactive|revealed|locked|preview</span>
+  <span class="tk-key">'revealed'</span> =&gt; <span class="tk-val">false</span>,  <span class="tk-comment">// guard kunci</span>
+  <span class="tk-key">'preview'</span> =&gt; <span class="tk-val">false</span>,   <span class="tk-comment">// mode guru</span>
+])
+
+&lt;<span class="tk-fn">div</span> class=<span class="tk-val">"{{ $state === 'locked' ? 'qcard-locked' : 'qcard' }}"</span>&gt;
+  {!! $question-&gt;<span class="tk-fn">prompt_html</span> !!}
+
+  @foreach ($question-&gt;<span class="tk-fn">options</span> as $opt)
+    @php
+      <span class="tk-comment">// revealed + preview → tampilkan kunci.</span>
+      <span class="tk-comment">// interactive → hanya 'selected'.</span>
+      <span class="tk-comment">// locked → semua tersembunyi.</span>
+      $state = match (true) {
+        $state === <span class="tk-val">'locked'</span> =&gt; <span class="tk-val">'locked'</span>,
+        $preview                            =&gt; $opt-&gt;is_correct ? <span class="tk-val">'correct'</span> : <span class="tk-val">'normal'</span>,
+        $revealed                           =&gt; $opt-&gt;is_correct ? <span class="tk-val">'correct'</span>
+                                      : ($opt-&gt;id === $selected ? <span class="tk-val">'wrong'</span> : <span class="tk-val">'normal'</span>),
+        default                             =&gt; $opt-&gt;id === $selected ? <span class="tk-val">'selected'</span> : <span class="tk-val">'normal'</span>,
+      };
+    @endphp
+    &lt;<span class="tk-fn">x-ui.answer-option</span>
+      :letter=<span class="tk-val">"$opt-&gt;letter"</span>
+      :state=<span class="tk-val">"$state"</span>
+      :name=<span class="tk-val">"\"q-\".$question-&gt;id"</span>
+      wire:model=<span class="tk-val">"answers.{{ $question-&gt;id }}"</span>
+    &gt;{{ $opt-&gt;text }}&lt;/<span class="tk-fn">x-ui.answer-option</span>&gt;
+  @endforeach
+
+  {{ $slot }}
+&lt;/<span class="tk-fn">div</span>&gt;</pre>
+      <p class="mt-3 text-sm" style="color: var(--muted);">
+        Blade guard di Livewire: <code>$revealed</code> hanya true jika
+        <code>$this-&gt;exam-&gt;is_submitted &amp;&amp; now()-&gt;gt($this-&gt;exam-&gt;closes_at)</code>.
+        Atau <code>$preview = auth()-&gt;user()-&gt;hasRole('guru')</code> di view pratinjau.
+      </p>
+    </details>
+  </section>
+
+  <!-- ============================================== -->
+  <!-- 9. PETA NOMOR SOAL -->
+  <!-- ============================================== -->
+  <section data-od-id="komponen-peta-soal">
+    <div class="flex items-baseline justify-between gap-4">
+      <div>
+        <p class="label-tag">09 / Peta nomor soal</p>
+        <h2 class="text-lg font-semibold mt-1">Peta nomor soal</h2>
+      </div>
+      <span class="chip" style="background: var(--accent-soft); color: var(--accent-text); border-color: var(--accent);">components/ui/question-map.blade.php</span>
+    </div>
+    <p class="mt-1 text-sm" style="color: var(--muted);">
+      Tiga state sel: aktif, terjawab, belum dijawab. (Tanda/ragu tidak dipakai — menjaga
+      tetap tenang.) Grid 5 kolom supaya muat di 390 px tanpa scroll horizontal.
+    </p>
+
+    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-3">Peta 25 soal — keadaan normal</p>
+        <div class="qmap">
+          <button class="qmap-cell qmap-answered">1</button>
+          <button class="qmap-cell qmap-answered">2</button>
+          <button class="qmap-cell qmap-active">3</button>
+          <button class="qmap-cell">4</button>
+          <button class="qmap-cell">5</button>
+          <button class="qmap-cell qmap-answered">6</button>
+          <button class="qmap-cell qmap-answered">7</button>
+          <button class="qmap-cell qmap-answered">8</button>
+          <button class="qmap-cell qmap-answered">9</button>
+          <button class="qmap-cell">10</button>
+          <button class="qmap-cell">11</button>
+          <button class="qmap-cell">12</button>
+          <button class="qmap-cell qmap-answered">13</button>
+          <button class="qmap-cell">14</button>
+          <button class="qmap-cell">15</button>
+          <button class="qmap-cell">16</button>
+          <button class="qmap-cell">17</button>
+          <button class="qmap-cell">18</button>
+          <button class="qmap-cell">19</button>
+          <button class="qmap-cell">20</button>
+          <button class="qmap-cell">21</button>
+          <button class="qmap-cell">22</button>
+          <button class="qmap-cell">23</button>
+          <button class="qmap-cell">24</button>
+          <button class="qmap-cell">25</button>
+        </div>
+        <div class="mt-4 flex items-center gap-3 text-xs" style="color: var(--muted);">
+          <span class="inline-flex items-center gap-1.5"><span class="inline-block w-3 h-3 rounded" style="background: var(--accent);"></span>Aktif</span>
+          <span class="inline-flex items-center gap-1.5"><span class="inline-block w-3 h-3 rounded" style="background: var(--accent-soft); border: 1px solid var(--accent);"></span>Terjawab</span>
+          <span class="inline-flex items-center gap-1.5"><span class="inline-block w-3 h-3 rounded" style="background: var(--surface); border: 1px solid var(--border-strong);"></span>Belum</span>
+        </div>
+        <p class="mt-3 text-xs" style="color: var(--muted);">
+          8 dari 25 soal sudah terjawab saat ini. Tombol aktif punya ring lembut untuk menandai posisi.
+        </p>
+      </article>
+
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-3">Peta 25 soal — keadaan hampir selesai</p>
+        <div class="qmap">
+          <button class="qmap-cell qmap-answered">1</button>
+          <button class="qmap-cell qmap-answered">2</button>
+          <button class="qmap-cell qmap-answered">3</button>
+          <button class="qmap-cell qmap-answered">4</button>
+          <button class="qmap-cell qmap-answered">5</button>
+          <button class="qmap-cell qmap-answered">6</button>
+          <button class="qmap-cell qmap-answered">7</button>
+          <button class="qmap-cell qmap-answered">8</button>
+          <button class="qmap-cell qmap-answered">9</button>
+          <button class="qmap-cell qmap-answered">10</button>
+          <button class="qmap-cell qmap-answered">11</button>
+          <button class="qmap-cell qmap-answered">12</button>
+          <button class="qmap-cell qmap-answered">13</button>
+          <button class="qmap-cell qmap-answered">14</button>
+          <button class="qmap-cell qmap-answered">15</button>
+          <button class="qmap-cell qmap-answered">16</button>
+          <button class="qmap-cell qmap-answered">17</button>
+          <button class="qmap-cell qmap-answered">18</button>
+          <button class="qmap-cell qmap-answered">19</button>
+          <button class="qmap-cell qmap-answered">20</button>
+          <button class="qmap-cell qmap-answered">21</button>
+          <button class="qmap-cell qmap-answered">22</button>
+          <button class="qmap-cell qmap-answered">23</button>
+          <button class="qmap-cell">24</button>
+          <button class="qmap-cell qmap-active">25</button>
+        </div>
+        <p class="mt-4 text-xs" style="color: var(--muted);">
+          Soal 24 belum terjawab. Saat tombol "Kumpulkan" ditekan, banner peringatan muncul (lihat §5).
+        </p>
+      </article>
+    </div>
+
+    <details class="mt-5 rounded-lg p-4" style="background: var(--surface-muted); border: 1px solid var(--border);">
+      <summary class="cursor-pointer text-sm font-medium">Catatan implementasi</summary>
+      <pre class="code-block mt-3"><span class="tk-comment">// resources/views/components/ui/question-map.blade.php</span>
+<span class="tk-fn">@props</span>([
+  <span class="tk-key">'total'</span>,         <span class="tk-comment">// 10, 25, 50</span>
+  <span class="tk-key">'current'</span>,       <span class="tk-comment">// index 1..N</span>
+  <span class="tk-key">'answered'</span>,     <span class="tk-comment">// array of index</span>
+])
+
+&lt;<span class="tk-fn">nav</span> class=<span class="tk-val">"qmap"</span> aria-label=<span class="tk-val">"Peta nomor soal"</span>&gt;
+  @for ($i = 1; $i &lt;= $total; $i++)
+    @php
+      $cls = match (true) {
+        $i === $current  =&gt; <span class="tk-val">'qmap-active'</span>,
+        in_array($i, $answered) =&gt; <span class="tk-val">'qmap-answered'</span>,
+        default          =&gt; <span class="tk-val">''</span>,
+      };
+    @endphp
+    &lt;<span class="tk-fn">button</span> type=<span class="tk-val">"button"</span>
+            class=<span class="tk-val">"qmap-cell {{ $cls }}"</span>
+            wire:click=<span class="tk-val">"goto({{ $i }})"</span>
+            aria-label=<span class="tk-val">"Soal {{ $i }}"</span>
+            aria-current=<span class="tk-val">"{{ $i === $current ? 'true' : 'false' }}"</span>&gt;
+      {{ $i }}
+    &lt;/<span class="tk-fn">button</span>&gt;
+  @endfor
+&lt;/<span class="tk-fn">nav</span>&gt;</pre>
+      <p class="mt-3 text-sm" style="color: var(--muted);">
+        Tidak ada state "ragu" — murid yang benar-benar ragu tinggal tidak menjawab.
+        Tidak ada "tanda bintang" — semua sel diperlakukan setara.
+      </p>
+    </details>
+  </section>
+
+  <!-- ============================================== -->
+  <!-- 10. TIMER UJIAN -->
+  <!-- ============================================== -->
+  <section data-od-id="komponen-timer">
+    <div class="flex items-baseline justify-between gap-4">
+      <div>
+        <p class="label-tag">10 / Timer ujian</p>
+        <h2 class="text-lg font-semibold mt-1">Timer ujian</h2>
+      </div>
+      <span class="chip" style="background: var(--accent-soft); color: var(--accent-text); border-color: var(--accent);">components/ui/timer.blade.php</span>
+    </div>
+    <p class="mt-1 text-sm" style="color: var(--muted);">
+      Dua varian: <strong>normal</strong> (warna netral) dan <strong>mendesak</strong>
+      (≤60 detik, ganti ke danger). Tidak ada pulse, tidak ada keyframes.
+      Hanya perubahan warna solid + border, transisi 150 ms.
+    </p>
+
+    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-3">Normal · 24:15 tersisa</p>
+        <div class="timer">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          <span>24:15</span>
+        </div>
+        <p class="mt-3 text-xs" style="color: var(--muted);">
+          Disertai ikon jam sederhana (Heroicons). Tabular-nums agar digit tidak goyang saat update tiap detik.
+        </p>
+      </article>
+
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-3">Mendesak · ≤60 detik</p>
+        <div class="timer timer-urgent">
+          <span>00:48</span>
+          <span class="text-xs" style="font-weight: 550; letter-spacing: 0.02em;">· Segera kumpulkan</span>
+        </div>
+        <p class="mt-3 text-xs" style="color: var(--muted);">
+          Background danger-soft, border danger, teks danger. Titik merah otomatis muncul di kiri.
+          Tidak ada animasi pulse — warna solid saja sudah cukup untuk menarik perhatian.
+        </p>
+      </article>
+    </div>
+
+    <details class="mt-5 rounded-lg p-4" style="background: var(--surface-muted); border: 1px solid var(--border);">
+      <summary class="cursor-pointer text-sm font-medium">Catatan implementasi</summary>
+      <pre class="code-block mt-3"><span class="tk-comment">// resources/views/components/ui/timer.blade.php</span>
+<span class="tk-fn">@props</span>([
+  <span class="tk-key">'secondsRemaining'</span>,
+  <span class="tk-key">'threshold'</span> =&gt; <span class="tk-val">60</span>,  <span class="tk-comment">// detik, di bawah ini = urgent</span>
+])
+
+<span class="tk-fn">@php</span>
+  $urgent = $secondsRemaining &lt;= $threshold;
+  $mm = str_pad(floor($secondsRemaining / <span class="tk-val">60</span>), <span class="tk-val">2</span>, <span class="tk-val">'0'</span>, STR_PAD_LEFT);
+  $ss = str_pad($secondsRemaining % <span class="tk-val">60</span>, <span class="tk-val">2</span>, <span class="tk-val">'0'</span>, STR_PAD_LEFT);
+<span class="tk-fn">@endphp</span>
+
+&lt;<span class="tk-fn">div</span> class=<span class="tk-val">"timer {{ $urgent ? 'timer-urgent' : '' }}"</span>
+     role=<span class="tk-val">"timer"</span>
+     aria-live=<span class="tk-val">"{{ $urgent ? 'assertive' : 'off' }}"</span>
+     aria-atomic=<span class="tk-val">"true"</span>&gt;
+  &lt;<span class="tk-fn">span</span> aria-hidden=<span class="tk-val">"true"</span>&gt;{{ $mm }}:{{ $ss }}&lt;/<span class="tk-fn">span</span>&gt;
+  @if ($urgent)
+    &lt;<span class="tk-fn">span</span> class=<span class="tk-val">"text-xs font-medium"</span>&gt;· Segera kumpulkan&lt;/<span class="tk-fn">span</span>&gt;
+  @endif
+&lt;/<span class="tk-fn">div</span>&gt;</pre>
+      <p class="mt-3 text-sm" style="color: var(--muted);">
+        Update via Livewire: <code>wire:poll.1s</code> pada wrapper timer.
+        Saat <code>$secondsRemaining &lt;= 0</code>, trigger event <code>autoSubmit()</code> —
+        <strong>bukan</strong> alert "Waktu habis!", langsung submit dengan jawaban kosong.
+      </p>
+    </details>
+  </section>
+
+  <!-- ============================================== -->
+  <!-- 11. TAB PIL -->
+  <!-- ============================================== -->
+  <section data-od-id="komponen-tab-pill">
+    <div class="flex items-baseline justify-between gap-4">
+      <div>
+        <p class="label-tag">11 / Tab pil</p>
+        <h2 class="text-lg font-semibold mt-1">Tab pil</h2>
+      </div>
+      <span class="chip" style="background: var(--accent-soft); color: var(--accent-text); border-color: var(--accent);">components/ui/tab-pill.blade.php</span>
+    </div>
+    <p class="mt-1 text-sm" style="color: var(--muted);">
+      Dipakai untuk filter di daftar nilai ("Semua · Belum dinilai · Sudah dinilai") dan
+      switch mapel di halaman ringkasan. Tinggi 36 px (lebih kecil dari tombol karena
+      bukan pemicu aksi, hanya pengubah tampilan).
+    </p>
+
+    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-3">Filter nilai</p>
+        <div class="flex flex-wrap items-center gap-1.5">
+          <button class="tab tab-active">Semua (12)</button>
+          <button class="tab">Sudah dinilai (8)</button>
+          <button class="tab">Belum dinilai (4)</button>
+        </div>
+      </article>
+
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-3">Switch mapel (guru)</p>
+        <div class="flex flex-wrap items-center gap-1.5">
+          <button class="tab">Matematika</button>
+          <button class="tab tab-active">Bahasa Indonesia</button>
+          <button class="tab">IPA</button>
+          <button class="tab">IPS</button>
+        </div>
+      </article>
+    </div>
+
+    <details class="mt-5 rounded-lg p-4" style="background: var(--surface-muted); border: 1px solid var(--border);">
+      <summary class="cursor-pointer text-sm font-medium">Catatan implementasi</summary>
+      <pre class="code-block mt-3"><span class="tk-comment">// resources/views/components/ui/tab-pill.blade.php</span>
+<span class="tk-fn">@props</span>([
+  <span class="tk-key">'active'</span> =&gt; <span class="tk-val">false</span>,
+  <span class="tk-key">'href'</span>   =&gt; <span class="tk-val">'#'</span>,
+])
+
+&lt;<span class="tk-fn">a</span>
+  href=<span class="tk-val">"{{ $href }}"</span>
+  {{ $attributes-&gt;<span class="tk-fn">class</span>([<span class="tk-val">'tab'</span>, <span class="tk-val">'tab-active'</span> =&gt; $active]) }}
+  aria-current=<span class="tk-val">"{{ $active ? 'page' : 'false' }}"</span>
+&gt;
+  {{ $slot }}
+&lt;/<span class="tk-fn">a</span>&gt;</pre>
+      <p class="mt-3 text-sm" style="color: var(--muted);">
+        Bisa dipakai sebagai <code>&lt;button&gt;</code> atau <code>&lt;a&gt;</code>. Untuk navigasi
+        pakai <code>&lt;a&gt;</code> agar bisa di-bookmark &amp; dibagikan.
+      </p>
+    </details>
+  </section>
+
+  <!-- ============================================== -->
+  <!-- 12. KARTU DAFTAR -->
+  <!-- ============================================== -->
+  <section data-od-id="komponen-kartu-daftar">
+    <div class="flex items-baseline justify-between gap-4">
+      <div>
+        <p class="label-tag">12 / Kartu daftar</p>
+        <h2 class="text-lg font-semibold mt-1">Kartu daftar</h2>
+      </div>
+      <span class="chip" style="background: var(--accent-soft); color: var(--accent-text); border-color: var(--accent);">components/ui/list-card.blade.php</span>
+    </div>
+    <p class="mt-1 text-sm" style="color: var(--muted);">
+      Tiga varian: normal, terpilih (latihan/ujian yang sedang berjalan), kosong/informasi.
+      Tinggi minimum 56 px. Digunakan di daftar latihan, daftar ujian, dan daftar musim.
+    </p>
+
+    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-3">Normal — kartu ujian terjadwal</p>
+        <div class="space-y-2">
+          <div class="list-card">
+            <div class="flex-1">
+              <p class="text-sm font-semibold">Ujian Tengah Semester · Matematika</p>
+              <p class="text-xs mt-0.5" style="color: var(--muted);">25 soal · 60 menit · tutup 14 Mar, 10:00</p>
+            </div>
+            <span class="badge badge-info"><span class="badge-dot"></span>Segera</span>
+          </div>
+          <div class="list-card">
+            <div class="flex-1">
+              <p class="text-sm font-semibold">Ujian Akhir · Bahasa Indonesia</p>
+              <p class="text-xs mt-0.5" style="color: var(--muted);">30 soal · 90 menit · tutup 28 Mar, 13:00</p>
+            </div>
+            <span class="badge badge-neutral"><span class="badge-dot"></span>Terjadwal</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-3">Terpilih (sedang berjalan)</p>
+        <div class="space-y-2">
+          <div class="list-card list-card-selected">
+            <div class="flex-1">
+              <p class="text-sm font-semibold">Latihan Matematika · Akar &amp; Pangkat</p>
+              <p class="text-xs mt-0.5" style="color: var(--accent-text);">Sedang berjalan · 4 dari 10 soal</p>
+            </div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+          </div>
+          <div class="list-card">
+            <div class="flex-1">
+              <p class="text-sm font-semibold">Latihan IPA · Sistem Pencernaan</p>
+              <p class="text-xs mt-0.5" style="color: var(--muted);">Belum pernah dicoba</p>
+            </div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--muted);" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+          </div>
+        </div>
+        <p class="mt-3 text-xs" style="color: var(--muted);">
+          Varian terpilih: background accent-soft + border accent. Ikon panah di kanan.
+        </p>
+      </article>
+
+      <article class="rounded-lg p-4 md:col-span-2" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-3">Kosong / informasi — mapel tanpa soal (EmptyState)</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div class="list-card-empty">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mb-2 mx-auto" style="color: var(--muted);" aria-hidden="true"><path d="M3.75 9h16.5m-16.5 6.75h16.5"/><path d="M3.75 6.75h16.5M3.75 15h16.5"/></svg>
+            <p class="text-sm font-medium" style="color: var(--fg);">Belum ada soal untuk mata pelajaran ini</p>
+            <p class="text-xs mt-1" style="color: var(--muted);">Coba kembali beberapa hari lagi, atau hubungi gurumu.</p>
+          </div>
+          <div class="list-card-empty">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mb-2 mx-auto" style="color: var(--muted);" aria-hidden="true"><path d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"/></svg>
+            <p class="text-sm font-medium" style="color: var(--fg);">Tidak ada ujian minggu ini</p>
+            <p class="text-xs mt-1" style="color: var(--muted);">Nanti akan ada notifikasi di Beranda ketika ada ujian baru.</p>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <details class="mt-5 rounded-lg p-4" style="background: var(--surface-muted); border: 1px solid var(--border);">
+      <summary class="cursor-pointer text-sm font-medium">Catatan implementasi</summary>
+      <pre class="code-block mt-3"><span class="tk-comment">// resources/views/components/ui/list-card.blade.php</span>
+<span class="tk-fn">@props</span>([
+  <span class="tk-key">'href'</span>     =&gt; <span class="tk-val">'#'</span>,
+  <span class="tk-key">'selected'</span> =&gt; <span class="tk-val">false</span>,
+  <span class="tk-key">'empty'</span>    =&gt; <span class="tk-val">false</span>,
+])
+
+@if ($empty)
+  &lt;<span class="tk-fn">div</span> class=<span class="tk-val">"list-card-empty"</span>&gt;{{ $slot }}&lt;/<span class="tk-fn">div</span>&gt;
+@else
+  &lt;<span class="tk-fn">a</span>
+    href=<span class="tk-val">"{{ $href }}"</span>
+    {{ $attributes-&gt;<span class="tk-fn">class</span>([
+      <span class="tk-val">'list-card'</span>,
+      <span class="tk-val">'list-card-selected'</span> =&gt; $selected,
+    ]) }}
+  &gt;
+    {{ $slot }}
+  &lt;/<span class="tk-fn">a</span>&gt;
+@endif</pre>
+    </details>
+  </section>
+
+  <!-- ============================================== -->
+  <!-- 13. INDIKATOR SIMPAN OTOMATIS -->
+  <!-- ============================================== -->
+  <section data-od-id="komponen-simpan-otomatis">
+    <div class="flex items-baseline justify-between gap-4">
+      <div>
+        <p class="label-tag">13 / Indikator simpan otomatis</p>
+        <h2 class="text-lg font-semibold mt-1">Indikator simpan otomatis (BARU)</h2>
+      </div>
+      <span class="chip" style="background: var(--accent-soft); color: var(--accent-text); border-color: var(--accent);">components/ui/save-indicator.blade.php</span>
+    </div>
+    <p class="mt-1 text-sm" style="color: var(--muted);">
+      Masalah: murid tidak punya bukti jawaban tersimpan saat ujian. Solusi: pill kecil
+      di header kartu soal yang diam-diam mengkonfirmasi. Dua state: <strong>tersimpan</strong>
+      (default) dan <strong>menyimpan</strong> (300–500 ms saat transit). Tanpa toast, tanpa banner.
+    </p>
+
+    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-3">Tersimpan (default · 99% waktu)</p>
+        <span class="save-pill">
+          <span class="save-dot"></span>
+          Tersimpan · 13:42
+        </span>
+        <p class="mt-3 text-xs" style="color: var(--muted);">
+          Latar netral, border tipis, titik hijau. Teks selalu memuat jam agar murid tahu
+          kapan terakhir disimpan (mis. setelah pergantian jawaban).
+        </p>
+      </article>
+
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-3">Menyimpan (300–500 ms · saat transit)</p>
+        <span class="save-pill save-saving">
+          <span class="save-dot"></span>
+          Menyimpan…
+        </span>
+        <p class="mt-3 text-xs" style="color: var(--muted);">
+          Latar info-soft, border info, titik info. Pulih ke "Tersimpan · [jam baru]" setelah
+          server meng-ack. Tidak ada spinner — sesuai aturan animasi (transisi warna saja).
+        </p>
+      </article>
+    </div>
+
+    <div class="mt-6 rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+      <p class="label-tag mb-3">Posisi di kartu soal (mobile)</p>
+      <div class="phone-frame" style="padding: 1rem; background: transparent;">
+        <div class="phone">
+          <div class="p-4">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs" style="color: var(--muted);">Soal 14 / 25</span>
+              <span class="save-pill">
+                <span class="save-dot"></span>
+                Tersimpan · 13:42
+              </span>
+            </div>
+            <div class="qcard">
+              <p class="text-base font-semibold" style="line-height: 1.45;">
+                [Soal ujian aktif]
+              </p>
+              <div class="mt-4 space-y-2">
+                <label class="option"><span class="option-letter">A</span><span class="option-text">—</span></label>
+                <label class="option option-selected"><span class="option-letter">B</span><span class="option-text">—</span></label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <details class="mt-5 rounded-lg p-4" style="background: var(--surface-muted); border: 1px solid var(--border);">
+      <summary class="cursor-pointer text-sm font-medium">Catatan implementasi</summary>
+      <pre class="code-block mt-3"><span class="tk-comment">// resources/views/components/ui/save-indicator.blade.php</span>
+<span class="tk-fn">@props</span>([
+  <span class="tk-key">'savedAt'</span> =&gt; <span class="tk-val">null'</span>,  <span class="tk-comment">// Carbon instance</span>
+  <span class="tk-key">'state'</span>  =&gt; <span class="tk-val">'saved'</span>,  <span class="tk-comment">// saved|saving</span>
+])
+
+<span class="tk-fn">@php</span>
+  $label = match (true) {
+    $state === <span class="tk-val">'saving'</span>                  =&gt; <span class="tk-val">'Menyimpan…'</span>,
+    $savedAt &amp;&amp; $savedAt-&gt;<span class="tk-fn">isToday</span>()       =&gt; <span class="tk-val">'Tersimpan · '</span> . $savedAt-&gt;<span class="tk-fn">format</span>(<span class="tk-val">'H:i'</span>),
+    $savedAt                                 =&gt; <span class="tk-val">'Tersimpan · '</span> . $savedAt-&gt;<span class="tk-fn">format</span>(<span class="tk-val">'d M, H:i'</span>),
+    default                                  =&gt; <span class="tk-val">'Belum disimpan'</span>,
+  };
+<span class="tk-fn">@endphp</span>
+
+&lt;<span class="tk-fn">span</span>
+  {{ $attributes-&gt;<span class="tk-fn">class</span>([
+    <span class="tk-val">'save-pill'</span>,
+    <span class="tk-val">'save-saving'</span> =&gt; $state === <span class="tk-val">'saving'</span>,
+  ]) }}
+  aria-live=<span class="tk-val">"polite"</span>
+  aria-atomic=<span class="tk-val">"true"</span>
+&gt;
+  &lt;<span class="tk-fn">span</span> class=<span class="tk-val">"save-dot"</span> aria-hidden=<span class="tk-val">"true"</span>&gt;&lt;/<span class="tk-fn">span</span>&gt;
+  {{ $label }}
+&lt;/<span class="tk-fn">span</span>&gt;</pre>
+      <p class="mt-3 text-sm" style="color: var(--muted);">
+        Wire ke Livewire: <code>wire:model.live.debounce.500ms</code> pada jawaban.
+        Setelah server ack, dispatch <code>$this-&gt;lastSavedAt = now()</code>.
+        Tidak ada alert/error ke murid saat offline — pill diam di "Tersimpan · [waktu terakhir]",
+        Livewire akan sync saat reconnect.
+      </p>
+    </details>
+  </section>
+
+  <!-- ============================================== -->
+  <!-- 14. BARIS LEADERBOARD -->
+  <!-- ============================================== -->
+  <section data-od-id="komponen-leaderboard">
+    <div class="flex items-baseline justify-between gap-4">
+      <div>
+        <p class="label-tag">14 / Baris leaderboard</p>
+        <h2 class="text-lg font-semibold mt-1">Baris leaderboard</h2>
+      </div>
+      <span class="chip" style="background: var(--accent-soft); color: var(--accent-text); border-color: var(--accent);">components/ui/leaderboard-row.blade.php</span>
+    </div>
+    <p class="mt-1 text-sm" style="color: var(--muted);">
+      Tiga varian: normal, baris sendiri (saat aku masuk 20 besar), baris "posisimu"
+      (saat aku di luar 20 besar). Avatar inisial, nama, poin. <strong>Tidak ada
+      streak, tidak ada "naik/peringkat turun"</strong> — di luar cakupan data schema.
+    </p>
+
+    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-3">Aku di 20 besar</p>
+        <div class="space-y-2">
+          <div class="lb-row">
+            <span class="lb-rank lb-rank-1">1</span>
+            <div>
+              <p class="text-sm font-medium">Rafi Pratama</p>
+              <p class="text-xs" style="color: var(--muted);">XI IPA 2</p>
+            </div>
+            <span class="text-sm font-semibold" style="font-variant-numeric: tabular-nums;">1.842</span>
+          </div>
+          <div class="lb-row">
+            <span class="lb-rank lb-rank-2">2</span>
+            <div>
+              <p class="text-sm font-medium">Nayla Putri</p>
+              <p class="text-xs" style="color: var(--muted);">XI IPA 1</p>
+            </div>
+            <span class="text-sm font-semibold" style="font-variant-numeric: tabular-nums;">1.795</span>
+          </div>
+          <div class="lb-row">
+            <span class="lb-rank lb-rank-3">3</span>
+            <div>
+              <p class="text-sm font-medium">Bima Sakti</p>
+              <p class="text-xs" style="color: var(--muted);">XII IPA 3</p>
+            </div>
+            <span class="text-sm font-semibold" style="font-variant-numeric: tabular-nums;">1.738</span>
+          </div>
+          <div class="lb-row lb-me">
+            <span class="lb-rank">8</span>
+            <div>
+              <p class="text-sm font-medium">Alya (kamu)</p>
+              <p class="text-xs" style="color: var(--accent-text);">IX B · 7 mata pelajaran</p>
+            </div>
+            <span class="text-sm font-semibold" style="font-variant-numeric: tabular-nums;">1.412</span>
+          </div>
+        </div>
+        <p class="mt-3 text-xs" style="color: var(--muted);">
+          Baris sendiri: background accent-soft + border accent + rank pill berwarna.
+        </p>
+      </article>
+
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-3">Aku di luar 20 besar</p>
+        <div class="space-y-2">
+          <div class="lb-row">
+            <span class="lb-rank lb-rank-1">1</span>
+            <div>
+              <p class="text-sm font-medium">Rafi Pratama</p>
+              <p class="text-xs" style="color: var(--muted);">XI IPA 2</p>
+            </div>
+            <span class="text-sm font-semibold" style="font-variant-numeric: tabular-nums;">1.842</span>
+          </div>
+          <div class="lb-row">
+            <span class="lb-rank">18</span>
+            <div>
+              <p class="text-sm font-medium">Citra Wulandari</p>
+              <p class="text-xs" style="color: var(--muted);">IX A</p>
+            </div>
+            <span class="text-sm font-semibold" style="font-variant-numeric: tabular-nums;">512</span>
+          </div>
+          <div class="lb-row">
+            <span class="lb-rank">19</span>
+            <div>
+              <p class="text-sm font-medium">Dimas Aryasatya</p>
+              <p class="text-xs" style="color: var(--muted);">IX C</p>
+            </div>
+            <span class="text-sm font-semibold" style="font-variant-numeric: tabular-nums;">498</span>
+          </div>
+          <div class="lb-row">
+            <span class="lb-rank">20</span>
+            <div>
+              <p class="text-sm font-medium">Eka Safitri</p>
+              <p class="text-xs" style="color: var(--muted);">IX A</p>
+            </div>
+            <span class="text-sm font-semibold" style="font-variant-numeric: tabular-nums;">487</span>
+          </div>
+          <div class="lb-divider">· · ·</div>
+          <div class="lb-row lb-me">
+            <span class="lb-rank">23</span>
+            <div>
+              <p class="text-sm font-medium">Alya (kamu)</p>
+              <p class="text-xs" style="color: var(--accent-text);">IX B · 7 mata pelajaran</p>
+            </div>
+            <span class="text-sm font-semibold" style="font-variant-numeric: tabular-nums;">462</span>
+          </div>
+        </div>
+        <p class="mt-3 text-xs" style="color: var(--muted);">
+          Pemisah: tiga titik di tengah, kemudian baris sendiri di bawahnya.
+          Tidak ada panah "kamu di sini" yang terlalu dramatis.
+        </p>
+      </article>
+    </div>
+
+    <details class="mt-5 rounded-lg p-4" style="background: var(--surface-muted); border: 1px solid var(--border);">
+      <summary class="cursor-pointer text-sm font-medium">Catatan implementasi</summary>
+      <pre class="code-block mt-3"><span class="tk-comment">// resources/views/components/ui/leaderboard-row.blade.php</span>
+<span class="tk-fn">@props</span>([
+  <span class="tk-key">'rank'</span>,
+  <span class="tk-key">'name'</span>,
+  <span class="tk-key">'class'</span>   =&gt; <span class="tk-val">''</span>,
+  <span class="tk-key">'points'</span>,
+  <span class="tk-key">'me'</span>     =&gt; <span class="tk-val">false</span>,
+])
+
+<span class="tk-fn">@php</span>
+  $rankClass = match ((int) $rank) {
+    <span class="tk-val">1</span> =&gt; <span class="tk-val">'lb-rank-1'</span>,
+    <span class="tk-val">2</span> =&gt; <span class="tk-val">'lb-rank-2'</span>,
+    <span class="tk-val">3</span> =&gt; <span class="tk-val">'lb-rank-3'</span>,
+    default =&gt; <span class="tk-val">''</span>,
+  };
+<span class="tk-fn">@endphp</span>
+
+&lt;<span class="tk-fn">div</span> class=<span class="tk-val">"lb-row {{ $me ? 'lb-me' : '' }}"</span>&gt;
+  &lt;<span class="tk-fn">span</span> class=<span class="tk-val">"lb-rank {{ $rankClass }}"</span> aria-hidden=<span class="tk-val">"true"</span>&gt;{{ $rank }}&lt;/<span class="tk-fn">span</span>&gt;
+  &lt;<span class="tk-fn">div</span>&gt;
+    &lt;<span class="tk-fn">p</span> class=<span class="tk-val">"text-sm font-medium"</span>&gt;{{ $name }}{{ $me ? <span class="tk-val">' (kamu)'</span> : <span class="tk-val">''</span> }}&lt;/<span class="tk-fn">p</span>&gt;
+    &lt;<span class="tk-fn">p</span> class=<span class="tk-val">"text-xs {{ $me ? '' : 'text-muted' }}"</span> style=<span class="tk-val">"{{ $me ? 'color: var(--accent-text);' : '' }}"</span>&gt;{{ $class }}&lt;/<span class="tk-fn">p</span>&gt;
+  &lt;/<span class="tk-fn">div</span>&gt;
+  &lt;<span class="tk-fn">span</span> class=<span class="tk-val">"text-sm font-semibold"</span> style=<span class="tk-val">"font-variant-numeric: tabular-nums;"</span>&gt;{{ number_format($points, 0, ',', '.') }}&lt;/<span class="tk-fn">span</span>&gt;
+&lt;/<span class="tk-fn">div</span>&gt;</pre>
+      <p class="mt-3 text-sm" style="color: var(--muted);">
+        Poin memakai <code>number_format</code> dengan titik pemisah (konvensi Indonesia: 1.412).
+        Tidak menampilkan delta poin minggu lalu — di luar scope data schema.
+      </p>
+    </details>
+  </section>
+
+  <!-- ============================================== -->
+  <!-- 15. HEADER + NAVIGASI MOBILE -->
+  <!-- ============================================== -->
+  <section data-od-id="komponen-header-nav">
+    <div class="flex items-baseline justify-between gap-4">
+      <div>
+        <p class="label-tag">15 / Header + navigasi</p>
+        <h2 class="text-lg font-semibold mt-1">Header + navigasi (mobile)</h2>
+      </div>
+      <span class="chip" style="background: var(--accent-soft); color: var(--accent-text); border-color: var(--accent);">components/ui/app-header.blade.php + tab-bar.blade.php</span>
+    </div>
+    <p class="mt-1 text-sm" style="color: var(--muted);">
+      <strong>Pola baru.</strong> Sebelum: hanya navigasi desktop (sidebar guru). Sekarang:
+      app bar di atas + bottom tab bar (4 menu) untuk murid. Tiga kondisi: tamu, murid login,
+      link ke panel guru.
+    </p>
+
+    <!-- 1. Tamu -->
+    <article class="rounded-lg p-4 mt-6" style="background: var(--surface); border: 1px solid var(--border);">
+      <p class="label-tag mb-3">1 · Tamu (belum login)</p>
+      <div class="phone-frame" style="padding: 1rem; background: transparent;">
+        <div class="phone">
+          <div class="app-bar">
+            <div class="flex-1">
+              <p class="text-xs" style="color: var(--muted); letter-spacing: 0.02em;">KAISAN</p>
+              <p class="text-sm font-semibold" style="line-height: 1.2;">Beranda</p>
+            </div>
+            <button class="btn btn-ghost btn-sm">Masuk</button>
+          </div>
+          <div class="p-4">
+            <p class="text-sm">Halo! Silakan masuk untuk mulai latihan.</p>
+          </div>
+          <div class="tab-bar">
+            <button class="tab-bar-item tab-bar-active">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
+              Beranda
+              <span class="tab-bar-dot" style="width: 4px; height: 4px; border-radius: 9999px;"></span>
+            </button>
+            <button class="tab-bar-item">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+              Latihan
+            </button>
+            <button class="tab-bar-item">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-11.302 18c-1.131-.094-1.976-1.057-1.976-2.192V5.25A2.25 2.25 0 0 1 4.5 3h11.25"/></svg>
+              Ujian
+            </button>
+            <button class="tab-bar-item">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.504-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 0 1-.982-3.172M9.497 14.25a7.454 7.454 0 0 0 .981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 0 0 2.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 0 1 2.916.52 6.003 6.003 0 0 1-5.395 4.972m0 0a6.726 6.726 0 0 1-2.749 1.35m0 0a6.772 6.772 0 0 1-3.044 0"/></svg>
+              Peringkat
+            </button>
+          </div>
+        </div>
+      </div>
+      <p class="mt-3 text-xs" style="color: var(--muted);">
+        Tamu hanya lihat tab Beranda. Tap "Masuk" untuk login. Tab lain menampilkan empty state
+        bertuliskan "Masuk dulu untuk membuka bagian ini."
+      </p>
+    </article>
+
+    <!-- 2. Murid login -->
+    <article class="rounded-lg p-4 mt-4" style="background: var(--surface); border: 1px solid var(--border);">
+      <p class="label-tag mb-3">2 · Murid login (latihan berlangsung)</p>
+      <div class="phone-frame" style="padding: 1rem; background: transparent;">
+        <div class="phone">
+          <div class="app-bar">
+            <button class="btn btn-ghost btn-sm" style="padding: 0 0.5rem;" aria-label="Kembali">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            </button>
+            <div class="flex-1">
+              <p class="text-xs" style="color: var(--muted);">Matematika · Akar &amp; Pangkat</p>
+              <p class="text-sm font-semibold" style="line-height: 1.2;">Sesi latihan kamu</p>
+            </div>
+            <button class="btn btn-ghost btn-sm" aria-label="Menu">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"/></svg>
+            </button>
+          </div>
+          <div class="p-4">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs" style="color: var(--muted);">Soal 4 / 10</span>
+              <span class="save-pill"><span class="save-dot"></span>Tersimpan · 13:42</span>
+            </div>
+            <div class="progress"><div class="fill fill-accent" style="width: 40%;"></div></div>
+          </div>
+          <div class="tab-bar">
+            <button class="tab-bar-item">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
+              Beranda
+            </button>
+            <button class="tab-bar-item tab-bar-active">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+              Latihan
+              <span class="tab-bar-dot" style="width: 4px; height: 4px; border-radius: 9999px;"></span>
+            </button>
+            <button class="tab-bar-item">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-11.302 18c-1.131-.094-1.976-1.057-1.976-2.192V5.25A2.25 2.25 0 0 1 4.5 3h11.25"/></svg>
+              Ujian
+            </button>
+            <button class="tab-bar-item">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.504-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 0 1-.982-3.172M9.497 14.25a7.454 7.454 0 0 0 .981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 0 0 2.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 0 1 2.916.52 6.003 6.003 0 0 1-5.395 4.972m0 0a6.726 6.726 0 0 1-2.749 1.35m0 0a6.772 6.772 0 0 1-3.044 0"/></svg>
+              Peringkat
+            </button>
+          </div>
+        </div>
+      </div>
+      <p class="mt-3 text-xs" style="color: var(--muted);">
+        App bar: tombol kembali di kiri, judul konteks di tengah, menu (akun, keluar) di kanan.
+        Tab bar aktif: titik amber 4 px di bawah ikon, warna teks accent-text.
+      </p>
+    </article>
+
+    <!-- 3. Tautan ke panel guru -->
+    <article class="rounded-lg p-4 mt-4" style="background: var(--surface); border: 1px solid var(--border);">
+      <p class="label-tag mb-3">3 · Menu akun (tautan ke panel guru)</p>
+      <div class="phone-frame" style="padding: 1rem; background: transparent;">
+        <div class="phone">
+          <div class="app-bar">
+            <div class="flex-1">
+              <p class="text-xs" style="color: var(--muted);">Akun</p>
+              <p class="text-sm font-semibold" style="line-height: 1.2;">Alya Putri</p>
+            </div>
+            <button class="btn btn-ghost btn-sm" aria-label="Tutup">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18 18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+          <div class="p-4 space-y-1">
+            <a href="#" class="list-card">
+              <div class="flex-1">
+                <p class="text-sm font-medium">Lihat profil</p>
+              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--muted);" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+            </a>
+            <a href="#" class="list-card">
+              <div class="flex-1">
+                <p class="text-sm font-medium">Pengaturan tampilan</p>
+                <p class="text-xs mt-0.5" style="color: var(--muted);">Ukuran teks, bahasa</p>
+              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--muted);" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+            </a>
+            <a href="/admin" class="list-card" style="border-color: var(--accent);">
+              <div class="flex-1">
+                <p class="text-sm font-medium" style="color: var(--accent-text);">Buka panel guru</p>
+                <p class="text-xs mt-0.5" style="color: var(--muted);">Bank soal, jadwal, nilai</p>
+              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);" aria-hidden="true"><path d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg>
+            </a>
+            <a href="#" class="list-card">
+              <div class="flex-1">
+                <p class="text-sm font-medium" style="color: var(--danger-text);">Keluar</p>
+              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--muted);" aria-hidden="true"><path d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+      <p class="mt-3 text-xs" style="color: var(--muted);">
+        "Buka panel guru" memakai border accent untuk membedakan dari menu lain — ini pintu masuk
+        ke Filament (sesuai brief: tidak mengubah bentuk komponen, hanya override primary color).
+      </p>
+    </article>
+
+    <details class="mt-5 rounded-lg p-4" style="background: var(--surface-muted); border: 1px solid var(--border);">
+      <summary class="cursor-pointer text-sm font-medium">Catatan implementasi</summary>
+      <pre class="code-block mt-3"><span class="tk-comment">// resources/views/components/ui/tab-bar.blade.php</span>
+<span class="tk-fn">@props</span>([
+  <span class="tk-key">'current'</span>,  <span class="tk-comment">// 'beranda'|'latihan'|'ujian'|'peringkat'</span>
+])
+
+&lt;<span class="tk-fn">nav</span> class=<span class="tk-val">"tab-bar"</span> aria-label=<span class="tk-val">"Navigasi utama"</span>&gt;
+  &lt;<span class="tk-fn">x-ui.tab-bar-item</span> :href=<span class="tk-val">"route('home')"</span>    :active=<span class="tk-val">"$current === 'beranda'"</span>  icon=<span class="tk-val">"home"</span>    label=<span class="tk-val">"Beranda"</span> /&gt;
+  &lt;<span class="tk-fn">x-ui.tab-bar-item</span> :href=<span class="tk-val">"route('latihan.index')"</span>  :active=<span class="tk-val">"$current === 'latihan'"</span>  icon=<span class="tk-val">"book"</span>    label=<span class="tk-val">"Latihan"</span> /&gt;
+  &lt;<span class="tk-fn">x-ui.tab-bar-item</span> :href=<span class="tk-val">"route('ujian.index')"</span>    :active=<span class="tk-val">"$current === 'ujian'"</span>    icon=<span class="tk-val">"clipboard"</span> label=<span class="tk-val">"Ujian"</span> /&gt;
+  &lt;<span class="tk-fn">x-ui.tab-bar-item</span> :href=<span class="tk-val">"route('peringkat.index')"</span> :active=<span class="tk-val">"$current === 'peringkat'"</span> icon=<span class="tk-val">"trophy"</span>  label=<span class="tk-val">"Peringkat"</span> /&gt;
+&lt;/<span class="tk-fn">nav</span>&gt;</pre>
+      <p class="mt-3 text-sm" style="color: var(--muted);">
+        <code>app-header</code> dipasang di atas <code>@yield('content')</code> pada layout murid.
+        <code>tab-bar</code> dipasang di bawah, di luar yield (sticky). <code>env(safe-area-inset-bottom)</code>
+        sudah ditangani CSS di class <code>tab-bar</code>.
+      </p>
+    </details>
+  </section>
+
+  <!-- CATATAN IMPLEMENTASI UMUM -->
+  <section data-od-id="catatan-akhir">
+    <h2 class="text-lg font-semibold">Catatan implementasi akhir</h2>
+
+    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-2">Peta lokasi komponen</p>
+        <pre class="code-block mt-2"><span class="tk-comment">// struktur resources/views/components/ui/</span>
+button.blade.php
+badge.blade.php
+badge-level.blade.php
+progress.blade.php
+banner.blade.php
+field.blade.php          <span class="tk-comment">// wrapper label + input + hint/error</span>
+answer-option.blade.php
+question-card.blade.php
+question-map.blade.php
+timer.blade.php
+tab-pill.blade.php
+list-card.blade.php
+save-indicator.blade.php
+leaderboard-row.blade.php
+app-header.blade.php
+tab-bar.blade.php
+tab-bar-item.blade.php
+icon.blade.php           <span class="tk-comment">// resolve name → SVG Heroicons</span></pre>
+      </article>
+
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-2">Helper component <code>&lt;x-ui.icon&gt;</code></p>
+        <pre class="code-block mt-2"><span class="tk-comment">// resources/views/components/icon.blade.php</span>
+<span class="tk-fn">@props</span>([
+  <span class="tk-key">'name'</span>,   <span class="tk-comment">// 'check' | 'cross' | 'arrow-left' | 'home' | 'book' | ...</span>
+  <span class="tk-key">'class'</span> =&gt; <span class="tk-val">'w-5 h-5'</span>,
+  <span class="tk-key">'strokeWidth'</span> =&gt; <span class="tk-val">1.5</span>,
+])
+
+<span class="tk-fn">@php</span>
+  $paths = [<span class="tk-comment">/* 30 ikon Heroicons yang dipakai */</span>];
+<span class="tk-fn">@endphp</span>
+
+&lt;<span class="tk-fn">svg</span> {{ $attributes-&gt;<span class="tk-fn">class</span>([$class]) }} viewBox=<span class="tk-val">"0 0 24 24"</span> fill=<span class="tk-val">"none"</span>
+     stroke=<span class="tk-val">"currentColor"</span> stroke-width=<span class="tk-val">"{{ $strokeWidth }}"</span>
+     stroke-linecap=<span class="tk-val">"round"</span> stroke-linejoin=<span class="tk-val">"round"</span>
+     aria-hidden=<span class="tk-val">"true"</span>&gt;
+  {!! $paths[$name] !!<span></span>}
+&lt;/<span class="tk-fn">svg</span>&gt;</pre>
+        <p class="mt-2 text-xs" style="color: var(--muted);">
+          Set ikon yang dipakai: home, book, clipboard, trophy, arrow-left, arrow-right,
+          check, cross, dots-horizontal, x-mark, clock, chevron-right, exclamation.
+          Total ~30 ikon, cukup untuk 4 layar di Tahap 3.
+        </p>
+      </article>
+
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-2">Verifikasi yang harus dijalankan sebelum commit</p>
+        <ul class="text-sm space-y-1.5 list-disc list-inside">
+          <li>Setiap tombol punya <code>min-height: 44px</code> (cek via DevTools).</li>
+          <li>Opsi benar &amp; salah memiliki label teks, bukan hanya warna.</li>
+          <li>Banner danger memiliki <code>role="alert"</code>.</li>
+          <li>Save indicator memiliki <code>aria-live="polite"</code>.</li>
+          <li>Tab bar <code>current</code> memiliki <code>aria-current="page"</code>.</li>
+          <li>Tidak ada emoji (✨🚀🔥) sebagai ikon UI.</li>
+          <li>Tidak ada gradient dekoratif.</li>
+        </ul>
+      </article>
+
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="label-tag mb-2">Hal yang TIDAK ada di Tahap 2</p>
+        <ul class="text-sm space-y-1.5 list-disc list-inside">
+          <li>Layar penuh (masuk Tahap 3).</li>
+          <li>Widget dashboard guru (masuk Tahap 4).</li>
+          <li>Pencarian &amp; filter tabel (Tahap 4, untuk Filament).</li>
+          <li>Dark mode (diputuskan tidak dibuat di Tahap 1).</li>
+          <li>Streak benar beruntun, lencana, tren peringkat (butuh schema baru).</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+</main>
+
+<footer class="border-t mt-16" style="border-color: var(--border); background: var(--surface);">
+  <div class="max-w-6xl mx-auto px-6 py-6 text-xs flex items-baseline justify-between" style="color: var(--muted);">
+    <span>KAISAN Design System · Tahap 2 dari 4 · Komponen Inti</span>
+    <span>Tunggu ACC untuk lanjut ke Tahap 3.</span>
+  </div>
+</footer>
+
+</body>
+</html>

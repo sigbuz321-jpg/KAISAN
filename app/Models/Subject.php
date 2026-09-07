@@ -21,6 +21,16 @@ class Subject extends Model
 
     protected $fillable = ['name', 'slug', 'is_active'];
 
+    /**
+     * Mirrors the column defaults so a freshly created model reports them
+     * rather than null. See coding-style.md.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'is_active' => true,
+    ];
+
     protected function casts(): array
     {
         return ['is_active' => 'boolean'];

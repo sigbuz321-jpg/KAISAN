@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>App-header — KAISAN</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="k-back" href="./index.html">← Kit</a>
+  <header class="k-header">
+    <h1>App-header</h1>
+    <p>56 px tall sticky top bar. Centered title, optional leading icon, optional trailing action. Safe above the content. Leading and trailing slots are 36 px round button hosts for stroke-based SVG icons.</p>
+  </header>
+
+  <section class="k-section">
+    <h2>Centered title</h2>
+    <p class="k-lead">default — Latihan</p>
+    <div class="k-appheader" style="position: relative;">
+      <span class="k-appheader__spacer"></span>
+      <div class="k-appheader__title">Pilih mata pelajaran</div>
+      <button class="k-appheader__btn" aria-label="Cari">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="10.5" cy="10.5" r="6.5"/>
+          <path d="M15.5 15.5 L20 20"/>
+        </svg>
+      </button>
+    </div>
+  </section>
+
+  <section class="k-section">
+    <h2>Left-aligned title</h2>
+    <p class="k-lead">Ujian — counter inline</p>
+    <div class="k-appheader" style="position: relative;">
+      <button class="k-appheader__btn" aria-label="Kembali">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M14.5 6 L8.5 12 L14.5 18"/>
+        </svg>
+      </button>
+      <div class="k-appheader__title k-appheader__title--left">Soal 3 dari 20</div>
+      <button class="k-appheader__btn" aria-label="Peta soal">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="4" y="4" width="7" height="7" rx="1"/>
+          <rect x="13" y="4" width="7" height="7" rx="1"/>
+          <rect x="4" y="13" width="7" height="7" rx="1"/>
+          <rect x="13" y="13" width="7" height="7" rx="1"/>
+        </svg>
+      </button>
+    </div>
+  </section>
+
+  <section class="k-section">
+    <h2>With save indicator</h2>
+    <p class="k-lead">slot between title and trailing action</p>
+    <div class="k-appheader" style="position: relative;">
+      <button class="k-appheader__btn" aria-label="Kembali">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M14.5 6 L8.5 12 L14.5 18"/>
+        </svg>
+      </button>
+      <div class="k-appheader__title k-appheader__title--left">Latihan</div>
+      <span class="k-save k-save--saved k-appheader__saving"><span class="k-save__dot"></span>Tersimpan · 13:42</span>
+      <button class="k-appheader__btn" aria-label="Lainnya">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="6" r="1.5" fill="currentColor" stroke="none"/>
+          <circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/>
+          <circle cx="12" cy="18" r="1.5" fill="currentColor" stroke="none"/>
+        </svg>
+      </button>
+    </div>
+  </section>
+
+  <section class="k-section">
+    <h2>Profile</h2>
+    <p class="k-lead">Saya — title only, no trailing action</p>
+    <div class="k-appheader" style="position: relative;">
+      <button class="k-appheader__btn" aria-label="Pengaturan">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 3 L12 6"/>
+          <path d="M12 18 L12 21"/>
+          <path d="M3 12 L6 12"/>
+          <path d="M18 12 L21 12"/>
+          <path d="M5.6 5.6 L7.7 7.7"/>
+          <path d="M16.3 16.3 L18.4 18.4"/>
+          <path d="M5.6 18.4 L7.7 16.3"/>
+          <path d="M16.3 7.7 L18.4 5.6"/>
+        </svg>
+      </button>
+      <div class="k-appheader__title k-appheader__title--left">Saya</div>
+      <span class="k-appheader__spacer"></span>
+    </div>
+  </section>
+
+  <section class="k-section">
+    <h2>HTML</h2>
+    <pre class="k-code">&lt;div class="k-appheader"&gt;
+  &lt;button class="k-appheader__btn" aria-label="Kembali"&gt;
+    &lt;svg viewBox="0 0 24 24" aria-hidden="true"&gt;
+      &lt;path d="M14.5 6 L8.5 12 L14.5 18"/&gt;
+    &lt;/svg&gt;
+  &lt;/button&gt;
+  &lt;div class="k-appheader__title k-appheader__title--left"&gt;Soal 3 dari 20&lt;/div&gt;
+  &lt;span class="k-save k-save--saved k-appheader__saving"&gt;
+    &lt;span class="k-save__dot"&gt;&lt;/span&gt;Tersimpan · 13:42
+  &lt;/span&gt;
+  &lt;button class="k-appheader__btn" aria-label="Peta soal"&gt;
+    &lt;svg viewBox="0 0 24 24" aria-hidden="true"&gt;
+      &lt;rect x="4" y="4" width="7" height="7" rx="1"/&gt;
+      &lt;rect x="13" y="4" width="7" height="7" rx="1"/&gt;
+      &lt;rect x="4" y="13" width="7" height="7" rx="1"/&gt;
+      &lt;rect x="13" y="13" width="7" height="7" rx="1"/&gt;
+    &lt;/svg&gt;
+  &lt;/button&gt;
+&lt;/div&gt;</pre>
+    <div class="k-callout">
+      All app-header icons are stroke-based SVGs that inherit color from <code>currentColor</code>. Pair every icon-only button with an <code>aria-label</code>; the SVG itself carries <code>aria-hidden="true"</code> so screen readers announce the label, not the path data.
+    </div>
+  </section>
+</body>
+</html>

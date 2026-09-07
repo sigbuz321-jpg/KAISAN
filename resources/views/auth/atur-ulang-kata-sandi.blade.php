@@ -3,7 +3,7 @@
 @section('title', 'Kata sandi baru')
 
 @section('content')
-    <h1 class="text-2xl font-semibold sm:text-3xl">Buat kata sandi baru</h1>
+    <h1 class="text-[1.75rem] font-semibold leading-tight tracking-[-0.015em] text-fg">Buat kata sandi baru</h1>
 
     <form method="POST" action="{{ route('atur-ulang-kata-sandi.update') }}" class="mt-8 max-w-md space-y-5">
         @csrf

@@ -16,6 +16,13 @@ return Application::configure(basePath: dirname(__DIR__))
         // the auth middleware threw "Route [login] not defined" and every
         // protected page answered 500 instead of a redirect.
         $middleware->redirectGuestsTo(fn () => route('masuk'));
+
+        // Caddy terminates TLS and forwards to PHP-FPM over plain HTTP. Without
+        // this Laravel builds http:// URLs on an https:// site, which breaks
+        // asset links, redirects after login, and Livewire's update endpoint.
+        // Trusting any proxy is safe here because the app port is published to
+        // 127.0.0.1 only, so nothing but the local proxy can reach it.
+        $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

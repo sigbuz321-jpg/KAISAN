@@ -9,12 +9,12 @@ beforeEach(function () {
 });
 
 it('lets a teacher open the question bank', function () {
-    $this->actingAs($this->guru)->get('/admin/questions')->assertOk();
+    $this->actingAs($this->guru)->get('/guru/questions')->assertOk();
 });
 
 it('keeps students out of the question bank', function () {
     $this->actingAs(User::factory()->murid()->create())
-        ->get('/admin/questions')
+        ->get('/guru/questions')
         ->assertForbidden();
 });
 
@@ -38,7 +38,7 @@ it('shows the question wording in the list', function () {
     Question::factory()->create(['stem' => 'Siapa penulis proklamasi?']);
 
     $this->actingAs($this->guru)
-        ->get('/admin/questions')
+        ->get('/guru/questions')
         ->assertOk()
         ->assertSee('Siapa penulis proklamasi?');
 });

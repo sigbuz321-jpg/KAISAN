@@ -1,23 +1,47 @@
-@props(['name', 'label', 'type' => 'text', 'value' => null, 'hint' => null])
+@props([
+    'name',
+    'label',
+    'type' => 'text',
+    'value' => null,
+    'hint' => null,
+    'prefix' => null,
+])
 
-<div>
-    <label for="{{ $name }}" class="block text-sm font-medium text-slate-900">{{ $label }}</label>
+{{-- Tahap 2 · Input berlabel. The control is 44 px tall so it stays a
+     comfortable touch target on a phone. --}}
+@php
+    $hasError = $errors->has($name);
+@endphp
 
-    <input id="{{ $name }}"
-           name="{{ $name }}"
-           type="{{ $type }}"
-           value="{{ old($name, $value) }}"
-           {{ $attributes->merge([
-               'class' => 'mt-1 block w-full rounded border px-3 py-2 text-base min-h-11 focus:ring-slate-900 '
-                   . ($errors->has($name) ? 'border-red-500 focus:border-red-500' : 'border-slate-300 focus:border-slate-900'),
-           ]) }}>
+<div {{ $attributes->only('class') }}>
+    <label for="{{ $name }}" class="mb-1 block text-xs font-medium text-muted">{{ $label }}</label>
 
-    @if ($hint)
-        <p class="mt-1 text-sm text-slate-600">{{ $hint }}</p>
+    <div @class([
+        'flex h-11 items-center gap-2 rounded-md border bg-surface px-3 transition-colors duration-150',
+        'border-danger focus-within:ring-danger/20' => $hasError,
+        'border-border focus-within:border-accent focus-within:ring-accent/20' => ! $hasError,
+        'focus-within:ring-[3px]',
+    ])>
+        @if ($prefix)
+            <span class="text-base text-muted">{{ $prefix }}</span>
+        @endif
+
+        <input id="{{ $name }}"
+               name="{{ $name }}"
+               type="{{ $type }}"
+               value="{{ old($name, $value) }}"
+               @if ($hasError) aria-invalid="true" aria-describedby="{{ $name }}-error" @endif
+               {{ $attributes->except('class')->merge([
+                   'class' => 'min-w-0 flex-1 border-0 bg-transparent p-0 text-base text-fg outline-none placeholder:text-muted focus:ring-0',
+               ]) }}>
+    </div>
+
+    @if ($hint && ! $hasError)
+        <p class="mt-2 text-xs text-muted">{{ $hint }}</p>
     @endif
 
-    {{-- Error sits next to its own field, not only at the top of the page. --}}
+    {{-- The error sits next to its own field, not only at the top of the page. --}}
     @error($name)
-        <p class="mt-1 text-sm text-red-700">{{ $message }}</p>
+        <p id="{{ $name }}-error" class="mt-2 text-xs text-danger-text">{{ $message }}</p>
     @enderror
 </div>

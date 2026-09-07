@@ -13,6 +13,7 @@ use App\Models\StudentAbility;
 use App\Models\Subject;
 use App\Models\User;
 use App\Services\Leaderboard\LeaderboardCalculator;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\QueryException;
 
 beforeEach(function () {
@@ -20,6 +21,10 @@ beforeEach(function () {
     $this->mapel = Subject::factory()->create();
     $this->murid = User::factory()->murid()->create();
     $this->reset = app(ResetSeason::class);
+
+    // Resetting a season is authorised now, so these tests need a caller who
+    // is allowed to do it. See 'refuses a season reset to a teacher' below.
+    $this->actingAs(User::factory()->admin()->create());
 });
 
 function nilaiDiSeason(Season $season, User $student, string $score): ExamAttempt
@@ -155,4 +160,22 @@ it('does nothing when there is no active season', function () {
     (new RecalculateLeaderboard)->handle(app(LeaderboardCalculator::class));
 
     expect(LeaderboardEntry::count())->toBe(0);
+});
+
+it('refuses a season reset to a teacher', function () {
+    $this->actingAs(User::factory()->guru()->create());
+
+    expect(fn () => $this->reset->handle('Semester Genap'))
+        ->toThrow(AuthorizationException::class);
+
+    expect(Season::current()->name)->toBe('Semester Ganjil');
+});
+
+it('refuses a season reset to a student', function () {
+    $this->actingAs($this->murid);
+
+    expect(fn () => $this->reset->handle('Semester Genap'))
+        ->toThrow(AuthorizationException::class);
+
+    expect(Season::current()->name)->toBe('Semester Ganjil');
 });

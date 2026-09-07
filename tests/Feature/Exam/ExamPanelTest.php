@@ -31,8 +31,8 @@ beforeEach(function () {
     $this->schedule = app(ScheduleExam::class);
 });
 
-it('lets a teacher open the exam list', function () {
-    $this->actingAs($this->guru)->get(ExamResource::getUrl('index'))->assertOk();
+it('lets a teacher open the exam list in their own panel', function () {
+    $this->actingAs($this->guru)->get(ExamResource::getUrl('index', panel: 'guru'))->assertOk();
 });
 
 it('keeps students out of the exam list', function () {
@@ -163,13 +163,13 @@ it('refuses to schedule an exam twice', function () {
 
 it('shows the results page to the exam author', function () {
     $this->actingAs($this->guru)
-        ->get(ExamResults::getUrl(['record' => $this->exam]))
+        ->get(ExamResults::getUrl(['record' => $this->exam], panel: 'guru'))
         ->assertOk();
 });
 
 it('hides the results page from a teacher who did not create the exam', function () {
     $this->actingAs(User::factory()->guru()->create())
-        ->get(ExamResults::getUrl(['record' => $this->exam]))
+        ->get(ExamResults::getUrl(['record' => $this->exam], panel: 'guru'))
         ->assertForbidden();
 });
 

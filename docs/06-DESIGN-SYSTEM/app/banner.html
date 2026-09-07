@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Banner — KAISAN</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="k-back" href="./index.html">← Kit</a>
+  <header class="k-header">
+    <h1>Banner</h1>
+    <p>Full-width callout. Soft semantic fill with matching foreground and a leading SVG icon. Optional close action. Icons inherit color from the banner's semantic token.</p>
+  </header>
+
+  <section class="k-section">
+    <h2>Tones</h2>
+    <p class="k-lead">info · success · warning · danger</p>
+    <div class="k-stack" style="max-width: 560px;">
+      <div class="k-banner k-banner--info">
+        <span class="k-banner__icon" aria-hidden="true">
+          <svg viewBox="0 0 20 20">
+            <circle cx="10" cy="10" r="7"/>
+            <path d="M10 8 L10 8"/>
+            <path d="M10 11 L10 14"/>
+          </svg>
+        </span>
+        <div class="k-banner__body">Jaringan tidak stabil. Jawaban akan dikirim ulang otomatis.</div>
+      </div>
+
+      <div class="k-banner k-banner--success">
+        <span class="k-banner__icon" aria-hidden="true">
+          <svg viewBox="0 0 20 20">
+            <circle cx="10" cy="10" r="7"/>
+            <path d="M7 10 L9 12 L13 8"/>
+          </svg>
+        </span>
+        <div class="k-banner__body"><strong>Sesi telah tersimpan.</strong> Lanjut ke soal berikutnya.</div>
+      </div>
+
+      <div class="k-banner k-banner--warning">
+        <span class="k-banner__icon" aria-hidden="true">
+          <svg viewBox="0 0 20 20">
+            <path d="M10 3 L17.5 16 L2.5 16 Z"/>
+            <path d="M10 8 L10 11.5"/>
+            <path d="M10 13.5 L10 13.5"/>
+          </svg>
+        </span>
+        <div class="k-banner__body"><strong>Sesi berakhir dalam 5 menit.</strong></div>
+      </div>
+
+      <div class="k-banner k-banner--danger">
+        <span class="k-banner__icon" aria-hidden="true">
+          <svg viewBox="0 0 20 20">
+            <circle cx="10" cy="10" r="7"/>
+            <path d="M7.5 7.5 L12.5 12.5"/>
+            <path d="M12.5 7.5 L7.5 12.5"/>
+          </svg>
+        </span>
+        <div class="k-banner__body"><strong>Soal gagal dimuat.</strong> Periksa koneksi lalu coba lagi.</div>
+        <button class="k-banner__close" aria-label="Tutup">
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M4 4 L12 12"/>
+            <path d="M12 4 L4 12"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="k-section">
+    <h2>Without close action</h2>
+    <p class="k-lead">default banner does not show a close button</p>
+    <div class="k-stack" style="max-width: 560px;">
+      <div class="k-banner k-banner--info">
+        <span class="k-banner__icon" aria-hidden="true">
+          <svg viewBox="0 0 20 20">
+            <circle cx="10" cy="10" r="7"/>
+            <path d="M10 8 L10 8"/>
+            <path d="M10 11 L10 14"/>
+          </svg>
+        </span>
+        <div class="k-banner__body">Soal baru sudah tersedia. Cek tab "Latihan".</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="k-section">
+    <h2>HTML</h2>
+    <pre class="k-code">&lt;div class="k-banner k-banner--info"&gt;
+  &lt;span class="k-banner__icon" aria-hidden="true"&gt;
+    &lt;svg viewBox="0 0 20 20"&gt;
+      &lt;circle cx="10" cy="10" r="7"/&gt;
+      &lt;path d="M10 8 L10 8"/&gt;
+      &lt;path d="M10 11 L10 14"/&gt;
+    &lt;/svg&gt;
+  &lt;/span&gt;
+  &lt;div class="k-banner__body"&gt;Jaringan tidak stabil…&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;!-- with close --&gt;
+&lt;div class="k-banner k-banner--danger"&gt;
+  &lt;span class="k-banner__icon" aria-hidden="true"&gt;
+    &lt;svg viewBox="0 0 20 20"&gt;
+      &lt;circle cx="10" cy="10" r="7"/&gt;
+      &lt;path d="M7.5 7.5 L12.5 12.5"/&gt;
+      &lt;path d="M12.5 7.5 L7.5 12.5"/&gt;
+    &lt;/svg&gt;
+  &lt;/span&gt;
+  &lt;div class="k-banner__body"&gt;&lt;strong&gt;Soal gagal dimuat.&lt;/strong&gt; Coba lagi.&lt;/div&gt;
+  &lt;button class="k-banner__close" aria-label="Tutup"&gt;
+    &lt;svg viewBox="0 0 16 16" aria-hidden="true"&gt;
+      &lt;path d="M4 4 L12 12"/&gt;
+      &lt;path d="M12 4 L4 12"/&gt;
+    &lt;/svg&gt;
+  &lt;/button&gt;
+&lt;/div&gt;</pre>
+    <div class="k-callout">
+      Banners reserve one row above the fold on student screens. Do not stack more than one banner per screen — collapse lower-priority items into a list. The <code>k-banner__close</code> button inverts its icon stroke on hover by filling with the banner's current color.
+    </div>
+  </section>
+</body>
+</html>

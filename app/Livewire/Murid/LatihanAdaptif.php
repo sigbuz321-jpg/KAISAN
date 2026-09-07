@@ -129,7 +129,7 @@ class LatihanAdaptif extends Component
 
     public function render(): View
     {
-        return view('livewire.murid.latihan-adaptif')->layout('layouts.app');
+        return view('livewire.murid.latihan-adaptif')->layout('layouts.app', ['tab' => 'latihan']);
     }
 
     /**

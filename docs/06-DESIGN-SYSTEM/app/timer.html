@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timer — KAISAN</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="k-back" href="./index.html">← Kit</a>
+  <header class="k-header">
+    <h1>Timer</h1>
+    <p>Pill in the question-card header. Default amber, danger (with blinking dot) below 60 s, success on completion. Monospace digits, tabular alignment.</p>
+  </header>
+
+  <section class="k-section">
+    <h2>States</h2>
+    <p class="k-lead">default · danger · success</p>
+    <div class="k-grid">
+      <span class="k-timer"><span class="k-timer__dot"></span>13:42</span>
+      <span class="k-timer k-timer--danger"><span class="k-timer__dot"></span>00:58</span>
+      <span class="k-timer k-timer--success"><span class="k-timer__dot"></span>Selesai</span>
+    </div>
+  </section>
+
+  <section class="k-section">
+    <h2>In context</h2>
+    <p class="k-lead">paired with counter and level in the question card</p>
+    <article class="k-qcard" style="margin-top: var(--sp-4);">
+      <header class="k-qcard__header">
+        <span class="k-badge k-badge-level--mulai">Mulai</span>
+        <span class="k-qcard__counter">Soal 17 / 20</span>
+        <span class="k-timer k-timer--danger"><span class="k-timer__dot"></span>00:42</span>
+      </header>
+      <div class="k-qcard__prompt">Tersisa kurang dari satu menit. Segera kirim jawaban.</div>
+    </article>
+  </section>
+
+  <section class="k-section">
+    <h2>HTML</h2>
+    <pre class="k-code">&lt;span class="k-timer"&gt;
+  &lt;span class="k-timer__dot"&gt;&lt;/span&gt;
+  13:42
+&lt;/span&gt;
+
+&lt;!-- danger (under 60s) --&gt;
+&lt;span class="k-timer k-timer--danger"&gt;
+  &lt;span class="k-timer__dot"&gt;&lt;/span&gt;
+  00:58
+&lt;/span&gt;
+
+&lt;!-- success --&gt;
+&lt;span class="k-timer k-timer--success"&gt;
+  &lt;span class="k-timer__dot"&gt;&lt;/span&gt;
+  Selesai
+&lt;/span&gt;</pre>
+    <div class="k-callout">
+      Danger state is added by client-side JS once the countdown crosses 60 s; do not rely on CSS-only animation alone.
+    </div>
+  </section>
+</body>
+</html>

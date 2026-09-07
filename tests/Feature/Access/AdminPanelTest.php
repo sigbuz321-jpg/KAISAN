@@ -15,15 +15,27 @@ it('refuses the account list to a teacher', function () {
         ->assertForbidden();
 });
 
-it('lets a teacher see classrooms', function () {
+it('lets a teacher see classrooms in their own panel', function () {
     $this->actingAs(User::factory()->guru()->create())
-        ->get('/admin/classrooms')
+        ->get('/guru/classrooms')
         ->assertOk();
 });
 
-it('keeps a student out of the panel entirely', function () {
+it('keeps a teacher out of the admin panel', function () {
+    $this->actingAs(User::factory()->guru()->create())
+        ->get('/admin')
+        ->assertForbidden();
+});
+
+it('keeps a student out of the admin panel entirely', function () {
     $this->actingAs(User::factory()->murid()->create())
         ->get('/admin')
+        ->assertForbidden();
+});
+
+it('keeps a student out of the teacher panel entirely', function () {
+    $this->actingAs(User::factory()->murid()->create())
+        ->get('/guru')
         ->assertForbidden();
 });
 

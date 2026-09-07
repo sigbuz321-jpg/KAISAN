@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Badge — KAISAN</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="k-back" href="./index.html">← Kit</a>
+  <header class="k-header">
+    <h1>Badge</h1>
+    <p>Pill label, 22 px tall. Soft fill paired with matching text color. Used for status, level, "Baru", "Kelas 9".</p>
+  </header>
+
+  <section class="k-section">
+    <h2>Tones</h2>
+    <p class="k-lead">accent · neutral · success · warning · info · danger</p>
+    <div class="k-grid">
+      <span class="k-badge k-badge--accent">Baru</span>
+      <span class="k-badge k-badge--neutral">Kelas 9</span>
+      <span class="k-badge k-badge--success">Selesai</span>
+      <span class="k-badge k-badge--warning">Sebagian</span>
+      <span class="k-badge k-badge--info">Pengingat</span>
+      <span class="k-badge k-badge--danger">Gagal</span>
+    </div>
+  </section>
+
+  <section class="k-section">
+    <h2>In context</h2>
+    <p class="k-lead">paired with subjects on Latihan</p>
+    <div class="k-stack" style="max-width: 360px;">
+      <div style="display: flex; gap: var(--sp-2); align-items: center;">
+        <span class="k-badge k-badge--neutral">Matematika</span>
+        <span class="k-badge k-badge--accent">Baru</span>
+      </div>
+      <div style="display: flex; gap: var(--sp-2); align-items: center;">
+        <span class="k-badge k-badge--neutral">Bahasa Indonesia</span>
+        <span class="k-badge k-badge--success">Selesai</span>
+      </div>
+      <div style="display: flex; gap: var(--sp-2); align-items: center;">
+        <span class="k-badge k-badge--neutral">IPA</span>
+        <span class="k-badge k-badge--warning">Sebagian</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="k-section">
+    <h2>HTML</h2>
+    <pre class="k-code">&lt;span class="k-badge k-badge--accent"&gt;Baru&lt;/span&gt;
+&lt;span class="k-badge k-badge--neutral"&gt;Kelas 9&lt;/span&gt;
+&lt;span class="k-badge k-badge--success"&gt;Selesai&lt;/span&gt;
+&lt;span class="k-badge k-badge--warning"&gt;Sebagian&lt;/span&gt;
+&lt;span class="k-badge k-badge--info"&gt;Pengingat&lt;/span&gt;
+&lt;span class="k-badge k-badge--danger"&gt;Gagal&lt;/span&gt;</pre>
+  </section>
+</body>
+</html>

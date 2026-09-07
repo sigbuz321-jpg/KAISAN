@@ -3,56 +3,88 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#FFFFFF">
     <title>@yield('title', __('app.name'))</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-h-screen bg-slate-50 text-slate-900 antialiased">
+<body class="flex min-h-screen flex-col bg-bg font-sans text-fg antialiased">
     <a href="#konten"
        class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50
-              focus:rounded focus:bg-slate-900 focus:px-4 focus:py-2 focus:text-white">
+              focus:rounded-md focus:bg-fg focus:px-4 focus:py-2 focus:text-bg">
         {{ __('app.skip_to_content') }}
     </a>
 
-    <header class="border-b border-slate-200 bg-white">
-        <div class="mx-auto flex max-w-3xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-4">
-            <a href="{{ route('beranda') }}" class="text-lg font-semibold">{{ __('app.name') }}</a>
+    @php
+        $murid = auth()->check() && auth()->user()->isMurid();
 
-            <nav class="ms-auto flex items-center gap-4 text-sm">
-                @auth
+        // Blade pages name their tab with @section('tab'); a full-page Livewire
+        // component passes it as layout data instead, because sections do not
+        // survive that render path.
+        $tab = $tab ?? (trim($__env->yieldContent('tab')) ?: null);
+    @endphp
+
+    <header class="sticky top-0 z-10 border-b border-border bg-surface">
+        <div class="mx-auto flex max-w-3xl items-center gap-3 px-4 py-3">
+            <a href="{{ route('beranda') }}"
+               class="text-base font-semibold tracking-[-0.01em] text-fg">{{ __('app.name') }}</a>
+
+            @auth
+                @if ($murid)
+                    <x-ui.nav-links :active="$tab" class="ms-4" />
+                @endif
+
+                <div class="ms-auto flex items-center gap-1">
                     @if (auth()->user()->role->canAccessPanel())
-                        <a href="/admin" class="text-slate-700 underline hover:text-slate-900">Panel</a>
+                        {{-- Staff each have their own panel; sending a teacher
+                             to /admin would be a 403. --}}
+                        <a href="{{ auth()->user()->isAdmin() ? '/admin' : '/guru' }}"
+                           class="inline-flex min-h-11 items-center rounded-md px-3 text-sm font-medium text-muted
+                                  transition-colors duration-150 hover:bg-surface-muted hover:text-fg">Panel</a>
                     @endif
 
-                    @if (auth()->user()->isMurid())
-                        <a href="{{ route('latihan.index') }}" wire:navigate
-                           class="text-slate-700 underline hover:text-slate-900">Latihan</a>
-
-                        <a href="{{ route('ujian.index') }}" wire:navigate
-                           class="text-slate-700 underline hover:text-slate-900">Ujian</a>
-
-                        <a href="{{ route('peringkat.index') }}" wire:navigate
-                           class="text-slate-700 underline hover:text-slate-900">Peringkat</a>
-                    @endif
-
-                    <a href="{{ route('ganti-kata-sandi') }}" class="text-slate-700 underline hover:text-slate-900">
-                        Ganti kata sandi
-                    </a>
+                    @unless ($murid)
+                        <a href="{{ route('ganti-kata-sandi') }}"
+                           class="inline-flex min-h-11 items-center rounded-md px-3 text-sm font-medium text-muted
+                                  transition-colors duration-150 hover:bg-surface-muted hover:text-fg">Akun</a>
+                    @endunless
 
                     <form method="POST" action="{{ route('keluar') }}">
                         @csrf
-                        <button type="submit" class="min-h-11 text-slate-700 underline hover:text-slate-900">
+                        <button type="submit"
+                                class="inline-flex min-h-11 items-center rounded-md px-3 text-sm font-medium text-muted
+                                       transition-colors duration-150 hover:bg-surface-muted hover:text-fg">
                             Keluar
                         </button>
                     </form>
-                @else
-                    <a href="{{ route('masuk') }}" class="text-slate-700 underline hover:text-slate-900">Masuk</a>
-                @endauth
-            </nav>
+                </div>
+            @else
+                {{-- The front page already lists all three ways in, so a second
+                     button up here would only compete with them. --}}
+                @unless (request()->routeIs('beranda'))
+                    <a href="{{ route('masuk') }}"
+                       class="ms-auto inline-flex min-h-11 items-center rounded-md px-3 text-sm font-medium text-muted
+                              transition-colors duration-150 hover:bg-surface-muted hover:text-fg">Masuk</a>
+                @endunless
+            @endauth
         </div>
     </header>
 
-    <main id="konten" class="mx-auto max-w-3xl px-4 py-10">
-        @yield('content')
+    {{--
+        Two ways in. A Blade page arrives through @extends and fills the
+        'content' section; a full-page Livewire component is handed to this
+        layout as $slot. Printing only the section left every Livewire screen
+        with an empty <main> -- a blank page in the browser.
+    --}}
+    <main id="konten" class="mx-auto w-full max-w-3xl flex-1 px-4 py-8">
+        @isset($slot)
+            {{ $slot }}
+        @else
+            @yield('content')
+        @endisset
     </main>
+
+    @if ($murid)
+        <x-ui.tab-bar :active="$tab" />
+    @endif
 </body>
 </html>

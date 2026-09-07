@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KAISAN · Tahap 4 — Penyelarasan Panel Guru</title>
+<style>
+  :root{
+    --bg:           oklch(98.5% 0 0);
+    --surface:      oklch(100% 0 0);
+    --surface-2:    oklch(96.5% 0 0);
+    --fg:           oklch(25% 0.01 260);
+    --muted:        oklch(48% 0.01 260);
+    --border:       oklch(90% 0.005 260);
+    --border-strong:oklch(78% 0.01 260);
+    --accent:       oklch(62% 0.18 65);
+    --accent-soft:  oklch(94% 0.05 65);
+    --accent-fg:    oklch(98% 0 0);
+    --accent-text:  oklch(45% 0.18 65);
+    --accent-2:     oklch(48% 0.18 65);
+    --success:      oklch(45% 0.14 150);
+    --success-soft: oklch(94% 0.05 150);
+    --warning:      oklch(60% 0.16 75);
+    --warning-soft: oklch(95% 0.06 75);
+    --danger:       oklch(50% 0.20 25);
+    --danger-soft:  oklch(95% 0.05 25);
+    --info:         oklch(50% 0.15 250);
+    --info-soft:    oklch(95% 0.04 250);
+    --side-bg:      oklch(20% 0.01 260);
+    --side-fg:      oklch(85% 0.005 260);
+    --side-muted:   oklch(60% 0.005 260);
+    --side-border:  oklch(28% 0.01 260);
+    --side-active-bg: oklch(28% 0.05 65);
+    --side-active-fg: oklch(98% 0.08 65);
+    --master:        oklch(35% 0.08 280);
+    --master-soft:   oklch(94% 0.03 280);
+    --rank-1:        oklch(75% 0.15 85);
+    --rank-2:        oklch(70% 0.02 260);
+    --rank-3:        oklch(60% 0.10 50);
+    --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --r-xs: 4px; --r-sm: 6px; --r-md: 10px; --r-lg: 14px; --r-xl: 20px;
+    --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 20px; --sp-6: 24px; --sp-8: 32px; --sp-10: 40px; --sp-12: 48px; --sp-16: 64px;
+    --shadow-elevated: 0 1px 0 oklch(0% 0 0 / 0.04), 0 4px 12px oklch(0% 0 0 / 0.05);
+    --shadow-modal:    0 1px 0 oklch(0% 0 0 / 0.05), 0 12px 32px oklch(0% 0 0 / 0.10);
+  }
+  *{ box-sizing: border-box; }
+  html, body { margin:0; padding:0; }
+  body{
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--fg);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  code, pre, kbd { font-family: var(--font-mono); font-size: 0.875em; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: var(--sp-8) var(--sp-5); }
+
+  .stage-hero{
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: var(--sp-12) 0 var(--sp-10);
+  }
+  .stage-hero .kicker{
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 var(--sp-3);
+  }
+  .stage-hero h1{
+    font-size: clamp(28px, 4vw, 40px);
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+    margin: 0 0 var(--sp-3);
+    color: var(--fg);
+  }
+  .stage-hero .lead{
+    font-size: 16px;
+    color: var(--muted);
+    margin: 0 0 var(--sp-6);
+    max-width: 60ch;
+  }
+  .stage-hero .chip{
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent-text);
+    font-size: 12px;
+    font-weight: 550;
+    letter-spacing: 0.01em;
+  }
+
+  .deliverables{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--sp-4);
+    margin-top: var(--sp-6);
+  }
+  @media (max-width: 720px){ .deliverables{ grid-template-columns: 1fr; } }
+  .deliv{
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    padding: var(--sp-5);
+    background: var(--surface);
+  }
+  .deliv .num{
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+  .deliv h3{
+    margin: var(--sp-2) 0 var(--sp-1);
+    font-size: 17px;
+    font-weight: 600;
+  }
+  .deliv p{
+    margin: 0;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  section { padding: var(--sp-12) 0; border-bottom: 1px solid var(--border); }
+  section:last-of-type{ border-bottom: 0; }
+  .sec-head{ margin-bottom: var(--sp-6); }
+  .sec-head .num{
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+  .sec-head h2{
+    font-size: clamp(22px, 3vw, 28px);
+    margin: var(--sp-2) 0 var(--sp-2);
+    letter-spacing: -0.01em;
+  }
+  .sec-head .desc{
+    color: var(--muted);
+    font-size: 15px;
+    margin: 0;
+    max-width: 64ch;
+  }
+  .anchor{ display: block; scroll-margin-top: var(--sp-6); }
+
+  .code-block{
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: var(--sp-4) var(--sp-5);
+    overflow-x: auto;
+    margin: var(--sp-4) 0;
+  }
+  .code-block pre{
+    margin: 0;
+    color: var(--fg);
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre;
+  }
+  .code-block .tk-comment{ color: var(--muted); }
+  .code-block .tk-string{ color: oklch(45% 0.14 150); }
+  .code-block .tk-key{ color: oklch(50% 0.18 260); font-weight: 550; }
+  .code-block .tk-class{ color: oklch(45% 0.18 65); }
+  .code-block .tk-num{ color: oklch(45% 0.14 250); }
+
+  .swatches{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--sp-4);
+    margin: var(--sp-4) 0 var(--sp-6);
+  }
+  .swatch{
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .swatch .chip-color{
+    height: 72px;
+    display: flex;
+    align-items: flex-end;
+    padding: var(--sp-3);
+    color: var(--fg);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.01em;
+  }
+  .swatch .chip-body{ padding: var(--sp-3) var(--sp-4) var(--sp-4); }
+  .swatch .chip-body .role{ font-weight: 600; font-size: 14px; margin-bottom: 2px; }
+  .swatch .chip-body .use{ color: var(--muted); font-size: 13px; line-height: 1.45; }
+
+  .panel-mock{
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    background: var(--surface);
+    margin: var(--sp-4) 0 var(--sp-6);
+    min-height: 480px;
+  }
+  @media (max-width: 720px){
+    .panel-mock{ grid-template-columns: 1fr; }
+    .panel-mock .side{ display: none; }
+  }
+  .side{
+    background: var(--side-bg);
+    color: var(--side-fg);
+    padding: var(--sp-4) var(--sp-2);
+  }
+  .side .brand{
+    padding: var(--sp-2) var(--sp-3) var(--sp-5);
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+  }
+  .side .brand-mark{
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: var(--accent);
+    display: grid; place-items: center;
+    color: var(--accent-fg);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: -0.02em;
+  }
+  .side .brand-name{
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: -0.005em;
+    color: var(--side-fg);
+  }
+  .side .group-label{
+    padding: var(--sp-4) var(--sp-3) var(--sp-2);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--side-muted);
+  }
+  .nav-item{
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: 10px var(--sp-3);
+    margin: 1px 0;
+    border-radius: var(--r-sm);
+    color: var(--side-fg);
+    text-decoration: none;
+    font-size: 14px;
+    min-height: 44px;
+    transition: background-color 150ms ease, color 150ms ease;
+  }
+  .nav-item:hover{ background: rgba(255,255,255,0.04); }
+  .nav-item.is-active{
+    background: var(--side-active-bg);
+    color: var(--side-active-fg);
+    font-weight: 550;
+  }
+  .nav-item .icon{ width: 20px; height: 20px; flex-shrink: 0; }
+  .nav-item .badge{
+    margin-left: auto;
+    background: var(--accent);
+    color: var(--accent-fg);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 999px;
+    letter-spacing: 0;
+  }
+  .main{
+    padding: var(--sp-5) var(--sp-6);
+    background: var(--bg);
+  }
+  .topbar{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--sp-5);
+    padding-bottom: var(--sp-4);
+    border-bottom: 1px solid var(--border);
+    gap: var(--sp-3);
+    flex-wrap: wrap;
+  }
+  .topbar h2{
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .topbar .crumbs{
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .stat-grid{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--sp-4);
+    margin-bottom: var(--sp-5);
+  }
+  @media (max-width: 720px){ .stat-grid{ grid-template-columns: 1fr; } }
+  .stat-card{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: var(--sp-5);
+    position: relative;
+    min-height: 96px;
+    transition: border-color 150ms ease;
+  }
+  .stat-card:hover{ border-color: var(--border-strong); }
+  .stat-card .label{
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    color: var(--muted);
+    font-size: 13px;
+    letter-spacing: 0.005em;
+    margin-bottom: var(--sp-3);
+  }
+  .stat-card .label .ico{
+    width: 32px; height: 32px;
+    border-radius: var(--r-sm);
+    display: grid; place-items: center;
+    flex-shrink: 0;
+  }
+  .stat-card .value{
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--fg);
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-card .desc{
+    margin-top: var(--sp-2);
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  .stat-card .desc .up{ color: var(--success); font-weight: 550; }
+  .stat-card.is-primary .label .ico{ background: var(--accent-soft); color: var(--accent-text); }
+  .stat-card.is-primary{ border-color: oklch(85% 0.08 65); }
+  .stat-card.is-primary::before{
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    background: var(--accent);
+    border-radius: var(--r-md) 0 0 var(--r-md);
+  }
+  .stat-card.is-warning .label .ico{ background: var(--warning-soft); color: var(--warning); }
+  .stat-card.is-info    .label .ico{ background: var(--info-soft);    color: var(--info); }
+
+  .queue-card{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    overflow: hidden;
+  }
+  .queue-head{
+    padding: var(--sp-4) var(--sp-5);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-3);
+    flex-wrap: wrap;
+  }
+  .queue-head h3{
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .queue-head .count{
+    font-size: 12.5px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .queue-list{ list-style: none; padding: 0; margin: 0; }
+  .queue-item{
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: var(--sp-3);
+    padding: var(--sp-4) var(--sp-5);
+    border-bottom: 1px solid var(--border);
+    transition: background-color 150ms ease;
+  }
+  @media (max-width: 720px){
+    .queue-item{ grid-template-columns: 1fr; }
+    .queue-item .actions{ justify-self: end; }
+  }
+  .queue-item:last-child{ border-bottom: 0; }
+  .queue-item:hover{ background: var(--surface-2); }
+  .queue-item .meta{
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    margin-bottom: 4px;
+    font-size: 12px;
+    color: var(--muted);
+    flex-wrap: wrap;
+  }
+  .queue-item .meta .subj{
+    background: var(--surface-2);
+    color: var(--fg);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 550;
+    font-size: 11.5px;
+    letter-spacing: 0.005em;
+  }
+  .queue-item .q-text{
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--fg);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .queue-item .actions{
+    display: flex;
+    gap: var(--sp-2);
+  }
+
+  .btn{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-2);
+    height: 44px;
+    padding: 0 var(--sp-4);
+    border-radius: var(--r-md);
+    font-size: 14px;
+    font-weight: 550;
+    letter-spacing: 0.005em;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .btn-primary{ background: var(--accent); color: var(--accent-fg); }
+  .btn-primary:hover{ background: var(--accent-2); }
+  .btn-secondary{ background: var(--surface); color: var(--fg); border-color: var(--border-strong); }
+  .btn-secondary:hover{ background: var(--surface-2); }
+  .btn-ghost{ background: transparent; color: var(--fg); border-color: transparent; }
+  .btn-ghost:hover{ background: var(--surface-2); }
+  .btn-sm{ height: 36px; padding: 0 var(--sp-3); font-size: 13px; }
+
+  .pill{
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 22px;
+    padding: 0 8px;
+    border-radius: 4px;
+    font-size: 11.5px;
+    font-weight: 550;
+    letter-spacing: 0.01em;
+  }
+  .pill-warn{ background: var(--warning-soft); color: var(--warning); }
+  .pill-info{ background: var(--info-soft); color: var(--info); }
+  .pill-neutral{ background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); }
+
+  .stage-foot{
+    background: var(--surface-2);
+    border-top: 1px solid var(--border);
+    padding: var(--sp-8) 0;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .stage-foot .wrap{ display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--sp-3); }
+  .stage-foot a{ color: var(--accent-text); text-decoration: none; }
+
+  .callout{
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    color: var(--fg);
+    padding: var(--sp-3) var(--sp-4);
+    border-radius: 0 var(--r-sm) var(--r-sm) 0;
+    font-size: 14px;
+    line-height: 1.55;
+    margin: var(--sp-4) 0;
+  }
+  .callout strong{ color: var(--accent-text); }
+  .callout-warn{
+    border-left-color: var(--warning);
+    background: var(--warning-soft);
+  }
+  .callout-warn strong{ color: var(--warning); }
+
+  .role-table{
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--sp-4) 0;
+    font-size: 14px;
+  }
+  .role-table th, .role-table td{
+    text-align: left;
+    padding: var(--sp-3) var(--sp-4);
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .role-table th{
+    background: var(--surface-2);
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .role-table td code{ background: var(--surface-2); padding: 1px 6px; border-radius: 4px; }
+
+  .checklist{ list-style: none; padding: 0; margin: var(--sp-4) 0; }
+  .checklist li{
+    padding: var(--sp-3) 0 var(--sp-3) var(--sp-8);
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    font-size: 14.5px;
+    line-height: 1.55;
+  }
+  .checklist li:last-child{ border-bottom: 0; }
+  .checklist li::before{
+    content: "✓";
+    position: absolute;
+    left: 0; top: 14px;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--success-soft);
+    color: var(--success);
+    display: grid; place-items: center;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .checklist li strong{ color: var(--fg); font-weight: 600; }
+  .checklist li .meta{ color: var(--muted); font-size: 13px; display: block; margin-top: 2px; }
+
+  .mini-mobile-frame{
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    max-width: 390px;
+    margin: var(--sp-4) auto 0;
+    background: var(--bg);
+  }
+  .mini-mobile-frame .mm-top{
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: var(--sp-3) var(--sp-4);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .mini-mobile-frame .mm-top .crumbs{ font-size: 12px; color: var(--muted); }
+  .mini-mobile-frame .mm-body{ padding: var(--sp-4); }
+  .mini-mobile-frame .mm-foot{
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 6px 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .mini-mobile-frame .mm-foot a{
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 2px;
+    padding: 6px 0;
+    font-size: 10.5px;
+    color: var(--muted);
+    text-decoration: none;
+    min-height: 44px;
+  }
+  .mini-mobile-frame .mm-foot a.is-active{ color: var(--accent-text); font-weight: 600; }
+  .mini-mobile-frame .mm-foot svg{ width: 20px; height: 20px; }
+</style>
+</head>
+<body>
+
+<header class="stage-hero">
+  <div class="wrap">
+    <p class="kicker">Tahap 4 · Penyelarasan Panel Guru</p>
+    <h1>Filament dipakai apa adanya — hanya palet, navigasi, dan satu widget dasbor yang disentuh.</h1>
+    <p class="lead">Panel guru tidak didesain ulang. Bentuk komponen Filament 4 tetap; kustomisasi berhenti di warna primer, ikon dan urutan menu, serta satu Blade view untuk widget dasbor. Hasilnya panel guru terasa satu keluarga dengan halaman murid, tanpa menulis ulang package.</p>
+    <span class="chip">Mengikuti Tahap 1–3 · Token konsisten · Tanpa ubah bentuk Filament</span>
+
+    <div class="deliverables">
+      <div class="deliv" data-od-id="deliv-palet">
+        <span class="num">01 · Palet</span>
+        <h3>Override palet Filament</h3>
+        <p>Primary amber <code>#D97706</code>, gray ke slate, semantic disinkronkan dengan token murid.</p>
+      </div>
+      <div class="deliv" data-od-id="deliv-navigasi">
+        <span class="num">02 · Navigasi</span>
+        <h3>Urutan menu 6 item</h3>
+        <p>Dasbor → Bank Soal → Jadwal Ujian → Nilai → Murid → Pengaturan. Ikon Heroicons.</p>
+      </div>
+      <div class="deliv" data-od-id="deliv-widget">
+        <span class="num">03 · Widget</span>
+        <h3>1 widget dasbor</h3>
+        <p>Tiga stat utama + antrian tinjauan. Data yang dipakai hanya yang sudah ada di schema.</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<a id="palet" class="anchor"></a>
+<section data-od-id="section-palet">
+  <div class="sec-head">
+    <span class="num">A · Palet</span>
+    <h2>Satu warna primer untuk murid dan guru</h2>
+    <p class="desc">Konflik dari Tahap 1 (halaman murid slate/hitam, Filament <code>Color::Amber</code>) diselesaikan dengan override di Panel Provider. <code>primary</code> mengarah ke hex yang sama dengan token <code>--accent</code> murid; <code>gray</code> diarahkan ke <code>Slate</code> agar komponen netral Filament tidak lagi abu-abu hangat yang berbeda.</p>
+  </div>
+
+  <h3 style="font-size:15px; font-weight:600; margin: 0 0 var(--sp-3);">Sampel 6 token yang dipakai Filament</h3>
+  <div class="swatches">
+    <div class="swatch" data-od-id="swatch-primary">
+      <div class="chip-color" style="background: var(--accent); color: var(--accent-fg);">primary · #D97706</div>
+      <div class="chip-body">
+        <div class="role">Primary</div>
+        <div class="use">Tombol aksi, badge aktif, nav item aktif. Hex yang sama dengan <code>--accent</code> murid.</div>
+      </div>
+    </div>
+    <div class="swatch" data-od-id="swatch-gray">
+      <div class="chip-color" style="background: oklch(95% 0.005 260); color: var(--fg);">gray · Slate</div>
+      <div class="chip-body">
+        <div class="role">Gray</div>
+        <div class="use">Border, surface, teks sekunder. Slate membuat panel tidak terasa kuning.</div>
+      </div>
+    </div>
+    <div class="swatch" data-od-id="swatch-success">
+      <div class="chip-color" style="background: var(--success); color: white;">success · #15803D</div>
+      <div class="chip-body">
+        <div class="role">Success</div>
+        <div class="use">Status soal terverifikasi, ujian terkirim, hemat biaya AI.</div>
+      </div>
+    </div>
+    <div class="swatch" data-od-id="swatch-warning">
+      <div class="chip-color" style="background: var(--warning); color: white;">warning · #B45309</div>
+      <div class="chip-body">
+        <div class="role">Warning</div>
+        <div class="use">Soal menunggu tinjauan, batas biaya AI hampir tercapai.</div>
+      </div>
+    </div>
+    <div class="swatch" data-od-id="swatch-danger">
+      <div class="chip-color" style="background: var(--danger); color: white;">danger · #B91C1C</div>
+      <div class="chip-body">
+        <div class="role">Danger</div>
+        <div class="use">Soal ditolak, ujian gagal diterbitkan, biaya AI terlampaui.</div>
+      </div>
+    </div>
+    <div class="swatch" data-od-id="swatch-info">
+      <div class="chip-color" style="background: var(--info); color: white;">info · #1D4ED8</div>
+      <div class="chip-body">
+        <div class="role">Info</div>
+        <div class="use">Ujian akan datang, notifikasi sistem, pengumuman.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>Catatan Filament 4.</strong> Di versi ini, palet di-deklarasikan lewat <code>Filament\Support\Colors\Color</code>. Hex ditulis sebagai string di constructor, atau pakai helper <code>Color::hex(...)</code>. Hindari <code>Color::Amber</code> default — itu amber-500 (<code>#F59E0B</code>), satu tingkat lebih cerah dari token murid dan akan terlihat sebagai dua warna berbeda saat halaman murid dan panel guru ditampilkan bersebelahan.
+  </div>
+
+  <h3 style="font-size:15px; font-weight:600; margin: var(--sp-6) 0 var(--sp-3);">Cara menempel di panel provider</h3>
+  <div class="code-block"><pre><span class="tk-comment">// app/Providers/Filament/GuruPanelProvider.php</span>
+<span class="tk-key">use</span> Filament\Support\Colors\Color;
+<span class="tk-key">use</span> Filament\Panel;
+<span class="tk-key">use</span> Filament\PanelProvider;
+
+<span class="tk-key">class</span> <span class="tk-class">GuruPanelProvider</span> <span class="tk-key">extends</span> PanelProvider
+{
+    <span class="tk-key">public function</span> panel(Panel <span class="tk-key">$panel</span>): Panel
+    {
+        <span class="tk-key">return</span> <span class="tk-key">$panel</span>
+            -&gt;<span class="tk-key">default</span>()
+            -&gt;<span class="tk-key">id</span>(<span class="tk-string">'guru'</span>)
+            -&gt;<span class="tk-key">path</span>(<span class="tk-string">'guru'</span>)
+            -&gt;<span class="tk-key">login</span>()
+            -&gt;<span class="tk-key">brandName</span>(<span class="tk-string">'KAISAN · Guru'</span>)
+            -&gt;<span class="tk-key">colors</span>([
+                <span class="tk-comment">// sinkron dengan --accent murid</span>
+                <span class="tk-string">'primary'</span> =&gt; <span class="tk-class">Color</span>::hex(<span class="tk-string">'#D97706'</span>),
+                <span class="tk-comment">// gray slate menggantikan default abu-abu hangat</span>
+                <span class="tk-string">'gray'</span>    =&gt; <span class="tk-class">Color</span>::Slate,
+                <span class="tk-comment">// 4 semantic disinkronkan dengan token murid</span>
+                <span class="tk-string">'success'</span> =&gt; <span class="tk-class">Color</span>::hex(<span class="tk-string">'#15803D'</span>),
+                <span class="tk-string">'warning'</span> =&gt; <span class="tk-class">Color</span>::hex(<span class="tk-string">'#B45309'</span>),
+                <span class="tk-string">'danger'</span>  =&gt; <span class="tk-class">Color</span>::hex(<span class="tk-string">'#B91C1C'</span>),
+                <span class="tk-string">'info'</span>    =&gt; <span class="tk-class">Color</span>::hex(<span class="tk-string">'#1D4ED8'</span>),
+            ])
+            -&gt;<span class="tk-key">viteTheme</span>(<span class="tk-string">'resources/css/filament/guru.css'</span>)
+            -&gt;<span class="tk-key">discoverResources</span>(<span class="tk-key">in</span>: app_path(<span class="tk-string">'Filament/Guru/Resources'</span>))
+            -&gt;<span class="tk-key">discoverPages</span>(<span class="tk-key">in</span>: app_path(<span class="tk-string">'Filament/Guru/Pages'</span>))
+            -&gt;<span class="tk-key">discoverWidgets</span>(<span class="tk-key">in</span>: app_path(<span class="tk-string">'Filament/Guru/Widgets'</span>))
+            -&gt;<span class="tk-key">widgets</span>([
+                <span class="tk-class">\App\Filament\Guru\Widgets\GuruOverview</span>::class,
+            ]);
+    }
+}</pre></div>
+
+  <div class="callout callout-warn">
+    <strong>Jangan ubah shape komponen.</strong> Brief §2 tegas: bentuk komponen Filament 4 tidak diubah. Override di atas terbatas pada <em>colors, brandName, viteTheme path, daftar resource &amp; widget</em>. Tidak ada <code>renderHook</code> yang memodifikasi struktur komponen, tidak ada Blade view bawaan Filament yang di-patch.
+  </div>
+
+  <h3 style="font-size:15px; font-weight:600; margin: var(--sp-6) 0 var(--sp-3);">Daftar token Filament vs. token murid</h3>
+  <table class="role-table">
+    <thead>
+      <tr><th>Peran</th><th>Token murid (Tahap 1)</th><th>Override Filament</th><th>Dipakai untuk</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Primary</td><td><code>--accent #D97706</code></td><td><code>Color::hex('#D97706')</code></td><td>Tombol utama, nav aktif, badge status aktif</td></tr>
+      <tr><td>Gray / netral</td><td><code>--bg / --surface / --border</code></td><td><code>Color::Slate</code></td><td>Surface, border, teks sekunder panel</td></tr>
+      <tr><td>Success</td><td><code>--success #15803D</code></td><td><code>Color::hex('#15803D')</code></td><td>Status sukses, hemat biaya</td></tr>
+      <tr><td>Warning</td><td><code>--warning #B45309</code></td><td><code>Color::hex('#B45309')</code></td><td>Antrian tinjauan, batas biaya</td></tr>
+      <tr><td>Danger</td><td><code>--danger #B91C1C</code></td><td><code>Color::hex('#B91C1C')</code></td><td>Soal ditolak, ujian gagal</td></tr>
+      <tr><td>Info</td><td><code>--info #1D4ED8</code></td><td><code>Color::hex('#1D4ED8')</code></td><td>Ujian akan datang, info sistem</td></tr>
+    </tbody>
+  </table>
+</section>
+<a id="navigasi" class="anchor"></a>
+<section data-od-id="section-navigasi">
+  <div class="sec-head">
+    <span class="num">B · Navigasi</span>
+    <h2>Enam menu, dua grup, urutan dari yang paling sering</h2>
+    <p class="desc">Urutan disusun dari yang paling sering dipakai guru (Bank Soal) ke yang paling jarang (Pengaturan). Tidak ada menu tersembunyi di balik dropdown — semua tampil di sidebar agar guru tidak perlu menghafal letak.</p>
+  </div>
+
+  <div class="panel-mock" data-od-id="panel-sidebar">
+    <aside class="side" aria-label="Navigasi panel guru">
+      <div class="brand">
+        <div class="brand-mark">K</div>
+        <div class="brand-name">KAISAN · Guru</div>
+      </div>
+
+      <div class="group-label">Akademik</div>
+      <a class="nav-item is-active" href="#" data-od-id="nav-dasbor">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v10h14V10"/></svg>
+        <span>Dasbor</span>
+      </a>
+      <a class="nav-item" href="#" data-od-id="nav-bank-soal">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6a2 2 0 0 1 2 2v14l-5-3-5 3V6a2 2 0 0 1 2-2z"/></svg>
+        <span>Bank Soal</span>
+        <span class="badge">12</span>
+      </a>
+      <a class="nav-item" href="#" data-od-id="nav-jadwal">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
+        <span>Jadwal Ujian</span>
+      </a>
+      <a class="nav-item" href="#" data-od-id="nav-nilai">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+        <span>Nilai</span>
+      </a>
+
+      <div class="group-label">Akun</div>
+      <a class="nav-item" href="#" data-od-id="nav-murid">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.6"/><path d="M21.5 19a4.5 4.5 0 0 0-7-3.7"/></svg>
+        <span>Murid</span>
+      </a>
+      <a class="nav-item" href="#" data-od-id="nav-pengaturan">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+        <span>Pengaturan</span>
+      </a>
+    </aside>
+
+    <div class="main">
+      <div class="topbar">
+        <div>
+          <div class="crumbs">Akademik · Dasbor</div>
+          <h2>Selamat mengajar, Pak Ahmad</h2>
+        </div>
+      </div>
+
+      <p style="color: var(--muted); font-size: 14px; margin: var(--sp-3) 0 var(--sp-5);">Sidebar terlihat seperti di sebelah kiri saat guru membuka <code>/guru</code> pada layar ≥ 720 px. Pada layar lebih kecil, sidebar tersembunyi dan diganti bottom-tab-bar — lihat preview mobile di bawah.</p>
+
+      <div class="callout">
+        <strong>Mengapa urutan ini?</strong> Bank Soal paling sering disentuh (setiap soal baru ditambah, ditinjau, atau diarsip). Pengaturan paling jarang. Meletakkan yang sering di atas mengurangi jangkauan mouse/jari pada akhirnya. Badge angka pada menu adalah jumlah soal menunggu tinjauan — berasal dari widget dasbor, jadi guru tidak perlu masuk menu dulu untuk tahu ada antrian.
+      </div>
+
+      <h3 style="font-size:15px; font-weight:600; margin: var(--sp-6) 0 var(--sp-3);">Tampilan mobile (&lt; 720 px) — sidebar pindah ke bawah</h3>
+      <div class="mini-mobile-frame" data-od-id="panel-mobile-nav">
+        <div class="mm-top">
+          <div>
+            <div class="crumbs">Akademik · Dasbor</div>
+            <div style="font-weight:600; font-size: 14px; margin-top: 2px;">Selamat mengajar</div>
+          </div>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="color: var(--muted);"><path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14V11a6 6 0 0 0-4-5.7V5a2 2 0 1 0-4 0v.3A6 6 0 0 0 6 11v3a2 2 0 0 1-.6 1.6L4 17h5"/><path d="M9 17a3 3 0 0 0 6 0"/></svg>
+        </div>
+        <div class="mm-body">
+          <p style="font-size: 12.5px; color: var(--muted); margin: 0 0 var(--sp-3);">Sidebar desktop hilang di mobile. Enam menu disusun sebagai bottom tab 4 +1 (Dasbor, Bank Soal, Jadwal, Nilai, dan satu item "Lainnya" yang membuka sheet untuk Murid &amp; Pengaturan).</p>
+          <div class="stat-grid" style="grid-template-columns: 1fr; gap: var(--sp-3);">
+            <div class="stat-card is-warning">
+              <div class="label"><span class="ico"></span><span>Soal menunggu tinjauan</span></div>
+              <div class="value">12</div>
+              <div class="desc"><span class="up">8 soal baru</span> minggu ini</div>
+            </div>
+          </div>
+        </div>
+        <div class="mm-foot">
+          <a href="#" class="is-active" data-od-id="m-nav-dasbor">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v10h14V10"/></svg>
+            Dasbor
+          </a>
+          <a href="#" data-od-id="m-nav-bank-soal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6a2 2 0 0 1 2 2v14l-5-3-5 3V6a2 2 0 0 1 2-2z"/></svg>
+            Bank Soal
+          </a>
+          <a href="#" data-od-id="m-nav-jadwal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
+            Jadwal
+          </a>
+          <a href="#" data-od-id="m-nav-nilai">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+            Nilai
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="font-size:15px; font-weight:600; margin: var(--sp-6) 0 var(--sp-3);">Cara menerapkan urutan &amp; ikon</h3>
+  <div class="code-block"><pre><span class="tk-comment">// app/Filament/Guru/Resources/QuestionResource.php</span>
+<span class="tk-key">class</span> <span class="tk-class">QuestionResource</span> <span class="tk-key">extends</span> Resource
+{
+    <span class="tk-key">protected static</span> ?string <span class="tk-key">$model</span> = Question::class;
+
+    <span class="tk-comment">// tampil di grup "Akademik", urutan ke-2 (setelah Dasbor)</span>
+    <span class="tk-key">protected static</span> ?string <span class="tk-key">$navigationGroup</span> = <span class="tk-string">'Akademik'</span>;
+    <span class="tk-key">protected static</span> ?int    <span class="tk-key">$navigationSort</span>  = <span class="tk-num">2</span>;
+
+    <span class="tk-key">protected static</span> ?string <span class="tk-key">$navigationIcon</span> = <span class="tk-string">'heroicon-m-bookmark'</span>;
+
+    <span class="tk-key">public static function</span> getNavigationBadge(): ?string
+    {
+        <span class="tk-comment">// ambil dari widget yang sama agar tidak double-query</span>
+        <span class="tk-key">return</span> (string) app(<span class="tk-class">GuruOverview</span>::class)-&gt;getAntrianCount();
+    }
+
+    <span class="tk-key">public static function</span> getNavigationBadgeColor(): ?string
+    {
+        <span class="tk-key">return</span> <span class="tk-string">'warning'</span>;
+    }
+}
+
+<span class="tk-comment">// app/Filament/Guru/Resources/ExamResource.php</span>
+<span class="tk-key">protected static</span> ?int    <span class="tk-key">$navigationSort</span>  = <span class="tk-num">3</span>;
+<span class="tk-key">protected static</span> ?string <span class="tk-key">$navigationIcon</span> = <span class="tk-string">'heroicon-m-calendar-days'</span>;
+
+<span class="tk-comment">// app/Filament/Guru/Resources/GradeResource.php</span>
+<span class="tk-key">protected static</span> ?int    <span class="tk-key">$navigationSort</span>  = <span class="tk-num">4</span>;
+<span class="tk-key">protected static</span> ?string <span class="tk-key">$navigationIcon</span> = <span class="tk-string">'heroicon-m-chart-bar'</span>;
+
+<span class="tk-comment">// app/Filament/Guru/Resources/StudentResource.php — grup "Akun"</span>
+<span class="tk-key">protected static</span> ?string <span class="tk-key">$navigationGroup</span> = <span class="tk-string">'Akun'</span>;
+<span class="tk-key">protected static</span> ?int    <span class="tk-key">$navigationSort</span>  = <span class="tk-num">5</span>;
+<span class="tk-key">protected static</span> ?string <span class="tk-key">$navigationIcon</span> = <span class="tk-string">'heroicon-m-user-group'</span>;
+
+<span class="tk-comment">// app/Filament/Guru/Pages/Settings.php (page, bukan resource)</span>
+<span class="tk-key">protected static</span> ?string <span class="tk-key">$navigationGroup</span> = <span class="tk-string">'Akun'</span>;
+<span class="tk-key">protected static</span> ?int    <span class="tk-key">$navigationSort</span>  = <span class="tk-num">6</span>;
+<span class="tk-key">protected static</span> ?string <span class="tk-key">$navigationIcon</span> = <span class="tk-string">'heroicon-m-cog-6-tooth'</span>;</pre></div>
+
+  <table class="role-table">
+    <thead>
+      <tr><th>Sort</th><th>Menu</th><th>Ikon Heroicons (mit)</th><th>Grup</th><th>Alasan urutan</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>Dasbor</td><td><code>heroicon-m-home</code></td><td>Akademik</td><td>Halaman pertama setelah login, ringkasan kerja hari ini</td></tr>
+      <tr><td>2</td><td>Bank Soal</td><td><code>heroicon-m-bookmark</code></td><td>Akademik</td><td>Paling sering disentuh — tambah, tinjau, arsip</td></tr>
+      <tr><td>3</td><td>Jadwal Ujian</td><td><code>heroicon-m-calendar-days</code></td><td>Akademik</td><td>Dibuat mingguan, lalu ditinggal sampai waktu ujian</td></tr>
+      <tr><td>4</td><td>Nilai</td><td><code>heroicon-m-chart-bar</code></td><td>Akademik</td><td>Diperiksa setelah ujian selesai (1–2× per minggu)</td></tr>
+      <tr><td>5</td><td>Murid</td><td><code>heroicon-m-user-group</code></td><td>Akun</td><td>Lihat daftar &amp; progres, jarang edit</td></tr>
+      <tr><td>6</td><td>Pengaturan</td><td><code>heroicon-m-cog-6-tooth</code></td><td>Akun</td><td>Paling jarang disentuh, taruh di dasar</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>Badge angka di sidebar.</strong> Angka "12" pada Bank Soal adalah jumlah soal yang menunggu tinjauan. Sumbernya adalah widget dasbor (Section C). Supaya konsisten dan tidak membuat query ganda, badge dihitung via method di <code>GuruOverview</code> widget, lalu di-pass ke <code>QuestionResource::getNavigationBadge()</code>. Jangan query langsung dari Resource — itu duplikasi.
+  </div>
+</section>
+<a id="widget" class="anchor"></a>
+<section data-od-id="section-widget">
+  <div class="sec-head">
+    <span class="num">C · Widget dasbor</span>
+    <h2>Satu widget, tiga stat, satu antrian</h2>
+    <p class="desc">Widget memakai kelas <code>Filament\Widgets\Widget</code> dengan Blade view kustom. Bentuk komponen bawaan Filament <em>tidak</em> dipakai — kita tulis view sendiri agar layout sesuai kisi 3 + 1 yang konsisten dengan halaman murid, dan supaya penanda beban biaya AI tidak terlihat mengancam.</p>
+  </div>
+
+  <h3 style="font-size:15px; font-weight:600; margin: 0 0 var(--sp-3);">Desktop ≥ 720 px — tiga stat di atas, antrian di bawah</h3>
+
+  <div class="panel-mock" data-od-id="widget-preview">
+    <aside class="side" aria-label="Navigasi ringkas">
+      <div class="brand">
+        <div class="brand-mark">K</div>
+        <div class="brand-name">KAISAN · Guru</div>
+      </div>
+      <div class="group-label">Akademik</div>
+      <a class="nav-item is-active" href="#"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v10h14V10"/></svg><span>Dasbor</span></a>
+      <a class="nav-item" href="#"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6a2 2 0 0 1 2 2v14l-5-3-5 3V6a2 2 0 0 1 2-2z"/></svg><span>Bank Soal</span><span class="badge">12</span></a>
+      <a class="nav-item" href="#"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg><span>Jadwal Ujian</span></a>
+      <a class="nav-item" href="#"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span>Nilai</span></a>
+      <div class="group-label">Akun</div>
+      <a class="nav-item" href="#"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/></svg><span>Murid</span></a>
+      <a class="nav-item" href="#"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="9"/></svg><span>Pengaturan</span></a>
+    </aside>
+
+    <div class="main">
+      <div class="topbar">
+        <div>
+          <div class="crumbs">Akademik · Dasbor</div>
+          <h2>Selamat mengajar, Pak Ahmad</h2>
+        </div>
+        <div style="font-size:12.5px; color: var(--muted);">Senin, 8 September 2025</div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card is-warning" data-od-id="stat-antrian">
+          <div class="label">
+            <span class="ico" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h13l5 4v4h-3"/><path d="M3 8v8h2"/><circle cx="7.5" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>
+            </span>
+            <span>Soal menunggu tinjauan</span>
+          </div>
+          <div class="value">12</div>
+          <div class="desc"><span class="up">8 soal baru</span> minggu ini · 4 dari AI</div>
+        </div>
+
+        <div class="stat-card is-info" data-od-id="stat-ujian">
+          <div class="label">
+            <span class="ico" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
+            </span>
+            <span>Ujian akan datang</span>
+          </div>
+          <div class="value">3</div>
+          <div class="desc">Berikutnya: <strong style="color: var(--fg); font-weight: 550;">UTS Matematika</strong> · Kamis, 10:00</div>
+        </div>
+
+        <div class="stat-card is-primary" data-od-id="stat-biaya-ai">
+          <div class="label">
+            <span class="ico" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg>
+            </span>
+            <span>Biaya AI bulan ini</span>
+          </div>
+          <div class="value">Rp 24.500</div>
+          <div class="desc">Dari batas Rp 100.000 · tersisa 76%</div>
+        </div>
+      </div>
+
+      <div class="queue-card" data-od-id="antrian-tinjauan">
+        <div class="queue-head">
+          <h3>Antrian tinjauan</h3>
+          <span class="count">5 dari 12 ditampilkan</span>
+        </div>
+        <ul class="queue-list">
+          <li class="queue-item">
+            <div>
+              <div class="meta">
+                <span class="subj">Matematika</span>
+                <span class="pill pill-warn">AI</span>
+                <span>· 2 jam lalu</span>
+              </div>
+              <div class="q-text">Sebuah tabung memiliki jari-jari 7 cm dan tinggi 15 cm. Berapakah volume tabung tersebut?</div>
+            </div>
+            <div class="actions">
+              <a href="#" class="btn btn-ghost btn-sm">Lewati</a>
+              <a href="#" class="btn btn-primary btn-sm">Tinjau</a>
+            </div>
+          </li>
+          <li class="queue-item">
+            <div>
+              <div class="meta">
+                <span class="subj">IPA</span>
+                <span class="pill pill-info">Manual</span>
+                <span>· 4 jam lalu</span>
+              </div>
+              <div class="q-text">Perhatikan gambar rantai makanan berikut. Organisme yang berperan sebagai konsumen tingkat kedua adalah …</div>
+            </div>
+            <div class="actions">
+              <a href="#" class="btn btn-ghost btn-sm">Lewati</a>
+              <a href="#" class="btn btn-primary btn-sm">Tinjau</a>
+            </div>
+          </li>
+          <li class="queue-item">
+            <div>
+              <div class="meta">
+                <span class="subj">Bahasa Indonesia</span>
+                <span class="pill pill-warn">AI</span>
+                <span>· kemarin</span>
+              </div>
+              <div class="q-text">Bacalah paragraf berikut dengan cermat. Gagasan utama paragraf tersebut adalah …</div>
+            </div>
+            <div class="actions">
+              <a href="#" class="btn btn-ghost btn-sm">Lewati</a>
+              <a href="#" class="btn btn-primary btn-sm">Tinjau</a>
+            </div>
+          </li>
+          <li class="queue-item">
+            <div>
+              <div class="meta">
+                <span class="subj">Matematika</span>
+                <span class="pill pill-neutral">Impor</span>
+                <span>· 2 hari lalu</span>
+              </div>
+              <div class="q-text">Sebuah fungsi f(x) = 2x + 3 dideskripsikan oleh … (butuh tinjauan manual karena diimpor dari CSV)</div>
+            </div>
+            <div class="actions">
+              <a href="#" class="btn btn-ghost btn-sm">Lewati</a>
+              <a href="#" class="btn btn-primary btn-sm">Tinjau</a>
+            </div>
+          </li>
+          <li class="queue-item">
+            <div>
+              <div class="meta">
+                <span class="subj">IPA</span>
+                <span class="pill pill-warn">AI</span>
+                <span>· 2 hari lalu</span>
+              </div>
+              <div class="q-text">Benda yang dapat menghantarkan listrik dengan baik disebut …</div>
+            </div>
+            <div class="actions">
+              <a href="#" class="btn btn-ghost btn-sm">Lewati</a>
+              <a href="#" class="btn btn-primary btn-sm">Tinjau</a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>Mengapa amber, bukan merah, untuk Biaya AI?</strong> Brief §6 melarang elemen yang membuat guru "takut berhenti". Batas biaya AI adalah pengingat, bukan alarm. Saat用量 melewati 90%, kita naikkan tone ke <code>warning</code> (amber lebih tua); saat melampaui, baru <code>danger</code> + email ke guru. Default di bawah 90% selalu amber primer — tenang, terlihat, tidak mengancam.
+  </div>
+
+  <h3 style="font-size:15px; font-weight:600; margin: var(--sp-6) 0 var(--sp-3);">Cara menempel di Filament</h3>
+  <div class="code-block"><pre><span class="tk-comment">// app/Filament/Guru/Widgets/GuruOverview.php</span>
+<span class="tk-key">namespace</span> App\Filament\Guru\Widgets;
+
+<span class="tk-key">use</span> App\Models\Question;
+<span class="tk-key">use</span> App\Models\Exam;
+<span class="tk-key">use</span> Filament\Widgets\Widget;
+<span class="tk-key">use</span> Illuminate\Support\Carbon;
+
+<span class="tk-key">class</span> <span class="tk-class">GuruOverview</span> <span class="tk-key">extends</span> Widget
+{
+    <span class="tk-comment">// lebar penuh di grid dasbor Filament</span>
+    <span class="tk-key">protected</span> <span class="tk-key">int</span> | <span class="tk-key">string</span> | <span class="tk-key">array</span> <span class="tk-key">$columnSpan</span> = <span class="tk-string">'full'</span>;
+
+    <span class="tk-comment">// view kustom — bukan StatsOverviewWidget default</span>
+    <span class="tk-key">protected</span> <span class="tk-key">static</span> <span class="tk-key">string</span> <span class="tk-key">$view</span> = <span class="tk-string">'filament.guru.widgets.guru-overview'</span>;
+
+    <span class="tk-key">public</span> <span class="tk-key">function</span> getAntrianCount(): <span class="tk-key">int</span>
+    {
+        <span class="tk-comment">// soal yang butuh tinjauan: status = pending_review</span>
+        <span class="tk-key">return</span> Question::where(<span class="tk-string">'status'</span>, <span class="tk-string">'pending_review'</span>)-&gt;count();
+    }
+
+    <span class="tk-key">public</span> <span class="tk-key">function</span> getAntrianBaruMingguIni(): <span class="tk-key">int</span>
+    {
+        <span class="tk-key">return</span> Question::where(<span class="tk-string">'status'</span>, <span class="tk-string">'pending_review'</span>)
+            -&gt;where(<span class="tk-string">'created_at'</span>, <span class="tk-string">'&gt;='</span>, Carbon::now()-&gt;subWeek())
+            -&gt;count();
+    }
+
+    <span class="tk-key">public</span> <span class="tk-key">function</span> getUjianAkanDatang(): <span class="tk-key">int</span>
+    {
+        <span class="tk-key">return</span> Exam::where(<span class="tk-string">'starts_at'</span>, <span class="tk-string">'&gt;'</span>, Carbon::now())-&gt;count();
+    }
+
+    <span class="tk-key">public</span> <span class="tk-key">function</span> getUjianBerikutnya(): ?Exam
+    {
+        <span class="tk-key">return</span> Exam::where(<span class="tk-string">'starts_at'</span>, <span class="tk-string">'&gt;'</span>, Carbon::now())
+            -&gt;orderBy(<span class="tk-string">'starts_at'</span>)
+            -&gt;first();
+    }
+
+    <span class="tk-key">public</span> <span class="tk-key">function</span> getBiayaAiBulanIni(): <span class="tk-key">float</span>
+    {
+        <span class="tk-comment">// total cost dari kolom cost_cents (lihat catatan Opsional di Section D)</span>
+        <span class="tk-key">$cents</span> = Question::where(<span class="tk-string">'is_ai_generated'</span>, <span class="tk-key">true</span>)
+            -&gt;whereBetween(<span class="tk-string">'created_at'</span>, [
+                Carbon::now()-&gt;startOfMonth(),
+                Carbon::now()-&gt;endOfMonth(),
+            ])
+            -&gt;sum(<span class="tk-string">'cost_cents'</span>);
+
+        <span class="tk-key">return</span> <span class="tk-key">$cents</span> / <span class="tk-num">100</span>;
+    }
+
+    <span class="tk-key">public</span> <span class="tk-key">function</span> getBatasBiayaAi(): <span class="tk-key">float</span>
+    {
+        <span class="tk-key">return</span> (<span class="tk-key">float</span>) config(<span class="tk-string">'ai.monthly_budget_idr'</span>, <span class="tk-num">100000</span>);
+    }
+
+    <span class="tk-key">public</span> <span class="tk-key">function</span> getAntrianList(): \Illuminate\Database\Eloquent\Collection
+    {
+        <span class="tk-key">return</span> Question::with(<span class="tk-string">'subject'</span>)
+            -&gt;where(<span class="tk-string">'status'</span>, <span class="tk-string">'pending_review'</span>)
+            -&gt;latest()
+            -&gt;limit(<span class="tk-num">5</span>)
+            -&gt;get();
+    }
+}</pre></div>
+
+  <div class="code-block"><pre><span class="tk-comment">{{-- resources/views/filament/guru/widgets/guru-overview.blade.php --}}</span>
+&lt;div&gt;
+
+  <span class="tk-comment">&lt;!-- Baris 1: tiga stat card --&gt;</span>
+  &lt;div class=<span class="tk-string">"grid grid-cols-1 gap-4 md:grid-cols-3"</span>&gt;
+
+    &lt;x-filament::card&gt;
+      &lt;div class=<span class="tk-string">"flex items-center gap-2 text-sm text-gray-500"</span>&gt;
+        &lt;x-heroicon-m-truck class=<span class="tk-string">"h-5 w-5 text-warning-600"</span> /&gt;
+        &lt;span&gt;Soal menunggu tinjauan&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;div class=<span class="tk-string">"mt-3 text-3xl font-semibold tabular-nums"</span>&gt;
+        {{ <span class="tk-key">$this</span>-&gt;antrianCount }}
+      &lt;/div&gt;
+      &lt;div class=<span class="tk-string">"mt-2 text-xs text-gray-500"</span>&gt;
+        &lt;span class=<span class="tk-string">"font-medium text-success-600"</span>&gt;{{ <span class="tk-key">$this</span>-&gt;antrianBaruMingguIni }} soal baru&lt;/span&gt; minggu ini
+      &lt;/div&gt;
+    &lt;/x-filament::card&gt;
+
+    &lt;x-filament::card&gt;
+      &lt;div class=<span class="tk-string">"flex items-center gap-2 text-sm text-gray-500"</span>&gt;
+        &lt;x-heroicon-m-calendar-days class=<span class="tk-string">"h-5 w-5 text-info-600"</span> /&gt;
+        &lt;span&gt;Ujian akan datang&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;div class=<span class="tk-string">"mt-3 text-3xl font-semibold tabular-nums"</span>&gt;
+        {{ <span class="tk-key">$this</span>-&gt;ujianAkanDatang }}
+      &lt;/div&gt;
+      &lt;div class=<span class="tk-string">"mt-2 text-xs text-gray-500"</span>&gt;
+        Berikutnya: &lt;strong class=<span class="tk-string">"text-gray-700"</span>&gt;{{ <span class="tk-key">$this</span>-&gt;ujianBerikutnya?-&gt;title ?? <span class="tk-string">'-'</span> }}&lt;/strong&gt;
+        @<span class="tk-key">if</span>(<span class="tk-key">$this</span>-&gt;ujianBerikutnya)
+          · {{ <span class="tk-key">$this</span>-&gt;ujianBerikutnya-&gt;starts_at-&gt;isoFormat(<span class="tk-string">'dddd, HH:mm'</span>) }}
+        @<span class="tk-key">endif</span>
+      &lt;/div&gt;
+    &lt;/x-filament::card&gt;
+
+    &lt;x-filament::card class=<span class="tk-string">"border-warning-300"</span>&gt;
+      &lt;div class=<span class="tk-string">"flex items-center gap-2 text-sm text-gray-500"</span>&gt;
+        &lt;x-heroicon-m-bolt class=<span class="tk-string">"h-5 w-5 text-warning-600"</span> /&gt;
+        &lt;span&gt;Biaya AI bulan ini&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;div class=<span class="tk-string">"mt-3 text-3xl font-semibold tabular-nums"</span>&gt;
+        Rp {{ number_format(<span class="tk-key">$this</span>-&gt;biayaAiBulanIni, <span class="tk-num">0</span>, <span class="tk-string">','</span>, <span class="tk-string">'.'</span>) }}
+      &lt;/div&gt;
+      &lt;div class=<span class="tk-string">"mt-2 text-xs text-gray-500"</span>&gt;
+        Dari batas Rp {{ number_format(<span class="tk-key">$this</span>-&gt;batasBiayaAi, <span class="tk-num">0</span>, <span class="tk-string">','</span>, <span class="tk-string">'.'</span>) }}
+        · tersisa {{ <span class="tk-num">100</span> - round((<span class="tk-key">$this</span>-&gt;biayaAiBulanIni / <span class="tk-key">$this</span>-&gt;batasBiayaAi) * <span class="tk-num">100</span>) }}%
+      &lt;/div&gt;
+    &lt;/x-filament::card&gt;
+  &lt;/div&gt;
+
+  <span class="tk-comment">&lt;!-- Baris 2: antrian tinjauan --&gt;</span>
+  &lt;x-filament::card class=<span class="tk-string">"mt-4"</span>&gt;
+    &lt;div class=<span class="tk-string">"flex items-center justify-between border-b pb-3"</span>&gt;
+      &lt;h3 class=<span class="tk-string">"text-base font-semibold"</span>&gt;Antrian tinjauan&lt;/h3&gt;
+      &lt;span class=<span class="tk-string">"text-xs text-gray-500"</span>&gt;5 dari {{ <span class="tk-key">$this</span>-&gt;antrianCount }} ditampilkan&lt;/span&gt;
+    &lt;/div&gt;
+    @<span class="tk-key">foreach</span>(<span class="tk-key">$this</span>-&gt;antrianList <span class="tk-key">as</span> <span class="tk-key">$q</span>)
+      &lt;div class=<span class="tk-string">"flex items-center justify-between gap-4 border-b py-3 last:border-b-0"</span>&gt;
+        &lt;div class=<span class="tk-string">"min-w-0 flex-1"</span>&gt;
+          &lt;div class=<span class="tk-string">"flex items-center gap-2 text-xs text-gray-500"</span>&gt;
+            &lt;span class=<span class="tk-string">"rounded bg-gray-100 px-2 py-0.5 font-medium text-gray-700"</span>&gt;{{ <span class="tk-key">$q</span>-&gt;subject-&gt;name }}&lt;/span&gt;
+            @<span class="tk-key">if</span>(<span class="tk-key">$q</span>-&gt;is_ai_generated)
+              &lt;span class=<span class="tk-string">"rounded bg-warning-50 px-2 py-0.5 font-medium text-warning-700"</span>&gt;AI&lt;/span&gt;
+            @<span class="tk-key">elseif</span>(<span class="tk-key">$q</span>-&gt;source === <span class="tk-string">'import'</span>)
+              &lt;span class=<span class="tk-string">"rounded bg-gray-100 px-2 py-0.5 font-medium text-gray-700"</span>&gt;Impor&lt;/span&gt;
+            @<span class="tk-key">else</span>
+              &lt;span class=<span class="tk-string">"rounded bg-info-50 px-2 py-0.5 font-medium text-info-700"</span>&gt;Manual&lt;/span&gt;
+            @<span class="tk-key">endif</span>
+            &lt;span&gt;· {{ <span class="tk-key">$q</span>-&gt;created_at-&gt;diffForHumans() }}&lt;/span&gt;
+          &lt;/div&gt;
+          &lt;p class=<span class="tk-string">"mt-1 line-clamp-2 text-sm"</span>&gt;{{ <span class="tk-key">$q</span>-&gt;prompt }}&lt;/p&gt;
+        &lt;/div&gt;
+        &lt;div class=<span class="tk-string">"flex shrink-0 gap-2"</span>&gt;
+          &lt;a href=<span class="tk-string">"{{ route('filament.guru.resources.questions.skip', <span class="tk-key">$q</span>) }}"</span>
+             class=<span class="tk-string">"inline-flex h-9 items-center rounded-md px-3 text-sm text-gray-700 hover:bg-gray-100"</span>&gt;
+            Lewati
+          &lt;/a&gt;
+          &lt;a href=<span class="tk-string">"{{ route('filament.guru.resources.questions.edit', <span class="tk-key">$q</span>) }}"</span>
+             class=<span class="tk-string">"inline-flex h-9 items-center rounded-md bg-primary-600 px-3 text-sm font-medium text-white hover:bg-primary-700"</span>&gt;
+            Tinjau
+          &lt;/a&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    @<span class="tk-key">endforeach</span>
+  &lt;/x-filament::card&gt;
+&lt;/div&gt;</pre></div>
+
+  <h3 style="font-size:15px; font-weight:600; margin: var(--sp-6) 0 var(--sp-3);">Catatan warna pada stat card</h3>
+  <table class="role-table">
+    <thead>
+      <tr><th>Stat</th><th>Tone Filament</th><th>Alasan</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Soal menunggu tinjauan</td><td><code>warning</code></td><td>Butuh aksi guru tapi bukan kondisi gagal. Amber tua menarik mata tanpa mengancam.</td></tr>
+      <tr><td>Ujian akan datang</td><td><code>info</code></td><td>Informasional murni — tidak ada tone emosional, biru netral.</td></tr>
+      <tr><td>Biaya AI bulan ini</td><td><code>warning</code> + border kiri accent</td><td>Satu-satunya penggunaan <code>accent</code> di dasbor — biar mata langsung tertuju ke angka biaya, sesuai brief §3 (satu aksen per layar).</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-warn">
+    <strong>Bukan StatsOverviewWidget default.</strong> Filament 4 menyediakan <code>StatsOverviewWidget</code> dengan kartu bawaan. Kita tidak memakainya karena: (1) kartu bawaan tidak punya <em>description</em> dengan dua baris seperti "8 soal baru / 4 dari AI"; (2) tidak punya border kiri accent untuk biaya AI; (3) tidak mendukung grid 3 kolom + 1 list di bawah dalam satu widget. Pakai <code>Widget</code> base class dengan view kustom adalah pola yang sehat di Filament 4.
+  </div>
+</section>
+<a id="impl" class="anchor"></a>
+<section data-od-id="section-impl">
+  <div class="sec-head">
+    <span class="num">D · Catatan implementasi</span>
+    <h2>Yang perlu dibuat, apa yang sudah ada, dan satu hal opsional</h2>
+    <p class="desc">Daftar file yang harus dibuat di repo, urutan eksekusi yang aman, dan satu kolom yang belum ada di schema tapi dipakai widget.</p>
+  </div>
+
+  <h3 style="font-size:15px; font-weight:600; margin: 0 0 var(--sp-3);">Berkas yang dibuat</h3>
+  <ul class="checklist">
+    <li>
+      <strong>app/Providers/Filament/GuruPanelProvider.php</strong>
+      <span class="meta">Override <code>colors()</code> dengan <code>Color::hex('#D97706')</code> + 4 semantic + <code>Color::Slate</code>. Daftarkan <code>GuruOverview::class</code> di <code>widgets()</code>.</span>
+    </li>
+    <li>
+      <strong>app/Filament/Guru/Widgets/GuruOverview.php</strong>
+      <span class="meta">Class widget dengan 7 getter: <code>antrianCount</code>, <code>antrianBaruMingguIni</code>, <code>ujianAkanDatang</code>, <code>ujianBerikutnya</code>, <code>biayaAiBulanIni</code>, <code>batasBiayaAi</code>, <code>antrianList</code>.</span>
+    </li>
+    <li>
+      <strong>resources/views/filament/guru/widgets/guru-overview.blade.php</strong>
+      <span class="meta">Grid 3 kolom (stat cards) + 1 kartu antrian. Pakai <code>x-filament::card</code> + <code>x-heroicon-m-*</code>. <em>Jangan</em> patch view bawaan Filament lain.</span>
+    </li>
+    <li>
+      <strong>resources/css/filament/guru.css</strong>
+      <span class="meta">CSS entry untuk panel guru via <code>viteTheme('resources/css/filament/guru.css')</code>. Boleh kosong jika tidak ada kustom — hanya untuk mengaktifkan tema Vite.</span>
+    </li>
+    <li>
+      <strong>app/Filament/Guru/Resources/{Question,Exam,Grade,Student}Resource.php</strong>
+      <span class="meta">Set <code>$navigationGroup</code>, <code>$navigationSort</code>, <code>$navigationIcon</code>, dan <code>getNavigationBadge()</code> untuk QuestionResource.</span>
+    </li>
+    <li>
+      <strong>app/Filament/Guru/Pages/Settings.php</strong>
+      <span class="meta">Halaman Pengaturan sebagai <code>Filament\Pages\Page</code>, group "Akun", sort 6. Konten bisa berupa form ganti password + preferensi notifikasi — di luar scope design system.</span>
+    </li>
+    <li>
+      <strong>config/ai.php</strong>
+      <span class="meta">Satu key: <code>'monthly_budget_idr' =&gt; 100000</code>. Dipakai widget sebagai batas biaya AI.</span>
+    </li>
+  </ul>
+
+  <h3 style="font-size:15px; font-weight:600; margin: var(--sp-6) 0 var(--sp-3);">Hal yang tidak boleh dilanggar</h3>
+  <ul class="checklist">
+    <li>
+      <strong>Bentuk komponen Filament 4 tetap.</strong>
+      <span class="meta">Tidak ada <code>renderHook</code> untuk membungkus komponen, tidak ada view override di <code>resources/views/vendor/filament/</code>, tidak ada CSS yang menyasar class internal Filament (prefix <code>fi-</code>).</span>
+    </li>
+    <li>
+      <strong>Token murid dipakai ulang, tidak dideklarasi ulang.</strong>
+      <span class="meta">Hex <code>#D97706</code> di sini = hex <code>--accent</code> di Tahap 1. Kalau ada perubahan di satu tempat, ubah dua tempat bersamaan (idealnya pin ke <code>config('design.colors.primary')</code>).</span>
+    </li>
+    <li>
+      <strong>Tanpa ikon custom atau library ikon ketiga.</strong>
+      <span class="meta">Heroicons (mit) sudah termasuk dalam Filament 4. Tidak perlu import Blade Icons atau CDN eksternal.</span>
+    </li>
+    <li>
+      <strong>Tanpa query langsung dari Resource untuk badge.</strong>
+      <span class="meta"><code>QuestionResource::getNavigationBadge()</code> delegate ke widget, supaya query dijadwalkan sekali per request.</span>
+    </li>
+  </ul>
+
+  <h3 style="font-size:15px; font-weight:600; margin: var(--sp-6) 0 var(--sp-3);">Urutan eksekusi</h3>
+  <ol style="padding-left: var(--sp-5); margin: var(--sp-3) 0; font-size: 14.5px; line-height: 1.7;">
+    <li>Set <code>config('design.colors.primary')</code> di Tahap 1 ke <code>#D97706</code> jika belum, lalu tarik ke <code>Color::hex(config('design.colors.primary'))</code> di Provider agar satu sumber.</li>
+    <li>Generate Filament panel: <code>php artisan make:filament-panel guru</code>, lalu modifikasi provider sesuai snippet Section A.</li>
+    <li>Generate widget kustom: <code>php artisan make:filament-widget GuruOverview --panel=guru</code>, lalu replace extends &amp; isi method.</li>
+    <li>Generate view: <code>php artisan make:filament-widget GuruOverview --view</code> → simpan di <code>resources/views/filament/guru/widgets/guru-overview.blade.php</code>.</li>
+    <li>Generate 4 resource: <code>php artisan make:filament-resource Question --generate --view --panel=guru</code> (ulangi untuk Exam, Grade, Student). Set navigation properties sesuai Section B.</li>
+    <li>Generate page Pengaturan: <code>php artisan make:filament-page Settings --panel=guru</code>.</li>
+    <li>Tambahkan <code>config/ai.php</code> dengan key <code>monthly_budget_idr</code>.</li>
+    <li>Build asset: <code>npm run build</code> untuk produksi, atau <code>npm run dev</code> untuk pengembangan lokal.</li>
+  </ol>
+
+  <div class="callout callout-warn" style="margin-top: var(--sp-8);">
+    <strong>Opsional — butuh perubahan schema.</strong>
+    <div style="margin-top: var(--sp-2); font-size: 13.5px;">
+      Widget <code>GuruOverview</code> menghitung "Biaya AI bulan ini" dari kolom <code>questions.cost_cents</code>. Kolom ini <strong>tidak ada</strong> dalam daftar data §5 brief — asumsinya adalah biaya dihitung dari sisi aplikasi AI provider dan dicatat saat soal disimpan. Bila kolom ini belum ada, ada tiga opsi:
+    </div>
+    <ul style="margin: var(--sp-2) 0 var(--sp-2) var(--sp-5); font-size: 13.5px; line-height: 1.6;">
+      <li><strong>Opsi A — tambah kolom.</strong> Migration: <code>ALTER TABLE questions ADD COLUMN cost_cents INT UNSIGNED DEFAULT 0, ADD COLUMN is_ai_generated BOOLEAN DEFAULT FALSE</code>. Isi dua kolom ini di <code>QuestionGeneratorJob</code> setelah pemanggilan API. (Disarankan — dipakai widget.)</li>
+      <li><strong>Opsi B — hitung dari log.</strong> Tambahkan tabel <code>ai_generation_logs</code> (cost, model, prompt_hash, created_at) dan join. Lebih akurat tapi lebih banyak migration.</li>
+      <li><strong>Opsi C — sembunyikan stat.</strong> Widget tampilkan 2 stat saja (antrian tinjauan + ujian akan datang) sampai ada schema. Tidak ideal karena kehilangan 1 dari 3 data point brief §4.</li>
+    </ul>
+    <div style="font-size: 13px; color: var(--muted);">
+      Tanpa salah satu dari ketiganya, stat "Biaya AI bulan ini" tidak bisa dihitung. Saya rekomendasikan Opsi A.
+    </div>
+  </div>
+
+  <h3 style="font-size:15px; font-weight:600; margin: var(--sp-6) 0 var(--sp-3);">Yang tidak dilakukan di Tahap 4 (sesuai brief)</h3>
+  <ul style="padding-left: var(--sp-5); font-size: 14.5px; line-height: 1.7; color: var(--muted);">
+    <li>Tidak mendesain ulang komponen Form / Table / Section bawaan Filament.</li>
+    <li>Tidak membuat halaman Pengaturan baru (filosofi + field) — hanya daftarkan ke navigasi.</li>
+    <li>Tidak menyentuh Resource Question untuk layout list/detail — itu kerja Tahap 5 jika diminta.</li>
+    <li>Tidak membuat halaman login Filament (bawaan sudah cukup; hanya warna primary yang akan ter-override).</li>
+  </ul>
+
+  <div class="callout" style="margin-top: var(--sp-8);">
+    <strong>Tahap 4 selesai.</strong> Panel guru siap dipakai tanpa menulis ulang Filament. Dengan menambahkan satu kolom <code>questions.cost_cents</code> (atau Opsi B/C di atas), widget dasbor langsung menampilkan ketiga stat + antrian tinjauan. Brief §4 sudah terpenuhi: palet, navigasi, dan 1 widget dasbor.
+  </div>
+</section>
+
+</main>
+
+<footer class="stage-foot">
+  <div class="wrap">
+    <div>Tahap 4 selesai. Panel guru siap dipakai tanpa menulis ulang Filament.</div>
+    <div><a href="#palet">A · Palet</a> &nbsp;·&nbsp; <a href="#navigasi">B · Navigasi</a> &nbsp;·&nbsp; <a href="#widget">C · Widget</a> &nbsp;·&nbsp; <a href="#impl">D · Implementasi</a></div>
+  </div>
+</footer>
+
+</body>
+</html>

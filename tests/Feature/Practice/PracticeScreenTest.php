@@ -195,3 +195,74 @@ it('keeps staff off the practice list', function () {
 it('sends a guest to the sign-in page', function () {
     $this->get(route('latihan.index'))->assertRedirect(route('masuk'));
 });
+
+/*
+|--------------------------------------------------------------------------
+| Regression: the answer could be chosen but never registered
+|--------------------------------------------------------------------------
+|
+| The radio is visually hidden and the selected styling is rendered from
+| server state, so a deferred wire:model deadlocked the screen: the choice
+| never reached the server, nothing re-rendered, the option never looked
+| selected, and "Periksa jawaban" stayed disabled forever.
+|
+*/
+
+it('sends the chosen option to the server as soon as it is picked', function () {
+    latihanSoal();
+
+    $html = Livewire::actingAs($this->murid)
+        ->test(LatihanAdaptif::class, ['subject' => $this->mapel])
+        ->html();
+
+    // Deferred binding leaves the student unable to submit at all, because the
+    // only control that would flush it is the button this value enables.
+    expect($html)->toContain('wire:model.live="pilihan"');
+});
+
+it('enables the check button once an option is chosen', function () {
+    latihanSoal();
+
+    $component = Livewire::actingAs($this->murid)
+        ->test(LatihanAdaptif::class, ['subject' => $this->mapel]);
+
+    expect(tombolNonaktif($component->html(), 'jawab'))->toBeTrue();
+
+    $component->set('pilihan', 'A');
+
+    expect(tombolNonaktif($component->html(), 'jawab'))->toBeFalse();
+});
+
+it('marks the chosen option as checked in the markup', function () {
+    latihanSoal();
+
+    $html = Livewire::actingAs($this->murid)
+        ->test(LatihanAdaptif::class, ['subject' => $this->mapel])
+        ->set('pilihan', 'B')
+        ->html();
+
+    // A student has to be able to see which option they picked.
+    expect(tagOpsi($html, 'B'))->toContain('checked')
+        ->and(tagOpsi($html, 'A'))->not->toContain('checked');
+});
+
+/**
+ * Whether the button behind a wire:click carries the boolean disabled attribute.
+ *
+ * Not a substring check: the class list contains disabled:opacity-70 and
+ * friends, so "disabled" appears on the tag whatever its actual state.
+ */
+function tombolNonaktif(string $html, string $action): bool
+{
+    preg_match('/<button[^>]*wire:click="'.$action.'"[^>]*>/s', $html, $m);
+
+    return (bool) preg_match('/\sdisabled(\s|>|=)/', $m[0] ?? '');
+}
+
+/** The radio input for one option letter. */
+function tagOpsi(string $html, string $letter): string
+{
+    preg_match('/<input[^>]*value="'.$letter.'"[^>]*>/s', $html, $m);
+
+    return $m[0] ?? '';
+}

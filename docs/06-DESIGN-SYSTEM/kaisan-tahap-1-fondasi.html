@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KAISAN · Tahap 1 — Fondasi Design System</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root {
+    --bg: oklch(0.985 0.005 80);
+    --surface: oklch(1 0 0);
+    --surface-muted: oklch(0.97 0.006 80);
+    --fg: oklch(0.25 0.02 250);
+    --muted: oklch(0.55 0.01 250);
+    --border: oklch(0.92 0.005 250);
+    --border-strong: oklch(0.85 0.008 250);
+    --accent: oklch(0.65 0.15 65);
+    --accent-hover: oklch(0.58 0.15 65);
+    --accent-text: oklch(0.50 0.14 60);
+    --accent-soft: oklch(0.95 0.04 65);
+    --accent-fg: oklch(1 0 0);
+    --success: oklch(0.48 0.14 145);
+    --success-soft: oklch(0.95 0.04 145);
+    --success-fg: oklch(1 0 0);
+    --warning: oklch(0.55 0.13 65);
+    --warning-soft: oklch(0.95 0.04 65);
+    --warning-fg: oklch(1 0 0);
+    --danger: oklch(0.49 0.20 25);
+    --danger-soft: oklch(0.95 0.04 25);
+    --danger-fg: oklch(1 0 0);
+    --info: oklch(0.45 0.18 260);
+    --info-soft: oklch(0.95 0.03 260);
+    --info-fg: oklch(1 0 0);
+  }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .swatch {
+    aspect-ratio: 1 / 1;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border);
+  }
+  .swatch-tall {
+    aspect-ratio: 4 / 3;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border);
+  }
+  .code-block {
+    background: oklch(0.18 0.02 250);
+    color: oklch(0.95 0.01 80);
+    border-radius: 0.5rem;
+    padding: 1rem 1.25rem;
+    overflow-x: auto;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 12.5px;
+    line-height: 1.65;
+  }
+  .code-block .tk-comment { color: oklch(0.62 0.02 250); }
+  .code-block .tk-key { color: oklch(0.78 0.12 200); }
+  .code-block .tk-val { color: oklch(0.92 0.10 80); }
+  .code-block .tk-fn { color: oklch(0.85 0.13 145); }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.25rem 0.625rem;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 550;
+    letter-spacing: 0.02em;
+    border: 1px solid transparent;
+  }
+  .kbd {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 11px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .divider {
+    border-top: 1px solid var(--border);
+  }
+  .bar { display: flex; align-items: center; gap: 1rem; }
+  .bar .label { width: 3.5rem; color: var(--muted); font-size: 12px; font-family: ui-monospace, monospace; }
+  .bar .bar-fill { height: 14px; background: var(--accent); border-radius: 2px; }
+  .swatch-shadow { box-shadow: var(--tw-shadow, 0 0 0 transparent); }
+  table { border-collapse: collapse; width: 100%; }
+  th, td {
+    text-align: left;
+    padding: 0.625rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    vertical-align: top;
+  }
+  th { font-weight: 600; color: var(--muted); letter-spacing: 0.02em; font-size: 12px; text-transform: uppercase; }
+  td code { font-size: 12.5px; }
+  .accent-text { color: var(--accent-text); }
+</style>
+</head>
+<body class="min-h-screen">
+
+<header class="border-b" style="border-color: var(--border); background: var(--surface);" data-od-id="doc-header">
+  <div class="max-w-5xl mx-auto px-6 py-5 flex items-baseline justify-between gap-4">
+    <div>
+      <p class="text-xs uppercase tracking-[0.08em]" style="color: var(--muted);">KAISAN · Design System</p>
+      <h1 class="text-xl font-semibold mt-1" style="letter-spacing: -0.01em;">Tahap 1 — Fondasi</h1>
+    </div>
+    <div class="text-xs text-right" style="color: var(--muted);">
+      <div>Palet · Tipografi · Jarak · Radius · Shadow</div>
+      <div class="mt-0.5">Mobile-first 390 px · Sistem stack · Tanpa CDN</div>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-5xl mx-auto px-6 py-10 space-y-14">
+
+  <!-- RINGKASAN KEPUTUSAN -->
+  <section data-od-id="ringkasan">
+    <p class="text-sm" style="color: var(--muted);">
+      Token di bawah ini adalah sumber satu-satunya untuk halaman murid dan panel guru.
+      Tempelkan blok <code class="kbd">@theme { }</code> ke <code class="kbd">resources/css/app.css</code>,
+      lalu hapus token lama. Setelah dipasang, Tailwind v4 otomatis mengenali kelas
+      seperti <code class="kbd">bg-accent</code>, <code class="kbd">text-success</code>, dan
+      <code class="kbd">rounded-lg</code>.
+    </p>
+
+    <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="text-xs uppercase tracking-[0.08em]" style="color: var(--muted);">Konflik 1 · Palet murid vs Filament</p>
+        <h3 class="mt-2 text-base font-semibold">Satu warna primer: <span class="accent-text">amber hangat</span></h3>
+        <p class="mt-2 text-sm" style="color: var(--muted);">
+          Murid dan guru pakai palet yang sama. Filament 4 dipaksa memakai
+          <code class="kbd">Color::hex('#D97706')</code> untuk primary
+          (override default <code class="kbd">Color::Amber</code> agar hue-nya seragam),
+          lalu di <code class="kbd">PanelProvider</code> daftarkan
+          <code class="kbd">FilamentColor::register(['primary' =&gt; Color::hex('#D97706')])</code>.
+        </p>
+      </article>
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="text-xs uppercase tracking-[0.08em]" style="color: var(--muted);">Konflik 2 · Font hantu</p>
+        <h3 class="mt-2 text-base font-semibold">Hapus 'Instrument Sans', pakai system stack</h3>
+        <p class="mt-2 text-sm" style="color: var(--muted);">
+          Murid pakai Android/iOS kelas menengah, RAM 4 GB, 4G lambat, 150 orang bersamaan saat ujian.
+          Memuat font web menambah ~50–100 KB per halaman dan blocking render — risiko nyata
+          di beban puncak. System stack (San Francisco di iOS, Roboto di Android) sudah
+          dioptimasi vendor dan gratis. <code class="kbd">--font-sans</code> di bawah menimpa
+          nilai default Tailwind agar tidak ada fallback ke 'Instrument Sans' yang tak pernah dimuat.
+        </p>
+      </article>
+    </div>
+
+    <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="text-xs uppercase tracking-[0.08em]" style="color: var(--muted);">Bayangan</p>
+        <h3 class="mt-2 text-base font-semibold">Tetap datar, 1 pengecualian</h3>
+        <p class="mt-2 text-sm" style="color: var(--muted);">
+          90% komponen tanpa shadow. Kartu soal aktif dan bottom-sheet modal boleh
+          <code class="kbd">shadow-elevated</code> / <code class="kbd">shadow-modal</code>
+          sebagai cue kedalaman. Tanpa shadow berarti render lebih murah di kelas menengah.
+        </p>
+      </article>
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="text-xs uppercase tracking-[0.08em]" style="color: var(--muted);">Animasi</p>
+        <h3 class="mt-2 text-base font-semibold">Transisi warna & opacity saja</h3>
+        <p class="mt-2 text-sm" style="color: var(--muted);">
+          <code class="kbd">transition-colors duration-150</code> untuk state (benar/salah, hover).
+          <code class="kbd">transition-opacity</code> untuk banner. Bar progres pindah value,
+          bukan layout. Tanpa keyframes, tanpa parallax, tanpa auto-play.
+        </p>
+      </article>
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="text-xs uppercase tracking-[0.08em]" style="color: var(--muted);">Ikon</p>
+        <h3 class="mt-2 text-base font-semibold">Heroicons outline, SVG inline</h3>
+        <p class="mt-2 text-sm" style="color: var(--muted);">
+          Pakai Heroicons (24/24, outline, 1.5 px stroke) sebagai markup
+          <code class="kbd">&lt;svg&gt;</code> langsung di Blade component. Tidak ada library JS,
+          tidak ada CDN, tidak ada permintaan jaringan tambahan. Filament sudah menyertakan
+          Blade Icons + Heroicons, jadi guru & murid berbagi set yang sama.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <!-- BLOK @theme -->
+  <section data-od-id="theme-block">
+    <div class="flex items-baseline justify-between">
+      <h2 class="text-lg font-semibold">Blok <code class="kbd">@theme</code> siap tempel</h2>
+      <span class="chip" style="background: var(--accent-soft); color: var(--accent-text); border-color: var(--accent);">resources/css/app.css</span>
+    </div>
+    <p class="mt-2 text-sm" style="color: var(--muted);">
+      Ganti seluruh isi <code class="kbd">resources/css/app.css</code> dengan blok di bawah.
+      Tailwind v4 akan otomatis mendaftarkan semua warna dan font sebagai utility.
+    </p>
+<pre class="code-block mt-4"><span class="tk-comment">/* === KAISAN Design System — Tahap 1 Fondasi === */</span>
+<span class="tk-comment">/* Tempel di resources/css/app.css. Hapus token lama. */</span>
+
+@theme {
+  <span class="tk-comment">/* --- Palet netral (warm, tenang, tidak cream murahan) --- */</span>
+  <span class="tk-key">--color-bg</span>:             <span class="tk-val">oklch(0.985 0.005 80)</span>;     <span class="tk-comment">/* halaman, kanvas */</span>
+  <span class="tk-key">--color-surface</span>:         <span class="tk-val">oklch(1 0 0)</span>;             <span class="tk-comment">/* kartu, kontainer */</span>
+  <span class="tk-key">--color-surface-muted</span>:   <span class="tk-val">oklch(0.97 0.006 80)</span>;     <span class="tk-comment">/* kartu tersubord (empty state) */</span>
+  <span class="tk-key">--color-fg</span>:              <span class="tk-val">oklch(0.25 0.02 250)</span>;     <span class="tk-comment">/* teks utama */</span>
+  <span class="tk-key">--color-muted</span>:           <span class="tk-val">oklch(0.55 0.01 250)</span>;     <span class="tk-comment">/* teks sekunder, label */</span>
+  <span class="tk-key">--color-border</span>:          <span class="tk-val">oklch(0.92 0.005 250)</span>;    <span class="tk-comment">/* garis halus */</span>
+  <span class="tk-key">--color-border-strong</span>:   <span class="tk-val">oklch(0.85 0.008 250)</span>;    <span class="tk-comment">/* garis fokus, pemisah tegas */</span>
+
+  <span class="tk-comment">/* --- Aksen primer (amber hangat — juga Filament primary) --- */</span>
+  <span class="tk-key">--color-accent</span>:          <span class="tk-val">oklch(0.65 0.15 65)</span>;      <span class="tk-comment">/* fill tombol primer */</span>
+  <span class="tk-key">--color-accent-hover</span>:     <span class="tk-val">oklch(0.58 0.15 65)</span>;      <span class="tk-comment">/* hover tombol primer */</span>
+  <span class="tk-key">--color-accent-text</span>:     <span class="tk-val">oklch(0.50 0.14 60)</span>;      <span class="tk-comment">/* teks/link amber di atas putih (rasio 6.6:1) */</span>
+  <span class="tk-key">--color-accent-soft</span>:      <span class="tk-val">oklch(0.95 0.04 65)</span>;      <span class="tk-comment">/* latar chip, banner info netral */</span>
+  <span class="tk-key">--color-accent-fg</span>:       <span class="tk-val">oklch(1 0 0)</span>;             <span class="tk-comment">/* teks di atas fill accent */</span>
+
+  <span class="tk-comment">/* --- Semantik: benar (hijau), peringatan (amber), salah (merah), info (biru) --- */</span>
+  <span class="tk-key">--color-success</span>:         <span class="tk-val">oklch(0.48 0.14 145)</span>;     <span class="tk-comment">/* "benar", submit sukses */</span>
+  <span class="tk-key">--color-success-soft</span>:    <span class="tk-val">oklch(0.95 0.04 145)</span>;     <span class="tk-comment">/* latar banner/area benar */</span>
+  <span class="tk-key">--color-success-fg</span>:      <span class="tk-val">oklch(1 0 0)</span>;
+
+  <span class="tk-key">--color-warning</span>:         <span class="tk-val">oklch(0.55 0.13 65)</span>;      <span class="tk-comment">/* hampir jatuh tempo */</span>
+  <span class="tk-key">--color-warning-soft</span>:    <span class="tk-val">oklch(0.95 0.04 65)</span>;
+  <span class="tk-key">--color-warning-fg</span>:      <span class="tk-val">oklch(1 0 0)</span>;
+
+  <span class="tk-key">--color-danger</span>:          <span class="tk-val">oklch(0.49 0.20 25)</span>;      <span class="tk-comment">/* "salah", error fatal */</span>
+  <span class="tk-key">--color-danger-soft</span>:     <span class="tk-val">oklch(0.95 0.04 25)</span>;
+  <span class="tk-key">--color-danger-fg</span>:       <span class="tk-val">oklch(1 0 0)</span>;
+
+  <span class="tk-key">--color-info</span>:            <span class="tk-val">oklch(0.45 0.18 260)</span>;     <span class="tk-comment">/* catatan sistem */</span>
+  <span class="tk-key">--color-info-soft</span>:       <span class="tk-val">oklch(0.95 0.03 260)</span>;
+  <span class="tk-key">--color-info-fg</span>:         <span class="tk-val">oklch(1 0 0)</span>;
+
+  <span class="tk-comment">/* --- Font: SYSTEM STACK SAJA, tidak memuat apa pun dari CDN --- */</span>
+  <span class="tk-key">--font-sans</span>: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans",
+    "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+  <span class="tk-key">--font-mono</span>: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+
+  <span class="tk-comment">/* --- Skala jarak: basis 4 px (Tailwind default) --- */</span>
+  <span class="tk-comment">/* p-1=4 p-2=8 p-3=12 p-4=16 p-5=20 p-6=24 p-8=32 p-10=40 p-12=48 p-16=64 */</span>
+
+  <span class="tk-comment">/* --- Radius --- */</span>
+  <span class="tk-key">--radius-sm</span>:    <span class="tk-val">0.25rem</span>;  <span class="tk-comment">/*  4px · input kecil, badge */</span>
+  <span class="tk-key">--radius-md</span>:    <span class="tk-val">0.5rem</span>;   <span class="tk-comment">/*  8px · tombol, kartu standar */</span>
+  <span class="tk-key">--radius-lg</span>:    <span class="tk-val">0.75rem</span>;  <span class="tk-comment">/* 12px · kartu besar, modal */</span>
+  <span class="tk-key">--radius-xl</span>:    <span class="tk-val">1rem</span>;     <span class="tk-comment">/* 16px · kartu soal */</span>
+  <span class="tk-key">--radius-full</span>:  <span class="tk-val">9999px</span>;   <span class="tk-comment">/* pill · badge level, chip */</span>
+
+  <span class="tk-comment">/* --- Bayangan (jarang, hanya untuk elevation cue) --- */</span>
+  <span class="tk-key">--shadow-elevated</span>:
+    <span class="tk-val">0 1px 2px 0 oklch(0.25 0.02 250 / 0.06),
+     0 1px 3px 0 oklch(0.25 0.02 250 / 0.04)</span>;
+  <span class="tk-key">--shadow-modal</span>:
+    <span class="tk-val">0 10px 25px -5px oklch(0.25 0.02 250 / 0.08),
+     0  8px 10px -6px oklch(0.25 0.02 250 / 0.04)</span>;
+}
+</pre>
+  </section>
+
+  <!-- PALET WARNA -->
+  <section data-od-id="palet">
+    <h2 class="text-lg font-semibold">Palet warna</h2>
+    <p class="mt-1 text-sm" style="color: var(--muted);">
+      Tujuh peran. Setiap peran punya 2–3 varian (default / hover / soft background).
+      Jangan pernah pakai <code class="kbd">#6366f1</code> atau dua-stop gradient.
+    </p>
+
+    <div class="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+      <div>
+        <div class="swatch" style="background: var(--bg);"></div>
+        <p class="mt-2 text-sm font-medium">--bg</p>
+        <p class="text-xs" style="color: var(--muted);">Latar halaman</p>
+      </div>
+      <div>
+        <div class="swatch" style="background: var(--surface);"></div>
+        <p class="mt-2 text-sm font-medium">--surface</p>
+        <p class="text-xs" style="color: var(--muted);">Kartu, panel</p>
+      </div>
+      <div>
+        <div class="swatch" style="background: var(--surface-muted);"></div>
+        <p class="mt-2 text-sm font-medium">--surface-muted</p>
+        <p class="text-xs" style="color: var(--muted);">Kartu kosong/info</p>
+      </div>
+      <div>
+        <div class="swatch" style="background: var(--fg);"></div>
+        <p class="mt-2 text-sm font-medium">--fg</p>
+        <p class="text-xs" style="color: var(--muted);">Teks utama</p>
+      </div>
+      <div>
+        <div class="swatch" style="background: var(--muted);"></div>
+        <p class="mt-2 text-sm font-medium">--muted</p>
+        <p class="text-xs" style="color: var(--muted);">Teks sekunder</p>
+      </div>
+      <div>
+        <div class="swatch" style="background: var(--border-strong);"></div>
+        <p class="mt-2 text-sm font-medium">--border-strong</p>
+        <p class="text-xs" style="color: var(--muted);">Garis tegas</p>
+      </div>
+      <div>
+        <div class="swatch" style="background: var(--accent);"></div>
+        <p class="mt-2 text-sm font-medium">--accent</p>
+        <p class="text-xs" style="color: var(--muted);">Tombol primer, badge</p>
+      </div>
+      <div>
+        <div class="swatch" style="background: var(--accent-text);"></div>
+        <p class="mt-2 text-sm font-medium">--accent-text</p>
+        <p class="text-xs" style="color: var(--muted);">Teks/link amber</p>
+      </div>
+      <div>
+        <div class="swatch" style="background: var(--accent-soft);"></div>
+        <p class="mt-2 text-sm font-medium">--accent-soft</p>
+        <p class="text-xs" style="color: var(--muted);">Latar chip amber</p>
+      </div>
+      <div>
+        <div class="swatch" style="background: var(--success);"></div>
+        <p class="mt-2 text-sm font-medium">--success</p>
+        <p class="text-xs" style="color: var(--muted);">"Benar"</p>
+      </div>
+      <div>
+        <div class="swatch" style="background: var(--warning);"></div>
+        <p class="mt-2 text-sm font-medium">--warning</p>
+        <p class="text-xs" style="color: var(--muted);">Hampir jatuh tempo</p>
+      </div>
+      <div>
+        <div class="swatch" style="background: var(--danger);"></div>
+        <p class="mt-2 text-sm font-medium">--danger</p>
+        <p class="text-xs" style="color: var(--muted);">"Salah", error fatal</p>
+      </div>
+    </div>
+
+    <div class="mt-8">
+      <p class="text-sm font-medium mb-2">Contoh penerapan — benar (WAJIB teks + bentuk, bukan warna saja)</p>
+      <div class="rounded-lg p-4 flex items-start gap-3" style="background: var(--success-soft); border: 1px solid var(--success);">
+        <span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-sm font-bold flex-shrink-0" style="background: var(--success); color: var(--success-fg);">✓</span>
+        <div>
+          <p class="text-sm font-semibold" style="color: oklch(0.30 0.10 145);">Benar</p>
+          <p class="text-sm" style="color: oklch(0.30 0.10 145);">Sel volta menghasilkan arus listrik dari reaksi redoks.</p>
+        </div>
+      </div>
+      <div class="mt-3 rounded-lg p-4 flex items-start gap-3" style="background: var(--danger-soft); border: 1px solid var(--danger);">
+        <span class="inline-flex items-center justify-center w-7 h-7 rounded-full text-sm font-bold flex-shrink-0" style="background: var(--danger); color: var(--danger-fg);">✕</span>
+        <div>
+          <p class="text-sm font-semibold" style="color: oklch(0.30 0.16 25);">Salah</p>
+          <p class="text-sm" style="color: oklch(0.30 0.16 25);">Kamu memilih <strong>"Kalor jenis"</strong>. Jawaban yang benar: <strong>"Konduktivitas termal"</strong>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TABEL PERAN -->
+  <section data-od-id="tabel-peran">
+    <h2 class="text-lg font-semibold">Tabel peran token</h2>
+    <p class="mt-1 text-sm" style="color: var(--muted);">
+      Referensi cepat saat menulis komponen. Kelas Tailwind v4 otomatis terdaftar
+      dari blok <code class="kbd">@theme</code> di atas.
+    </p>
+
+    <div class="mt-4 rounded-lg overflow-hidden" style="background: var(--surface); border: 1px solid var(--border);">
+      <table>
+        <thead>
+          <tr>
+            <th>Peran</th>
+            <th>Token</th>
+            <th>Kelas Tailwind</th>
+            <th>Digunakan untuk</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Halaman</td>
+            <td><code>--color-bg</code></td>
+            <td><code>bg-bg</code></td>
+            <td>Latar body, kanvas utama.</td>
+          </tr>
+          <tr>
+            <td>Kartu</td>
+            <td><code>--color-surface</code></td>
+            <td><code>bg-surface</code></td>
+            <td>Kartu soal, kartu daftar, kontainer modal.</td>
+          </tr>
+          <tr>
+            <td>Kartu kosong</td>
+            <td><code>--color-surface-muted</code></td>
+            <td><code>bg-surface-muted</code></td>
+            <td>Empty state, info area tanpa penekanan.</td>
+          </tr>
+          <tr>
+            <td>Teks utama</td>
+            <td><code>--color-fg</code></td>
+            <td><code>text-fg</code></td>
+            <td>Seluruh body dan judul. Kontras pada <code>bg</code>: 14.8:1.</td>
+          </tr>
+          <tr>
+            <td>Teks sekunder</td>
+            <td><code>--color-muted</code></td>
+            <td><code>text-muted</code></td>
+            <td>Label, helper, timestamp. Kontras pada <code>bg</code>: 4.9:1.</td>
+          </tr>
+          <tr>
+            <td>Garis</td>
+            <td><code>--color-border</code> / <code>--color-border-strong</code></td>
+            <td><code>border-border</code> / <code>border-border-strong</code></td>
+            <td>Pemisah kartu, garis bawah input, fokus ring.</td>
+          </tr>
+          <tr>
+            <td>Aksen</td>
+            <td><code>--color-accent</code></td>
+            <td><code>bg-accent</code> / <code>text-accent-text</code></td>
+            <td>Tombol primer, chip "Latihan tidak menambah poin", fokus ring aktif.</td>
+          </tr>
+          <tr>
+            <td>Benar</td>
+            <td><code>--color-success</code></td>
+            <td><code>bg-success</code> / <code>text-success</code></td>
+            <td>Banner "Jawaban benar", centang pembahasan.</td>
+          </tr>
+          <tr>
+            <td>Peringatan</td>
+            <td><code>--color-warning</code></td>
+            <td><code>bg-warning</code></td>
+            <td>Banner "Belum dinilai", timer "ujian akan ditutup".</td>
+          </tr>
+          <tr>
+            <td>Salah / Error</td>
+            <td><code>--color-danger</code></td>
+            <td><code>bg-danger</code> / <code>text-danger</code></td>
+            <td>Opsi salah dipilih, banner error, timer mendesak (≤60 dtk).</td>
+          </tr>
+          <tr>
+            <td>Info</td>
+            <td><code>--color-info</code></td>
+            <td><code>bg-info</code></td>
+            <td>Banner catatan sistem (mis. soal tersimpan otomatis).</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- TIPOGRAFI -->
+  <section data-od-id="tipografi">
+    <h2 class="text-lg font-semibold">Skala tipografi</h2>
+    <p class="mt-1 text-sm" style="color: var(--muted);">
+      System stack untuk semua peran. Display memakai weight 600, body 400,
+      UI/label 510. Huruf besar wajib <code class="kbd">tracking-[0.06em]</code> atau lebih.
+    </p>
+
+    <div class="mt-6 rounded-lg p-6 space-y-5" style="background: var(--surface); border: 1px solid var(--border);">
+      <div class="flex items-baseline gap-6">
+        <span class="w-20 text-xs font-mono" style="color: var(--muted);">display</span>
+        <span class="text-4xl font-semibold" style="letter-spacing: -0.02em; line-height: 1.1;">Latihan adaptif</span>
+      </div>
+      <div class="flex items-baseline gap-6">
+        <span class="w-20 text-xs font-mono" style="color: var(--muted);">h1 · 28</span>
+        <span class="text-[28px] font-semibold" style="letter-spacing: -0.015em; line-height: 1.2;">Pilih mata pelajaran</span>
+      </div>
+      <div class="flex items-baseline gap-6">
+        <span class="w-20 text-xs font-mono" style="color: var(--muted);">h2 · 22</span>
+        <span class="text-[22px] font-semibold" style="letter-spacing: -0.01em; line-height: 1.25;">Sesi latihan kamu</span>
+      </div>
+      <div class="flex items-baseline gap-6">
+        <span class="w-20 text-xs font-mono" style="color: var(--muted);">h3 · 18</span>
+        <span class="text-[18px] font-semibold">Soal latihan · Matematika</span>
+      </div>
+      <div class="flex items-baseline gap-6">
+        <span class="w-20 text-xs font-mono" style="color: var(--muted);">body · 16</span>
+        <span class="text-base" style="line-height: 1.6;">Hitunglah nilai dari 12 × (3 + 5). Tuliskan langkah penyelesaian sebelum menulis jawaban akhir.</span>
+      </div>
+      <div class="flex items-baseline gap-6">
+        <span class="w-20 text-xs font-mono" style="color: var(--muted);">small · 14</span>
+        <span class="text-sm" style="line-height: 1.5;">Terakhir berlatih 2 hari lalu. Akurasi 78%.</span>
+      </div>
+      <div class="flex items-baseline gap-6">
+        <span class="w-20 text-xs font-mono" style="color: var(--muted);">caps · 12</span>
+        <span class="text-xs uppercase" style="letter-spacing: 0.08em;">Label kategori</span>
+      </div>
+    </div>
+
+    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div class="rounded-lg p-3" style="background: var(--surface-muted); border: 1px solid var(--border);">
+        <p class="text-sm font-medium">Benar</p>
+        <p class="text-xs mt-1" style="color: var(--muted);">
+          Display/H1 (≥28px): <code>letter-spacing: -0.015em</code> sampai <code>-0.02em</code>.
+          Body: <code>0</code>. ALL CAPS: <code>0.06em</code>–<code>0.1em</code>.
+        </p>
+      </div>
+      <div class="rounded-lg p-3" style="background: var(--surface-muted); border: 1px solid var(--border);">
+        <p class="text-sm font-medium">Salah</p>
+        <p class="text-xs mt-1" style="color: var(--muted);">
+          Huruf besar tanpa tracking (mis. <span class="uppercase" style="letter-spacing: 0;">LEVEL</span>),
+          display longgar (mis. <span style="letter-spacing: 0.05em;">Latihan</span>), dan body justified
+          adalah tiga kegagalan AI yang paling mudah terlihat.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- JARAK -->
+  <section data-od-id="jarak">
+    <h2 class="text-lg font-semibold">Skala jarak</h2>
+    <p class="mt-1 text-sm" style="color: var(--muted);">
+      Basis 4 px (Tailwind default). Pakai kelipatan, jangan nilai lain.
+      Konten murid dibungkus <code class="kbd">max-w-3xl mx-auto px-4</code>.
+    </p>
+
+    <div class="mt-6 rounded-lg p-6 space-y-2" style="background: var(--surface); border: 1px solid var(--border);">
+      <div class="bar"><span class="label">p-1 · 4</span><div class="bar-fill" style="width: 4px;"></div></div>
+      <div class="bar"><span class="label">p-2 · 8</span><div class="bar-fill" style="width: 8px;"></div></div>
+      <div class="bar"><span class="label">p-3 · 12</span><div class="bar-fill" style="width: 12px;"></div></div>
+      <div class="bar"><span class="label">p-4 · 16</span><div class="bar-fill" style="width: 16px;"></div></div>
+      <div class="bar"><span class="label">p-5 · 20</span><div class="bar-fill" style="width: 20px;"></div></div>
+      <div class="bar"><span class="label">p-6 · 24</span><div class="bar-fill" style="width: 24px;"></div></div>
+      <div class="bar"><span class="label">p-8 · 32</span><div class="bar-fill" style="width: 32px;"></div></div>
+      <div class="bar"><span class="label">p-10 · 40</span><div class="bar-fill" style="width: 40px;"></div></div>
+      <div class="bar"><span class="label">p-12 · 48</span><div class="bar-fill" style="width: 48px;"></div></div>
+      <div class="bar"><span class="label">p-16 · 64</span><div class="bar-fill" style="width: 64px;"></div></div>
+    </div>
+  </section>
+
+  <!-- RADIUS -->
+  <section data-od-id="radius">
+    <h2 class="text-lg font-semibold">Radius</h2>
+    <p class="mt-1 text-sm" style="color: var(--muted);">
+      Hindari <code>rounded-full</code> kecuali untuk badge dan chip.
+      Tombol dan kartu standar cukup <code>rounded-md</code> atau <code>rounded-lg</code>.
+    </p>
+
+    <div class="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+      <div class="text-center">
+        <div class="h-20" style="background: var(--accent-soft); border: 1px solid var(--accent); border-radius: var(--radius-sm);"></div>
+        <p class="mt-2 text-xs font-mono">sm · 4</p>
+      </div>
+      <div class="text-center">
+        <div class="h-20" style="background: var(--accent-soft); border: 1px solid var(--accent); border-radius: var(--radius-md);"></div>
+        <p class="mt-2 text-xs font-mono">md · 8</p>
+      </div>
+      <div class="text-center">
+        <div class="h-20" style="background: var(--accent-soft); border: 1px solid var(--accent); border-radius: var(--radius-lg);"></div>
+        <p class="mt-2 text-xs font-mono">lg · 12</p>
+      </div>
+      <div class="text-center">
+        <div class="h-20" style="background: var(--accent-soft); border: 1px solid var(--accent); border-radius: var(--radius-xl);"></div>
+        <p class="mt-2 text-xs font-mono">xl · 16</p>
+      </div>
+      <div class="text-center">
+        <div class="h-20" style="background: var(--accent-soft); border: 1px solid var(--accent); border-radius: var(--radius-full);"></div>
+        <p class="mt-2 text-xs font-mono">full · pill</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHADOW -->
+  <section data-od-id="shadow">
+    <h2 class="text-lg font-semibold">Bayangan</h2>
+    <p class="mt-1 text-sm" style="color: var(--muted);">
+      Mayoritas komponen tanpa bayangan. Hanya untuk kartu aktif dan modal.
+    </p>
+    <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <div class="text-center">
+        <div class="h-24 rounded-lg mx-auto" style="width: 9rem; background: var(--surface); border: 1px solid var(--border);"></div>
+        <p class="mt-3 text-sm font-medium">Tanpa shadow</p>
+        <p class="text-xs" style="color: var(--muted);">Default. Mayoritas permukaan.</p>
+      </div>
+      <div class="text-center">
+        <div class="h-24 rounded-lg mx-auto" style="width: 9rem; background: var(--surface); box-shadow: var(--shadow-elevated);"></div>
+        <p class="mt-3 text-sm font-medium">shadow-elevated</p>
+        <p class="text-xs" style="color: var(--muted);">Kartu soal aktif, FAB.</p>
+      </div>
+      <div class="text-center">
+        <div class="h-24 rounded-lg mx-auto" style="width: 9rem; background: var(--surface); box-shadow: var(--shadow-modal);"></div>
+        <p class="mt-3 text-sm font-medium">shadow-modal</p>
+        <p class="text-xs" style="color: var(--muted);">Bottom-sheet, dialog.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- IKON & ANIMASI ATURAN -->
+  <section data-od-id="aturan">
+    <h2 class="text-lg font-semibold">Aturan ikon & animasi</h2>
+
+    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="text-xs uppercase tracking-[0.08em]" style="color: var(--muted);">Ikon — Heroicons outline, SVG inline</p>
+        <p class="mt-2 text-sm">
+          Pakai hanya ikon 24/24 outline, stroke 1.5 px, warna <code>currentColor</code>.
+        </p>
+        <div class="mt-3 flex items-center gap-4" style="color: var(--fg);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"/></svg>
+        </div>
+        <p class="mt-3 text-xs" style="color: var(--muted);">
+          Lokasi file: <code>resources/views/components/icon/{name}.blade.php</code>
+          (Blade component menerima <code>name</code> + <code>class</code>, render
+          markup <code>&lt;svg&gt;</code> lengkap). Tidak ada JS, tidak ada CDN.
+        </p>
+      </article>
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="text-xs uppercase tracking-[0.08em]" style="color: var(--muted);">Animasi — minimum</p>
+        <p class="mt-2 text-sm">
+          Tiga kelas saja yang dipakai. Tidak ada keyframes, tidak ada spring,
+          tidak ada auto-play.
+        </p>
+        <ul class="mt-3 text-sm space-y-2">
+          <li><code class="kbd">transition-colors duration-150</code> · hover tombol, perubahan status benar/salah.</li>
+          <li><code class="kbd">transition-opacity duration-200</code> · banner simpan otomatis, banner pesan.</li>
+          <li><code class="kbd">transition-transform duration-150</code> · tekan tombol (2 px ke bawah).</li>
+        </ul>
+        <p class="mt-3 text-xs" style="color: var(--muted);">
+          Bar progres pindah value (lebar) dengan <code>transition-[width] duration-300 ease-out</code> —
+          satu-satunya transisi value di aplikasi.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <!-- CATATAN IMPLEMENTASI -->
+  <section data-od-id="implementasi">
+    <h2 class="text-lg font-semibold">Catatan implementasi</h2>
+
+    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="text-xs uppercase tracking-[0.08em]" style="color: var(--muted);">Setelah menempel @theme</p>
+        <ol class="mt-2 text-sm space-y-1.5 list-decimal list-inside">
+          <li>Jalankan <code class="kbd">npm run build</code> (atau <code class="kbd">vite build</code>) sekali untuk meregenerasi utilitas.</li>
+          <li>Cari penggunaan warna hardcoded lama (mis. <code>bg-slate-900</code>, <code>text-amber-600</code>) dan ganti ke <code>bg-fg</code>, <code>text-accent-text</code>.</li>
+          <li>Konfirmasi tidak ada lagi <code>tailwind.config.js</code> — semua konfigurasi via <code>@theme</code>.</li>
+        </ol>
+      </article>
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="text-xs uppercase tracking-[0.08em]" style="color: var(--muted);">Filament 4 — samakan primary</p>
+        <p class="mt-2 text-sm">
+          Override <code class="kbd">Color::Amber</code> default dengan hex yang sama:
+        </p>
+<pre class="code-block mt-2"><span class="tk-comment">// app/Providers/Filament/AdminPanelProvider.php</span>
+<span class="tk-fn">use</span> Filament\Support\Colors\Color;
+<span class="tk-fn">use</span> Filament\Support\Facades\FilamentColor;
+
+FilamentColor::<span class="tk-fn">register</span>([
+  <span class="tk-key">'primary'</span> =&gt; Color::<span class="tk-fn">hex</span>(<span class="tk-val">'#D97706'</span>),
+]);
+</pre>
+        <p class="mt-2 text-xs" style="color: var(--muted);">
+          Setelah override ini, tombol, fokus ring, dan active state panel guru memakai
+          amber yang sama dengan halaman murid — tidak ada dua identitas visual lagi.
+        </p>
+      </article>
+    </div>
+
+    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="text-xs uppercase tracking-[0.08em]" style="color: var(--muted);">Komponen Blade yang akan datang</p>
+        <p class="mt-2 text-sm">
+          Tahap 2 akan menambah Blade component bersama di
+          <code>resources/views/components/ui/</code>: <code>button</code>,
+          <code>badge</code>, <code>card</code>, <code>progress</code>,
+          <code>banner</code>, <code>input</code>, <code>tab</code>,
+          <code>leaderboard-row</code>, <code>answer-option</code>, dan
+          <code>question-card</code>. Token di sini dipakai oleh semuanya.
+        </p>
+      </article>
+      <article class="rounded-lg p-4" style="background: var(--surface); border: 1px solid var(--border);">
+        <p class="text-xs uppercase tracking-[0.08em]" style="color: var(--muted);">Hal yang TIDAK dipakai di Tahap 1</p>
+        <ul class="mt-2 text-sm space-y-1.5 list-disc list-inside">
+          <li>Dark mode (diputuskan: tidak dibuat).</li>
+          <li>Font eksternal, ikon library JS, gradient dekoratif.</li>
+          <li>Bayangan pada kartu standar dan tombol.</li>
+          <li>Stroke lebih tebal dari 1 px pada border.</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+</main>
+
+<footer class="border-t mt-16" style="border-color: var(--border); background: var(--surface);">
+  <div class="max-w-5xl mx-auto px-6 py-6 text-xs flex items-baseline justify-between" style="color: var(--muted);">
+    <span>KAISAN Design System · Tahap 1 dari 4 · Fondasi</span>
+    <span>Tunggu ACC untuk lanjut ke Tahap 2.</span>
+  </div>
+</footer>
+
+</body>
+</html>

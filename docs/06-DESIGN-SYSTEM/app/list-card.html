@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>List-card — KAISAN</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="k-back" href="./index.html">← Kit</a>
+  <header class="k-header">
+    <h1>List-card</h1>
+    <p>The default card on Latihan and Saya. 16 px padding, <code>--r-lg</code>, hover lift.</p>
+  </header>
+
+  <section class="k-section">
+    <h2>Variants</h2>
+    <p class="k-lead">icon + title + meta + trail</p>
+    <div style="max-width: 520px;">
+      <a class="k-list" href="#">
+        <div class="k-list__row">
+          <div class="k-list__icon">M</div>
+          <div class="k-list__body">
+            <span class="k-list__title">Matematika — Bab 3: Persamaan Linear</span>
+            <span class="k-list__meta">20 soal · 25 menit · Kelas 9</span>
+          </div>
+          <div class="k-list__trail">Mulai ›</div>
+        </div>
+      </a>
+      <a class="k-list" href="#">
+        <div class="k-list__row">
+          <div class="k-list__icon k-list__icon--info">B</div>
+          <div class="k-list__body">
+            <span class="k-list__title">Bahasa Indonesia — Teks Eksposisi</span>
+            <span class="k-list__meta">15 soal · 20 menit · Selesai</span>
+          </div>
+          <div class="k-list__trail">Lihat ›</div>
+        </div>
+      </a>
+      <a class="k-list" href="#">
+        <div class="k-list__row">
+          <div class="k-list__icon k-list__icon--success">I</div>
+          <div class="k-list__body">
+            <span class="k-list__title">IPA — Sistem Pencernaan</span>
+            <span class="k-list__meta">18 soal · 22 menit · 80% benar</span>
+          </div>
+          <div class="k-list__trail">Coba lagi ›</div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <section class="k-section">
+    <h2>HTML</h2>
+    <pre class="k-code">&lt;a class="k-list" href="#"&gt;
+  &lt;div class="k-list__row"&gt;
+    &lt;div class="k-list__icon"&gt;M&lt;/div&gt;
+    &lt;div class="k-list__body"&gt;
+      &lt;span class="k-list__title"&gt;Matematika — Bab 3: Persamaan Linear&lt;/span&gt;
+      &lt;span class="k-list__meta"&gt;20 soal · 25 menit · Kelas 9&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class="k-list__trail"&gt;Mulai ›&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/a&gt;</pre>
+  </section>
+</body>
+</html>

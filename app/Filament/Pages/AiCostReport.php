@@ -9,6 +9,7 @@ use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use UnitEnum;
 
 /**
  * What the AI has cost, month by month.
@@ -23,9 +24,11 @@ class AiCostReport extends Page
 
     protected static ?string $navigationLabel = 'Biaya AI';
 
-    protected static ?string $title = 'Rekap biaya AI';
+    protected static string|UnitEnum|null $navigationGroup = 'Pengguna';
 
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 2;
+
+    protected static ?string $title = 'Rekap biaya AI';
 
     protected string $view = 'filament.pages.ai-cost-report';
 
