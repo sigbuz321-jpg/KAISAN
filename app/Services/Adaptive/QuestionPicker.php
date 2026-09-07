@@ -26,10 +26,13 @@ class QuestionPicker
     /** A question seen this recently is not worth asking again yet. */
     public const REPEAT_COOLDOWN_DAYS = 30;
 
-    public function pick(User $student, int $subjectId, int $rating): PickedQuestion
+    /**
+     * @param  list<int>  $excludeQuestionIds
+     */
+    public function pick(User $student, int $subjectId, int $rating, array $excludeQuestionIds = []): PickedQuestion
     {
         $target = $rating + self::TARGET_OFFSET;
-        $recent = $this->recentlyAnswered($student, $subjectId);
+        $recent = array_values(array_unique(array_merge($this->recentlyAnswered($student, $subjectId), $excludeQuestionIds)));
 
         foreach (self::WINDOWS as $window) {
             $question = $this->candidates($subjectId, $recent)
@@ -52,10 +55,13 @@ class QuestionPicker
             return new PickedQuestion($anything, bankIsThin: true);
         }
 
-        // Everything published has been seen recently. Allow repeats rather
-        // than telling a student to come back in a month.
+        // Everything published has been seen recently. Allow repeats from older
+        // sessions rather than telling a student to come back in a month, but
+        // NEVER repeat questions already answered in the current session.
+        $repeatCandidate = $this->candidates($subjectId, $excludeQuestionIds)->inRandomOrder()->first();
+
         return new PickedQuestion(
-            $this->candidates($subjectId, [])->inRandomOrder()->first(),
+            $repeatCandidate,
             bankIsThin: true,
         );
     }

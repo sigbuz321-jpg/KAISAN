@@ -165,8 +165,14 @@ class LatihanAdaptif extends Component
     private function ambilSoal(): void
     {
         $ability = $this->ability();
+        $sessionAnsweredIds = $this->session()->answers()->pluck('question_id')->all();
 
-        $picked = app(QuestionPicker::class)->pick(auth()->user(), $this->subjectId, $ability->rating);
+        $picked = app(QuestionPicker::class)->pick(
+            auth()->user(),
+            $this->subjectId,
+            $ability->rating,
+            $sessionAnsweredIds,
+        );
 
         if (! $picked->found()) {
             $this->soal = null;

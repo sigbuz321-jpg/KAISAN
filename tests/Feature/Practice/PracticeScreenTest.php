@@ -67,6 +67,21 @@ it('shows the key and the explanation after answering', function () {
         ->toBe('Karena dua ditambah dua sama dengan empat.');
 });
 
+it('shows incorrect feedback banner when student picks wrong option', function () {
+    $question = latihanSoal(['explanation' => 'Pembahasan soal salah.']);
+
+    $component = Livewire::actingAs($this->murid)
+        ->test(LatihanAdaptif::class, ['subject' => $this->mapel]);
+
+    $wrong = $question->answer_key === 'A' ? 'B' : 'A';
+    $component->set('pilihan', $wrong)->call('jawab');
+
+    expect($component->get('umpanBalik')['benar'])->toBeFalse()
+        ->and($component->get('umpanBalik')['kunci'])->toBe($question->answer_key)
+        ->and($component->html())->toContain('Belum tepat.')
+        ->and($component->html())->toContain('Jawaban yang benar: '.$question->answer_key);
+});
+
 it('records the answer and moves the rating', function () {
     latihanSoal();
 

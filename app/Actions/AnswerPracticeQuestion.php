@@ -33,17 +33,26 @@ class AnswerPracticeQuestion
         $this->guard($session, $question);
 
         return DB::transaction(function () use ($session, $question, $option) {
+            $correct = $option === $question->answer_key;
+
             // Idempotent guard: if this question has already been recorded in
-            // this session (e.g. from rapid double-clicks or slow network retry),
-            // return the existing outcome without double-counting the rating.
+            // this session, handle repeat submissions cleanly without throwing
+            // or misattributing a wrong answer as correct.
             $existing = PracticeAnswer::query()
                 ->where('practice_session_id', $session->id)
                 ->where('question_id', $question->id)
                 ->first();
 
             if ($existing !== null) {
+                if ($existing->selected_option !== $option) {
+                    $existing->update([
+                        'selected_option' => $option,
+                        'is_correct' => $correct,
+                    ]);
+                }
+
                 return new PracticeOutcome(
-                    correct: $existing->is_correct,
+                    correct: $correct,
                     answerKey: $question->answer_key,
                     explanation: $question->explanation,
                     ratingBefore: $existing->rating_before,
@@ -60,9 +69,7 @@ class AnswerPracticeQuestion
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            $correct = $option === $question->answer_key;
             $before = $ability->rating;
-
             $after = $this->elo->nextRating($before, $question->difficulty, $correct, $ability->answers_count);
 
             PracticeAnswer::create([
