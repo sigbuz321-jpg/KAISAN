@@ -54,7 +54,7 @@
         @endphp
 
         {{-- Interactive Top 3 Podium Island with Motion.dev physics --}}
-        <div data-react-island="leaderboard-podium" data-react-props="@json(['entries' => $podiumEntries])"></div>
+        <div data-react-island="leaderboard-podium" data-react-props="{{ json_encode(['entries' => $podiumEntries]) }}"></div>
 
         <ol class="mt-6 rounded-lg border border-border bg-surface px-1 py-1">
             @foreach ($top as $entry)

@@ -29,61 +29,55 @@
             {{ __('app.home.pilih') }}
         </h2>
 
-        @php
-            $pintuList = [
+        <ul class="mt-3 space-y-3">
+            @foreach ([
                 [
                     'label' => 'Murid',
                     'meta' => 'Latihan adaptif, ujian terjadwal, dan peringkat.',
                     'href' => route('masuk'),
-                    'icon' => 'book',
+                    'icon' => 'icon.book',
                     'tone' => 'accent',
                 ],
                 [
                     'label' => 'Guru',
                     'meta' => 'Bank soal, jadwal ujian, dan nilai kelas.',
                     'href' => '/guru/login',
-                    'icon' => 'clipboard',
+                    'icon' => 'icon.clipboard',
                     'tone' => 'info',
                 ],
                 [
                     'label' => 'Admin',
                     'meta' => 'Akun, mata pelajaran, musim, dan biaya AI.',
                     'href' => '/admin/login',
-                    'icon' => 'user',
+                    'icon' => 'icon.user',
                     'tone' => 'neutral',
                 ],
-            ];
-        @endphp
+            ] as $pintu)
+                <li>
+                    <a href="{{ $pintu['href'] }}"
+                       onclick="window.soundEngine?.playTap()"
+                       class="flex items-center gap-3 rounded-lg border border-border bg-surface p-4
+                              transition-all duration-150 hover:-translate-y-0.5 hover:shadow-elevated active:scale-[0.985]
+                              focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
+                              focus-visible:outline-accent">
+                        <span @class([
+                            'flex h-10 w-10 shrink-0 items-center justify-center rounded-md',
+                            'bg-accent-soft text-accent-text' => $pintu['tone'] === 'accent',
+                            'bg-info-soft text-info-text' => $pintu['tone'] === 'info',
+                            'bg-surface-muted text-muted' => $pintu['tone'] === 'neutral',
+                        ])>
+                            <x-dynamic-component :component="$pintu['icon']" class="h-5 w-5" />
+                        </span>
 
-        {{-- React Island with Motion.dev stagger entry and spring gestures --}}
-        <div data-react-island="home-pillars" data-react-props="@json(['items' => $pintuList])">
-            <ul class="mt-3 space-y-3">
-                @foreach ($pintuList as $pintu)
-                    <li>
-                        <a href="{{ $pintu['href'] }}"
-                           class="flex items-center gap-3 rounded-lg border border-border bg-surface p-4
-                                  transition-shadow duration-150 hover:shadow-elevated
-                                  focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
-                                  focus-visible:outline-accent">
-                            <span @class([
-                                'flex h-10 w-10 shrink-0 items-center justify-center rounded-md',
-                                'bg-accent-soft text-accent-text' => $pintu['tone'] === 'accent',
-                                'bg-info-soft text-info-text' => $pintu['tone'] === 'info',
-                                'bg-surface-muted text-muted' => $pintu['tone'] === 'neutral',
-                            ])>
-                                <x-dynamic-component :component="'icon.'.$pintu['icon']" class="h-5 w-5" />
-                            </span>
+                        <span class="min-w-0 flex-1">
+                            <span class="block text-base font-semibold text-fg">{{ $pintu['label'] }}</span>
+                            <span class="mt-0.5 block text-xs leading-relaxed text-muted">{{ $pintu['meta'] }}</span>
+                        </span>
 
-                            <span class="min-w-0 flex-1">
-                                <span class="block text-base font-semibold text-fg">{{ $pintu['label'] }}</span>
-                                <span class="mt-0.5 block text-xs leading-relaxed text-muted">{{ $pintu['meta'] }}</span>
-                            </span>
-
-                            <x-icon.chevron-right class="h-5 w-5 shrink-0 text-muted" />
-                        </a>
-                    </li>
-                @endforeach
-            </ul>
-        </div>
+                        <x-icon.chevron-right class="h-5 w-5 shrink-0 text-muted" />
+                    </a>
+                </li>
+            @endforeach
+        </ul>
     @endauth
 @endsection

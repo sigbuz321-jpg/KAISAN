@@ -17,7 +17,7 @@
                 <h1 class="text-[1.375rem] font-semibold tracking-[-0.01em] text-fg">Ujian sudah dikumpulkan</h1>
 
                 {{-- Exam Celebration Island: counter roll-up + confetti + chord --}}
-                <div data-react-island="exam-celebration" data-react-props="@json(['score' => $nilaiAngka])"></div>
+                <div data-react-island="exam-celebration" data-react-props="{{ json_encode(['score' => $nilaiAngka]) }}"></div>
             @else
                 <h1 class="text-[1.375rem] font-semibold tracking-[-0.01em] text-fg">Ujian selesai</h1>
                 <p class="mt-3 text-base leading-relaxed text-fg">{{ $pesan }}</p>
