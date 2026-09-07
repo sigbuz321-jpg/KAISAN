@@ -81,6 +81,8 @@ npm run build
 
 ## Dokumen pendukung
 
+- `HANDOVER.md` — **baca ini dulu** kalau baru bergabung di proyek
+
 - `docs/01-PRD.md` — spesifikasi produk & user story
 - `docs/02-ARCHITECTURE.md` — keputusan arsitektur
 - `docs/03-DATABASE.md` — skema database

@@ -6,25 +6,17 @@ dan men-deploy.
 
 ---
 
-## 1. Kondisi repo hari ini — baca ini sebelum clone
-
-**`main` BUKAN yang berjalan di server.** Jangan mulai dari `main`.
-
-| Branch | Isi | Status |
-|---|---|---|
-| `main` | M0–M5 | tertinggal 34 commit |
-| `feat/m6-leaderboard-core` | M6 leaderboard & musim | PR #16 masih terbuka |
-| `feat/design-system` | M6 + design system + seluruh perbaikan bug | **inilah yang jalan di VPS dev** |
+## 1. Mulai dari mana
 
 ```bash
 git clone git@github.com:sigbuz321-jpg/KAISAN.git
 cd KAISAN
-git checkout feat/design-system
 ```
 
-`feat/design-system` dicabangkan dari `feat/m6-leaderboard-core`, bukan dari
-`main`, karena halaman Peringkat hanya ada di sana. Urutan merge yang benar:
-PR #16 ke `main` dulu, baru design system.
+`main` adalah yang berjalan di VPS dev. Cabangkan darinya:
+`feat/<modul>-<ringkas>` untuk fitur, `fix/<ringkas>` untuk perbaikan.
+
+Baca `HANDOVER.md` di akar repo lebih dulu — itu orientasi lengkapnya.
 
 ---
 
@@ -220,11 +212,11 @@ Port 8080 di laptop sering sudah dipakai layanan lain; pakai 8081.
 
 ## 8. Yang masih terbuka
 
-1. **Kunci AI lama bocor di repo publik** (`sk-c9f…`, commit `7ccff05`). Belum
-   dicabut, riwayat belum dibersihkan. **Bersihkan riwayat sebelum merge ke
-   `main`**, kalau tidak kuncinya ikut menyebar ke riwayat `main`.
-2. **PR #16 (M6)** masih menunggu penerimaan.
-3. **`main` tertinggal 34 commit.**
-4. **Kata sandi akun contoh ada di repo publik.** Siapa pun yang menemukan URL
-   dev bisa masuk sebagai admin. Ganti sebelum menyebarkan link lebih luas.
-5. **M7 Serah Terima** belum mulai (`docs/04-ROADMAP.md`).
+1. **Kunci AI lama pernah bocor di repo publik.** Tidak masuk riwayat `main`
+   karena design system di-squash saat merge, tapi masih ada di riwayat branch
+   lama. Kunci itu harus dicabut dan diganti.
+2. **Kata sandi akun contoh ada di repo publik.** Ganti sebelum link dev
+   disebarkan lebih luas.
+3. **Rate limit simpan jawaban belum benar-benar terpasang** — `throttle` ada di
+   `GET /ujian/{exam}`, sedangkan penyimpanan lewat `POST /livewire/update`.
+4. **M7 Serah Terima** belum mulai (`docs/04-ROADMAP.md`).
