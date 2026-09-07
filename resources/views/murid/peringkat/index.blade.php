@@ -45,6 +45,17 @@
             </x-slot:action>
         </x-ui.empty>
     @else
+        @php
+            $podiumEntries = $top->take(3)->map(fn ($e) => [
+                'rank' => (int) $e->rank,
+                'name' => $e->student->name,
+                'points' => number_format((float) $e->points, 0, ',', '.'),
+            ])->values()->all();
+        @endphp
+
+        {{-- Interactive Top 3 Podium Island with Motion.dev physics --}}
+        <div data-react-island="leaderboard-podium" data-react-props="@json(['entries' => $podiumEntries])"></div>
+
         <ol class="mt-6 rounded-lg border border-border bg-surface px-1 py-1">
             @foreach ($top as $entry)
                 <x-ui.leaderboard-row

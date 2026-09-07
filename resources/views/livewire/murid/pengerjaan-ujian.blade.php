@@ -6,6 +6,8 @@
         'number' => $item['number'],
         'answered' => ($answers[$item['id']] ?? null) !== null,
     ])->all();
+
+    $nilaiAngka = is_string($skor) ? (float) $skor : ($skor ?? 0);
 @endphp
 
 <div class="space-y-5">
@@ -13,10 +15,9 @@
         <section class="rounded-lg border border-border bg-surface p-6 text-center">
             @if ($skor !== null)
                 <h1 class="text-[1.375rem] font-semibold tracking-[-0.01em] text-fg">Ujian sudah dikumpulkan</h1>
-                <p class="mt-3 text-sm text-muted">Nilai kamu</p>
-                <p class="mt-1 font-mono text-[2.5rem] font-bold leading-none tabular-nums text-fg">
-                    {{ rtrim(rtrim($skor, '0'), '.') }}
-                </p>
+
+                {{-- Exam Celebration Island: counter roll-up + confetti + chord --}}
+                <div data-react-island="exam-celebration" data-react-props="@json(['score' => $nilaiAngka])"></div>
             @else
                 <h1 class="text-[1.375rem] font-semibold tracking-[-0.01em] text-fg">Ujian selesai</h1>
                 <p class="mt-3 text-base leading-relaxed text-fg">{{ $pesan }}</p>

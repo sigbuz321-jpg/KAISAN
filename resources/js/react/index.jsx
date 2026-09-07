@@ -3,6 +3,9 @@ import { createRoot } from 'react-dom/client';
 import { MotionProbe } from './components/MotionProbe';
 import { SoundToggle } from './components/SoundToggle';
 import { LatihanFeedbackOverlay } from './components/LatihanFeedbackOverlay';
+import { LeaderboardPodium } from './components/LeaderboardPodium';
+import { ExamCelebration } from './components/ExamCelebration';
+import { HomePillars } from './components/HomePillars';
 
 /**
  * Registry of available React micro-island components.
@@ -12,6 +15,9 @@ const registry = {
     'motion-probe': MotionProbe,
     'sound-toggle': SoundToggle,
     'latihan-feedback-overlay': LatihanFeedbackOverlay,
+    'leaderboard-podium': LeaderboardPodium,
+    'exam-celebration': ExamCelebration,
+    'home-pillars': HomePillars,
 };
 
 /**
