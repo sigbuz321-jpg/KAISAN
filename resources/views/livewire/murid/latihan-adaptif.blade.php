@@ -11,6 +11,9 @@
 @endphp
 
 <div class="space-y-5">
+    {{-- React Micro-Island for Motion.dev spring celebrations, confetti burst, and SFX --}}
+    <div data-react-island="latihan-feedback-overlay"></div>
+
     @if (! $selesai)
         <section class="rounded-lg border border-border bg-surface p-4 sm:p-5">
             <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">

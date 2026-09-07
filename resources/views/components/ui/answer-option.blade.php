@@ -47,6 +47,7 @@
            class="sr-only"
            @checked($selected)
            @disabled(! $interactive)
+           @if ($interactive) @click="window.soundEngine?.playTap()" @endif
            {{ $bind ?? '' }}
            {{ $attributes }}>
 

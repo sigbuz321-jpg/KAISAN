@@ -2,6 +2,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { MotionProbe } from './components/MotionProbe';
 import { SoundToggle } from './components/SoundToggle';
+import { LatihanFeedbackOverlay } from './components/LatihanFeedbackOverlay';
 
 /**
  * Registry of available React micro-island components.
@@ -10,6 +11,7 @@ import { SoundToggle } from './components/SoundToggle';
 const registry = {
     'motion-probe': MotionProbe,
     'sound-toggle': SoundToggle,
+    'latihan-feedback-overlay': LatihanFeedbackOverlay,
 };
 
 /**

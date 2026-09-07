@@ -108,6 +108,22 @@ class LatihanAdaptif extends Component
         $this->benar += $outcome->correct ? 1 : 0;
 
         $this->refreshLevel();
+
+        // Hand off to the React Micro-Island layered on top of this Livewire view:
+        // Motion.dev handles the spring bounce, confetti and the level-up modal,
+        // while the Web Audio API engine plays the matching tone. The
+        // server has already recorded the answer and updated the rating, so this
+        // is purely a celebratory signal — re-fetching it would risk a double
+        // tap that the answers() guard in AnswerPracticeQuestion already blocks.
+        $this->dispatch('latihan-feedback', [
+            'benar' => $outcome->correct,
+            'kunci' => $outcome->answerKey,
+            'pembahasan' => $outcome->explanation,
+            'naikLevel' => $outcome->levelChanged(),
+            'level' => $this->level,
+            'dijawab' => $this->dijawab,
+            'benar_count' => $this->benar,
+        ]);
     }
 
     public function berikutnya(): void
@@ -125,6 +141,14 @@ class LatihanAdaptif extends Component
 
         $this->selesai = true;
         $this->soal = null;
+
+        // Signal the React Micro-Island to play the celebratory finished-chord
+        // and a final lighter confetti burst as the summary renders. This is a
+        // one-shot cue — the next page-load resets the overlay.
+        $this->dispatch('latihan-selesai', [
+            'dijawab' => $this->dijawab,
+            'benar_count' => $this->benar,
+        ]);
     }
 
     public function render(): View
