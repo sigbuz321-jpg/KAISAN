@@ -142,6 +142,9 @@ resources/views/
   components/ui/    18 komponen design system
   components/icon/  ikon SVG inline, tanpa library
   layouts/app.blade.php
+resources/js/
+  react/            React micro-islands: Motion.dev confetti, level-up, podium, celebration
+  sound-engine.js   Web Audio API sound synthesizer (0 KB, 0 ms latensi)
 docs/               spesifikasi, design system, onboarding
 .claude/            aturan, skill, subagent
 ```

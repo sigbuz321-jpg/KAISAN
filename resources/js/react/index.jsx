@@ -1,5 +1,6 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import { MotionConfig } from 'motion/react';
 import { MotionProbe } from './components/MotionProbe';
 import { SoundToggle } from './components/SoundToggle';
 import { LatihanFeedbackOverlay } from './components/LatihanFeedbackOverlay';
@@ -61,7 +62,11 @@ export function mountIslands() {
         }
 
         const root = createRoot(container);
-        root.render(<Component {...props} container={container} />);
+        root.render(
+            <MotionConfig reducedMotion="user">
+                <Component {...props} container={container} />
+            </MotionConfig>
+        );
         mountedRoots.set(container, root);
     });
 }
