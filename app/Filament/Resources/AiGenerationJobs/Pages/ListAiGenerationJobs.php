@@ -85,7 +85,7 @@ class ListAiGenerationJobs extends ListRecords
                         ->when(filled($grade), fn ($q) => $q->forGrade((int) $grade))
                         ->orderBy('name')
                         ->get()
-                        ->mapWithKeys(fn (Subject $s) => [$s->id => $s->displayName()])
+                        ->mapWithKeys(fn (Subject $s) => [$s->id => $s->nameOnly()])
                         ->all();
                 })
                 ->required()

@@ -41,7 +41,7 @@ class QuestionForm
                                 ->when($level, fn ($q) => $q->where('school_level', $level))
                                 ->orderBy('name')
                                 ->get()
-                                ->mapWithKeys(fn (Subject $s) => [$s->id => $s->displayName()])
+                                ->mapWithKeys(fn (Subject $s) => [$s->id => $level ? $s->nameOnly() : $s->displayName()])
                                 ->all();
                         })
                         ->required()

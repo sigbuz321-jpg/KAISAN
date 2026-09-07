@@ -65,6 +65,7 @@ class Subject extends Model
 
     /**
      * Human-readable label that includes school level when present (without parentheses).
+     * Used in reference tables where both SD and SMP appear together.
      */
     public function displayName(): string
     {
@@ -73,6 +74,15 @@ class Subject extends Model
         }
 
         return "{$this->name} {$this->school_level->label()}";
+    }
+
+    /**
+     * Plain subject name without school level suffix.
+     * Used in forms where school level is already selected separately.
+     */
+    public function nameOnly(): string
+    {
+        return $this->name;
     }
 
     /**

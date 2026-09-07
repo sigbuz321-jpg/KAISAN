@@ -12,14 +12,12 @@ it('generates slug with school level suffix', function () {
     expect($subject->slug)->toBe('bahasa-indonesia-smp');
 });
 
-it('formats display name with school level', function () {
-    $general = new Subject(['name' => 'Matematika']);
+it('returns plain name via nameOnly', function () {
     $sd = new Subject(['name' => 'Matematika', 'school_level' => SchoolLevel::SD]);
-    $smp = new Subject(['name' => 'Matematika', 'school_level' => SchoolLevel::SMP]);
+    $smp = new Subject(['name' => 'Informatika', 'school_level' => SchoolLevel::SMP]);
 
-    expect($general->displayName())->toBe('Matematika')
-        ->and($sd->displayName())->toBe('Matematika SD')
-        ->and($smp->displayName())->toBe('Matematika SMP');
+    expect($sd->nameOnly())->toBe('Matematika')
+        ->and($smp->nameOnly())->toBe('Informatika');
 });
 
 it('formats grade range label correctly', function () {

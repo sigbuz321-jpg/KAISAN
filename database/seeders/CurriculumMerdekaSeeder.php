@@ -34,14 +34,16 @@ class CurriculumMerdekaSeeder extends Seeder
     }
 
     /**
-     * Kurikulum Merdeka SD dan SMP dengan topik representatif per mapel.
+     * Kurikulum Merdeka SD dan SMP dengan rentang kelas per mapel sesuai
+     * fase dan mata pelajaran yang berlaku di Kurikulum Merdeka. Pemetaan
+     * dimulai dari fase A (kelas 1-2 SD) sampai fase D (kelas 10-12 SMA).
      *
      * @return array<int, array{name: string, school_level: SchoolLevel, start_grade: int, end_grade: int, topics: list<string>}>
      */
     public static function subjects(): array
     {
         return [
-            // ===== SD (Kelas 1-6) =====
+            // ===== SD — Fase A (kelas 1-2), Fase B (kelas 3-4), Fase C (kelas 5-6) =====
             [
                 'name' => 'Pendidikan Agama Islam',
                 'school_level' => SchoolLevel::SD,
@@ -96,9 +98,9 @@ class CurriculumMerdekaSeeder extends Seeder
                 ],
             ],
             [
-                'name' => 'Ilmu Pengetahuan Alam dan Sosial (IPAS)',
+                'name' => 'IPAS',
                 'school_level' => SchoolLevel::SD,
-                'start_grade' => 1,
+                'start_grade' => 3,
                 'end_grade' => 6,
                 'topics' => [
                     'Makhluk Hidup dan Lingkungan',
@@ -123,7 +125,7 @@ class CurriculumMerdekaSeeder extends Seeder
                 ],
             ],
             [
-                'name' => 'Pendidikan Jasmani, Olahraga, dan Kesehatan (PJOK)',
+                'name' => 'PJOK',
                 'school_level' => SchoolLevel::SD,
                 'start_grade' => 1,
                 'end_grade' => 6,
@@ -139,7 +141,7 @@ class CurriculumMerdekaSeeder extends Seeder
             [
                 'name' => 'Bahasa Inggris',
                 'school_level' => SchoolLevel::SD,
-                'start_grade' => 1,
+                'start_grade' => 5,
                 'end_grade' => 6,
                 'topics' => [
                     'Greetings (Salam)',
@@ -151,7 +153,7 @@ class CurriculumMerdekaSeeder extends Seeder
                 ],
             ],
 
-            // ===== SMP (Kelas 7-9) =====
+            // ===== SMP — Fase D (kelas 7-9) =====
             [
                 'name' => 'Pendidikan Agama Islam',
                 'school_level' => SchoolLevel::SMP,
@@ -220,7 +222,7 @@ class CurriculumMerdekaSeeder extends Seeder
                 ],
             ],
             [
-                'name' => 'Ilmu Pengetahuan Sosial (IPS)',
+                'name' => 'IPS',
                 'school_level' => SchoolLevel::SMP,
                 'start_grade' => 7,
                 'end_grade' => 9,
@@ -247,7 +249,7 @@ class CurriculumMerdekaSeeder extends Seeder
                 ],
             ],
             [
-                'name' => 'Pendidikan Jasmani, Olahraga, dan Kesehatan (PJOK)',
+                'name' => 'PJOK',
                 'school_level' => SchoolLevel::SMP,
                 'start_grade' => 7,
                 'end_grade' => 9,
@@ -264,7 +266,7 @@ class CurriculumMerdekaSeeder extends Seeder
                 'name' => 'Informatika',
                 'school_level' => SchoolLevel::SMP,
                 'start_grade' => 7,
-                'end_grade' => 9,
+                'end_grade' => 7,
                 'topics' => [
                     'Fondasi Informatika',
                     'Algoritma Dasar',
