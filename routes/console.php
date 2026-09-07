@@ -1,6 +1,7 @@
 <?php
 
 use App\Console\Commands\TransitionExams;
+use App\Jobs\RecalculateLeaderboard;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
@@ -22,3 +23,13 @@ Schedule::command(TransitionExams::class)
     ->everyMinute()
     ->withoutOverlapping()
     ->runInBackground();
+
+/*
+| Standings are computed on a schedule, never when a ranking page is opened.
+| Five minutes is close enough to feel live to a student and far enough apart
+| that the heaviest query in the application runs a dozen times an hour rather
+| than once per page view.
+*/
+Schedule::job(new RecalculateLeaderboard)
+    ->everyFiveMinutes()
+    ->withoutOverlapping();

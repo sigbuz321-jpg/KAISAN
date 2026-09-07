@@ -104,7 +104,7 @@ lebih sulit, dan sebaliknya.
 ---
 
 ## M6 — Leaderboard & season
-**Status:** belum mulai
+**Status:** selesai — menunggu penerimaan (tag `v0.6.0`)
 
 - `seasons`, `leaderboard_entries`
 - Job agregasi tiap 5 menit dengan window function
