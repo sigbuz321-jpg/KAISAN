@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\SchoolLevel;
 use Database\Factories\SubjectFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -11,6 +13,9 @@ use Illuminate\Support\Str;
 /**
  * @property int $id
  * @property string $name
+ * @property SchoolLevel|null $school_level
+ * @property int|null $start_grade
+ * @property int|null $end_grade
  * @property string $slug
  * @property bool $is_active
  */
@@ -19,7 +24,14 @@ class Subject extends Model
     /** @use HasFactory<SubjectFactory> */
     use HasFactory;
 
-    protected $fillable = ['name', 'slug', 'is_active'];
+    protected $fillable = [
+        'name',
+        'school_level',
+        'start_grade',
+        'end_grade',
+        'slug',
+        'is_active',
+    ];
 
     /**
      * Mirrors the column defaults so a freshly created model reports them
@@ -33,15 +45,70 @@ class Subject extends Model
 
     protected function casts(): array
     {
-        return ['is_active' => 'boolean'];
+        return [
+            'school_level' => SchoolLevel::class,
+            'start_grade' => 'integer',
+            'end_grade' => 'integer',
+            'is_active' => 'boolean',
+        ];
     }
 
     protected static function booted(): void
     {
         static::saving(function (Subject $subject) {
             if (blank($subject->slug)) {
-                $subject->slug = Str::slug($subject->name);
+                $suffix = $subject->school_level ? '-'.$subject->school_level->value : '';
+                $subject->slug = Str::slug($subject->name.$suffix);
             }
+        });
+    }
+
+    /**
+     * Human-readable label that includes school level when present.
+     */
+    public function displayName(): string
+    {
+        if ($this->school_level === null) {
+            return $this->name;
+        }
+
+        return "{$this->name} ({$this->school_level->label()})";
+    }
+
+    /**
+     * Returns grade range text, e.g. "Kelas 1–6" or "Kelas 7–9".
+     */
+    public function gradeRangeLabel(): ?string
+    {
+        if ($this->start_grade === null && $this->end_grade === null) {
+            return null;
+        }
+
+        if ($this->start_grade !== null && $this->end_grade !== null) {
+            return $this->start_grade === $this->end_grade
+                ? "Kelas {$this->start_grade}"
+                : "Kelas {$this->start_grade}–{$this->end_grade}";
+        }
+
+        return $this->start_grade !== null
+            ? "Mulai Kelas {$this->start_grade}"
+            : "Sampai Kelas {$this->end_grade}";
+    }
+
+    /** @param Builder<Subject> $query */
+    public function scopeForSchoolLevel(Builder $query, SchoolLevel|string $level): void
+    {
+        $value = $level instanceof SchoolLevel ? $level->value : $level;
+        $query->where('school_level', $value);
+    }
+
+    /** @param Builder<Subject> $query */
+    public function scopeForGrade(Builder $query, int $grade): void
+    {
+        $query->where(function (Builder $q) use ($grade) {
+            $q->whereNull('start_grade')->orWhere('start_grade', '<=', $grade);
+        })->where(function (Builder $q) use ($grade) {
+            $q->whereNull('end_grade')->orWhere('end_grade', '>=', $grade);
         });
     }
 

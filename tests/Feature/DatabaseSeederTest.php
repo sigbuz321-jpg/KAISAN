@@ -52,7 +52,7 @@ it('leaves the AI questions waiting for review', function () {
 it('seeds published questions a teacher could build an exam from', function () {
     $this->seed(DatabaseSeeder::class);
 
-    expect(Subject::count())->toBe(3)
+    expect(Subject::count())->toBeGreaterThanOrEqual(3)
         ->and(Question::where('status', QuestionStatus::Published)->count())->toBeGreaterThanOrEqual(6);
 });
 

@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             AccountSeeder::class,
             SeasonSeeder::class,
-            CurriculumSeeder::class,
+            CurriculumMerdekaSeeder::class,
             QuestionSeeder::class,
         ]);
 

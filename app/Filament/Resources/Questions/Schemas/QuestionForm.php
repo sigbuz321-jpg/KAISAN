@@ -20,7 +20,7 @@ class QuestionForm
                 ->schema([
                     Select::make('subject_id')
                         ->label('Mata pelajaran')
-                        ->options(fn () => Subject::query()->where('is_active', true)->orderBy('name')->pluck('name', 'id')->all())
+                        ->options(fn () => Subject::query()->where('is_active', true)->orderBy('name')->get()->mapWithKeys(fn (Subject $s) => [$s->id => $s->displayName()])->all())
                         ->required()
                         ->searchable()
                         ->native(false)
