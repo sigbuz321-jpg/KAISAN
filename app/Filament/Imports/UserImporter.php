@@ -3,6 +3,7 @@
 namespace App\Filament\Imports;
 
 use App\Enums\Role;
+use App\Enums\SchoolLevel;
 use App\Models\Classroom;
 use App\Models\User;
 use Filament\Actions\Imports\ImportColumn;
@@ -48,7 +49,7 @@ class UserImporter extends Importer
 
                     $record->classroom_id = $classroom->id;
                     $record->grade = $classroom->grade;
-                    $record->school_level = \App\Enums\SchoolLevel::fromGrade($classroom->grade);
+                    $record->school_level = SchoolLevel::fromGrade($classroom->grade);
                 }),
         ];
     }

@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\Role;
 use App\Enums\SchoolLevel;
 use App\Models\Classroom;
 use App\Models\User;

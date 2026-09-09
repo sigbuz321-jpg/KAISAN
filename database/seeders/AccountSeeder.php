@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Enums\Role;
+use App\Enums\SchoolLevel;
 use App\Models\Classroom;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -55,9 +56,9 @@ class AccountSeeder extends Seeder
         $number = 1;
 
         $classes = [
-            ['6A', 6, \App\Enums\SchoolLevel::SD],
-            ['7A', 7, \App\Enums\SchoolLevel::SMP],
-            ['10A', 10, \App\Enums\SchoolLevel::SMA],
+            ['6A', 6, SchoolLevel::SD],
+            ['7A', 7, SchoolLevel::SMP],
+            ['10A', 10, SchoolLevel::SMA],
         ];
 
         foreach ($classes as [$label, $grade, $level]) {

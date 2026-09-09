@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\Role;
+use App\Enums\SchoolLevel;
 use App\Models\Classroom;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -47,7 +48,7 @@ class UserFactory extends Factory
     {
         return $this->state(fn () => [
             'role' => Role::Murid,
-            'school_level' => \App\Enums\SchoolLevel::SD,
+            'school_level' => SchoolLevel::SD,
             'grade' => $grade,
         ]);
     }
@@ -56,7 +57,7 @@ class UserFactory extends Factory
     {
         return $this->state(fn () => [
             'role' => Role::Murid,
-            'school_level' => \App\Enums\SchoolLevel::SMP,
+            'school_level' => SchoolLevel::SMP,
             'grade' => $grade,
         ]);
     }
@@ -65,7 +66,7 @@ class UserFactory extends Factory
     {
         return $this->state(fn () => [
             'role' => Role::Murid,
-            'school_level' => \App\Enums\SchoolLevel::SMA,
+            'school_level' => SchoolLevel::SMA,
             'grade' => $grade,
         ]);
     }

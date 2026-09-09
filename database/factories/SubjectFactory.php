@@ -54,4 +54,3 @@ class SubjectFactory extends Factory
         ]);
     }
 }
-

@@ -18,7 +18,7 @@ return new class extends Migration
         });
 
         DB::statement("ALTER TABLE users ADD CONSTRAINT users_school_level_check CHECK (school_level IS NULL OR school_level IN ('sd', 'smp', 'sma'))");
-        DB::statement("ALTER TABLE users ADD CONSTRAINT users_grade_check CHECK (grade IS NULL OR (grade >= 1 AND grade <= 12))");
+        DB::statement('ALTER TABLE users ADD CONSTRAINT users_grade_check CHECK (grade IS NULL OR (grade >= 1 AND grade <= 12))');
         DB::statement("ALTER TABLE users ADD CONSTRAINT users_school_level_only_for_students CHECK (school_level IS NULL OR role = 'murid')");
         DB::statement("ALTER TABLE users ADD CONSTRAINT users_grade_only_for_students CHECK (grade IS NULL OR role = 'murid')");
     }

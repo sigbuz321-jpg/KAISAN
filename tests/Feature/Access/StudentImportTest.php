@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\Role;
+use App\Enums\SchoolLevel;
 use App\Models\Classroom;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -22,7 +23,7 @@ it('imports students and puts them in the named classroom', function () {
         ->and($budi->is_active)->toBeTrue()
         ->and($budi->classroom->name)->toBe('Kelas 9A')
         ->and($budi->grade)->toBe(9)
-        ->and($budi->school_level)->toBe(\App\Enums\SchoolLevel::SMP);
+        ->and($budi->school_level)->toBe(SchoolLevel::SMP);
 });
 
 it('gives every imported student the password the admin chose', function () {

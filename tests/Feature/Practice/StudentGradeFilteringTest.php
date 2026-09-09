@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\QuestionStatus;
 use App\Enums\SchoolLevel;
 use App\Models\Question;
 use App\Models\Subject;
