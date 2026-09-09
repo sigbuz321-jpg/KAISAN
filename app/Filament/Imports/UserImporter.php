@@ -47,6 +47,8 @@ class UserImporter extends Importer
                     }
 
                     $record->classroom_id = $classroom->id;
+                    $record->grade = $classroom->grade;
+                    $record->school_level = \App\Enums\SchoolLevel::fromGrade($classroom->grade);
                 }),
         ];
     }

@@ -16,6 +16,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Validation\ValidationException;
+use RuntimeException;
 
 class ListAiGenerationJobs extends ListRecords
 {
@@ -59,16 +60,19 @@ class ListAiGenerationJobs extends ListRecords
                 ->minValue(fn (callable $get) => match ($get('school_level')) {
                     SchoolLevel::SD->value => 1,
                     SchoolLevel::SMP->value => 7,
+                    SchoolLevel::SMA->value => 10,
                     default => 1,
                 })
                 ->maxValue(fn (callable $get) => match ($get('school_level')) {
                     SchoolLevel::SD->value => 6,
                     SchoolLevel::SMP->value => 9,
+                    SchoolLevel::SMA->value => 12,
                     default => 12,
                 })
                 ->helperText(fn (callable $get) => match ($get('school_level')) {
                     SchoolLevel::SD->value => 'Kelas 1 sampai 6 untuk tingkat SD.',
                     SchoolLevel::SMP->value => 'Kelas 7, 8, atau 9 untuk tingkat SMP.',
+                    SchoolLevel::SMA->value => 'Kelas 10, 11, atau 12 untuk tingkat SMA.',
                     default => 'Boleh dikosongkan. Pilih jenjang terlebih dahulu untuk batasan kelas.',
                 })
                 ->live(),
@@ -139,6 +143,10 @@ class ListAiGenerationJobs extends ListRecords
 
             if ($level === SchoolLevel::SMP->value && ($grade < 7 || $grade > 9)) {
                 $this->reject('Kelas untuk jenjang SMP hanya kelas 7, 8, atau 9.');
+            }
+
+            if ($level === SchoolLevel::SMA->value && ($grade < 10 || $grade > 12)) {
+                $this->reject('Kelas untuk jenjang SMA hanya kelas 10, 11, atau 12.');
             }
         }
 

@@ -44,4 +44,14 @@ class SubjectFactory extends Factory
             'end_grade' => 9,
         ]);
     }
+
+    public function sma(): static
+    {
+        return $this->state(fn () => [
+            'school_level' => SchoolLevel::SMA,
+            'start_grade' => 10,
+            'end_grade' => 12,
+        ]);
+    }
 }
+

@@ -54,7 +54,13 @@ class AccountSeeder extends Seeder
         $names = $this->nameParts();
         $number = 1;
 
-        foreach ([['7A', 7], ['7B', 7], ['8A', 8]] as [$label, $grade]) {
+        $classes = [
+            ['6A', 6, \App\Enums\SchoolLevel::SD],
+            ['7A', 7, \App\Enums\SchoolLevel::SMP],
+            ['10A', 10, \App\Enums\SchoolLevel::SMA],
+        ];
+
+        foreach ($classes as [$label, $grade, $level]) {
             $classroom = Classroom::updateOrCreate(
                 ['name' => "Kelas {$label}", 'academic_year' => '2026/2027'],
                 ['grade' => $grade],
@@ -67,6 +73,8 @@ class AccountSeeder extends Seeder
                         'name' => $names[($number - 1) % count($names)].' '.$number,
                         'password' => self::PASSWORD,
                         'role' => Role::Murid,
+                        'school_level' => $level,
+                        'grade' => $grade,
                         'classroom_id' => $classroom->id,
                         'is_active' => true,
                     ],

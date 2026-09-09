@@ -20,7 +20,9 @@ it('imports students and puts them in the named classroom', function () {
     $budi = User::where('email', 'budi@sekolah.test')->first();
     expect($budi->role)->toBe(Role::Murid)
         ->and($budi->is_active)->toBeTrue()
-        ->and($budi->classroom->name)->toBe('Kelas 9A');
+        ->and($budi->classroom->name)->toBe('Kelas 9A')
+        ->and($budi->grade)->toBe(9)
+        ->and($budi->school_level)->toBe(\App\Enums\SchoolLevel::SMP);
 });
 
 it('gives every imported student the password the admin chose', function () {

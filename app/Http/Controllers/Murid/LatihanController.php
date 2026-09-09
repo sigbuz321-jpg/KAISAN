@@ -23,8 +23,16 @@ class LatihanController extends Controller
 
         abort_unless($student->isMurid(), 403, 'Halaman ini untuk murid.');
 
+        $level = $student->effectiveSchoolLevel();
+        $grade = $student->effectiveGrade();
+
         $subjects = Subject::query()
             ->where('is_active', true)
+            ->when($level, fn ($q) => $q->where(function ($query) use ($level) {
+                $query->whereNull('school_level')
+                    ->orWhere('school_level', $level->value);
+            }))
+            ->when($grade, fn ($q) => $q->forGrade($grade))
             ->withCount(['questions as published_questions_count' => fn ($q) => $q->where('status', QuestionStatus::Published)])
             ->orderBy('name')
             ->get();

@@ -50,6 +50,7 @@ class GuruPanelProvider extends PanelProvider
             // teacher never has to remember where something lives.
             ->navigationGroups([
                 'Akademik',
+                'Pengguna',
                 'Referensi',
             ])
             // Question generation runs on a queue, so the teacher who asked is

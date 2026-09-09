@@ -43,6 +43,33 @@ class UserFactory extends Factory
         return $this->state(fn () => ['role' => Role::Murid]);
     }
 
+    public function sd(int $grade = 1): static
+    {
+        return $this->state(fn () => [
+            'role' => Role::Murid,
+            'school_level' => \App\Enums\SchoolLevel::SD,
+            'grade' => $grade,
+        ]);
+    }
+
+    public function smp(int $grade = 7): static
+    {
+        return $this->state(fn () => [
+            'role' => Role::Murid,
+            'school_level' => \App\Enums\SchoolLevel::SMP,
+            'grade' => $grade,
+        ]);
+    }
+
+    public function sma(int $grade = 10): static
+    {
+        return $this->state(fn () => [
+            'role' => Role::Murid,
+            'school_level' => \App\Enums\SchoolLevel::SMA,
+            'grade' => $grade,
+        ]);
+    }
+
     public function inactive(): static
     {
         return $this->state(fn () => ['is_active' => false]);

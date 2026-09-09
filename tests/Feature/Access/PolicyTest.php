@@ -9,14 +9,18 @@ beforeEach(function () {
     $this->murid = User::factory()->murid()->create();
 });
 
-it('lets only the admin manage accounts', function () {
+it('lets admin and guru manage student accounts but keeps murid out', function () {
     expect($this->admin->can('viewAny', User::class))->toBeTrue()
-        ->and($this->guru->can('viewAny', User::class))->toBeFalse()
+        ->and($this->guru->can('viewAny', User::class))->toBeTrue()
         ->and($this->murid->can('viewAny', User::class))->toBeFalse();
 });
 
-it('stops a teacher from reading another account', function () {
-    expect($this->guru->can('view', $this->murid))->toBeFalse();
+it('allows a teacher to view a student account but not staff accounts', function () {
+    $otherGuru = User::factory()->guru()->create();
+
+    expect($this->guru->can('view', $this->murid))->toBeTrue()
+        ->and($this->guru->can('view', $this->admin))->toBeFalse()
+        ->and($this->guru->can('view', $otherGuru))->toBeFalse();
 });
 
 it('stops a student from reading another account', function () {

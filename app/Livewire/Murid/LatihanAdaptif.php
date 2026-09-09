@@ -66,9 +66,23 @@ class LatihanAdaptif extends Component
 
     public function mount(Subject $subject, StartPracticeSession $start): void
     {
-        abort_unless(auth()->user()?->isMurid() && auth()->user()->is_active, 403);
+        $student = auth()->user();
+        abort_unless($student?->isMurid() && $student->is_active, 403);
 
-        $session = $start->handle(auth()->user(), $subject);
+        if ($subject->school_level !== null && $student->effectiveSchoolLevel() !== null) {
+            abort_if($subject->school_level !== $student->effectiveSchoolLevel(), 403, 'Mata pelajaran tidak sesuai dengan jenjang Anda.');
+        }
+
+        if ($student->effectiveGrade() !== null) {
+            if ($subject->start_grade !== null && $student->effectiveGrade() < $subject->start_grade) {
+                abort(403, 'Mata pelajaran tidak sesuai dengan kelas Anda.');
+            }
+            if ($subject->end_grade !== null && $student->effectiveGrade() > $subject->end_grade) {
+                abort(403, 'Mata pelajaran tidak sesuai dengan kelas Anda.');
+            }
+        }
+
+        $session = $start->handle($student, $subject);
 
         $this->subjectId = $subject->id;
         $this->sessionId = $session->id;

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Users\Tables;
 
 use App\Enums\Role;
+use App\Enums\SchoolLevel;
 use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
@@ -33,8 +34,20 @@ class UsersTable
                     ->badge()
                     ->formatStateUsing(fn (Role $state) => $state->label()),
 
-                TextColumn::make('classroom.name')
+                TextColumn::make('school_level')
+                    ->label('Jenjang')
+                    ->badge()
+                    ->formatStateUsing(fn (?SchoolLevel $state, User $record) => $record->effectiveSchoolLevel()?->label() ?? '-')
+                    ->placeholder('-'),
+
+                TextColumn::make('grade')
                     ->label('Kelas')
+                    ->formatStateUsing(fn (?int $state, User $record) => $record->effectiveGrade() ? "Kelas {$record->effectiveGrade()}" : '-')
+                    ->placeholder('-')
+                    ->sortable(),
+
+                TextColumn::make('classroom.name')
+                    ->label('Rombel')
                     ->placeholder('-')
                     ->sortable(),
 
@@ -49,13 +62,22 @@ class UsersTable
                     ->sortable(),
             ])
             ->filters([
-                SelectFilter::make('role')
-                    ->label('Peran')
-                    ->options(Role::options()),
+                SelectFilter::make('school_level')
+                    ->label('Jenjang')
+                    ->options(SchoolLevel::options()),
+
+                SelectFilter::make('grade')
+                    ->label('Kelas')
+                    ->options(collect(range(1, 12))->mapWithKeys(fn (int $g) => [$g => "Kelas {$g}"])->all()),
 
                 SelectFilter::make('classroom_id')
-                    ->label('Kelas')
+                    ->label('Rombel')
                     ->relationship('classroom', 'name'),
+
+                SelectFilter::make('role')
+                    ->label('Peran')
+                    ->options(Role::options())
+                    ->visible(fn () => auth()->user()?->isAdmin()),
 
                 TernaryFilter::make('is_active')
                     ->label('Status akun')

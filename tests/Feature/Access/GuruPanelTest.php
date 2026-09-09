@@ -16,8 +16,15 @@ it('lets a teacher into their own dashboard', function () {
     $this->actingAs($this->guru)->get('/guru')->assertOk();
 });
 
-it('refuses the account list to a teacher in their own panel', function () {
-    $this->actingAs($this->guru)->get('/guru/users')->assertForbidden();
+it('allows teacher into account list showing students', function () {
+    User::factory()->murid()->create(['name' => 'Budi Santoso']);
+    User::factory()->admin()->create(['name' => 'Admin Utama']);
+
+    $this->actingAs($this->guru)
+        ->get('/guru/users')
+        ->assertOk()
+        ->assertSee('Budi Santoso')
+        ->assertDontSee('Admin Utama');
 });
 
 it('never shows a student name to a teacher through the teacher dashboard', function () {

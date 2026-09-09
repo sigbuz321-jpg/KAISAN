@@ -24,6 +24,7 @@ class SubjectsTable
                     ->color(fn ($state) => match ($state?->value) {
                         'sd' => 'info',
                         'smp' => 'success',
+                        'sma' => 'warning',
                         default => 'gray',
                     }),
                 TextColumn::make('grade_range')

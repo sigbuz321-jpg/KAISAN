@@ -7,28 +7,35 @@ use App\Models\User;
 class UserPolicy
 {
     /**
-     * Account management belongs to the admin alone in M1.
-     * Teachers get scoped access to their own students once teaching
-     * assignments exist -- there is no such relation in the schema yet.
+     * Account management belongs to admin for all roles, and teachers can manage
+     * student accounts (setting school level, grade, and classroom).
      */
     public function viewAny(User $user): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->isGuru();
     }
 
     public function view(User $user, User $subject): bool
     {
-        return $user->isAdmin() || $user->is($subject);
+        if ($user->isAdmin() || $user->is($subject)) {
+            return true;
+        }
+
+        return $user->isGuru() && $subject->isMurid();
     }
 
     public function create(User $user): bool
     {
-        return $user->isAdmin();
+        return $user->isAdmin() || $user->isGuru();
     }
 
     public function update(User $user, User $subject): bool
     {
-        return $user->isAdmin();
+        if ($user->isAdmin()) {
+            return true;
+        }
+
+        return $user->isGuru() && $subject->isMurid();
     }
 
     /**
@@ -43,7 +50,10 @@ class UserPolicy
 
     public function deactivate(User $user, User $subject): bool
     {
-        // An admin locking themselves out cannot be undone from the panel.
-        return $user->isAdmin() && ! $user->is($subject);
+        if ($user->isAdmin() && ! $user->is($subject)) {
+            return true;
+        }
+
+        return $user->isGuru() && $subject->isMurid();
     }
 }

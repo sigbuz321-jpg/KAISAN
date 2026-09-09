@@ -18,11 +18,17 @@ class ExamPolicy
             return true;
         }
 
+        $level = $user->effectiveSchoolLevel();
+        $subjectMatches = $level === null
+            || $exam->subject->school_level === null
+            || $exam->subject->school_level === $level;
+
         // A student sees an exam once it has left the teacher's desk and only
         // if their own class is sitting it.
         return $user->isMurid()
             && $exam->status->isVisibleToStudents()
-            && $exam->targetsClassroom($user->classroom_id);
+            && $exam->targetsClassroom($user->classroom_id)
+            && $subjectMatches;
     }
 
     public function create(User $user): bool
@@ -56,12 +62,18 @@ class ExamPolicy
      */
     public function start(User $user, Exam $exam): bool
     {
-        return $user->isMurid()
-            && $user->is_active
-            && $exam->status->acceptsSubmissions()
-            // A student cannot sit an exam their class was not given, even
-            // with the URL in hand.
-            && $exam->targetsClassroom($user->classroom_id);
+        if (! $user->isMurid() || ! $user->is_active || ! $exam->status->acceptsSubmissions()) {
+            return false;
+        }
+
+        $level = $user->effectiveSchoolLevel();
+        $subjectMatches = $level === null
+            || $exam->subject->school_level === null
+            || $exam->subject->school_level === $level;
+
+        // A student cannot sit an exam their class was not given, even
+        // with the URL in hand.
+        return $exam->targetsClassroom($user->classroom_id) && $subjectMatches;
     }
 
     /**

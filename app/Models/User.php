@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\Role;
+use App\Enums\SchoolLevel;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
@@ -19,6 +20,8 @@ use Illuminate\Support\Carbon;
  * @property string $name
  * @property string $email
  * @property Role $role
+ * @property SchoolLevel|null $school_level
+ * @property int|null $grade
  * @property int|null $classroom_id
  * @property bool $is_active
  * @property Carbon|null $last_login_at
@@ -34,6 +37,8 @@ class User extends Authenticatable implements FilamentUser
         'email',
         'password',
         'role',
+        'school_level',
+        'grade',
         'classroom_id',
         'is_active',
     ];
@@ -48,8 +53,45 @@ class User extends Authenticatable implements FilamentUser
             'last_login_at' => 'datetime',
             'password' => 'hashed',
             'role' => Role::class,
+            'school_level' => SchoolLevel::class,
+            'grade' => 'integer',
             'is_active' => 'boolean',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::saving(function (User $user) {
+            if (! $user->isMurid()) {
+                $user->school_level = null;
+                $user->grade = null;
+                $user->classroom_id = null;
+            } elseif ($user->grade !== null && $user->school_level === null) {
+                $user->school_level = SchoolLevel::fromGrade($user->grade);
+            }
+        });
+    }
+
+    public function effectiveGrade(): ?int
+    {
+        return $this->grade ?? $this->classroom?->grade;
+    }
+
+    public function effectiveSchoolLevel(): ?SchoolLevel
+    {
+        return $this->school_level ?? SchoolLevel::fromGrade($this->effectiveGrade());
+    }
+
+    public function gradeLabel(): ?string
+    {
+        $grade = $this->effectiveGrade();
+
+        return $grade !== null ? "Kelas {$grade}" : null;
+    }
+
+    public function schoolLevelLabel(): ?string
+    {
+        return $this->effectiveSchoolLevel()?->label();
     }
 
     /** The class a student belongs to. Always null for staff. */

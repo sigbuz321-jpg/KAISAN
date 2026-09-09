@@ -24,6 +24,7 @@ class UjianController extends Controller
         abort_unless($student->isMurid(), 403, 'Halaman ini untuk murid.');
 
         $season = Season::current();
+        $level = $student->effectiveSchoolLevel();
 
         $exams = $season === null || $student->classroom_id === null
             ? collect()
@@ -33,6 +34,7 @@ class UjianController extends Controller
                 // Only exams this student's class was actually given. Without
                 // this every student saw every exam in the school.
                 ->whereHas('classrooms', fn ($q) => $q->whereKey($student->classroom_id))
+                ->when($level, fn ($q) => $q->whereHas('subject', fn ($sub) => $sub->whereNull('school_level')->orWhere('school_level', $level->value)))
                 ->with('subject')
                 ->orderByDesc('starts_at')
                 ->get();

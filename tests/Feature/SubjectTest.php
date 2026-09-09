@@ -35,9 +35,11 @@ it('formats grade range label correctly', function () {
 it('filters subjects by school level scope', function () {
     Subject::create(['name' => 'IPA SD', 'school_level' => SchoolLevel::SD]);
     Subject::create(['name' => 'IPA SMP', 'school_level' => SchoolLevel::SMP]);
+    Subject::create(['name' => 'Fisika SMA', 'school_level' => SchoolLevel::SMA]);
 
     expect(Subject::forSchoolLevel(SchoolLevel::SD)->count())->toBe(1)
-        ->and(Subject::forSchoolLevel(SchoolLevel::SMP)->count())->toBe(1);
+        ->and(Subject::forSchoolLevel(SchoolLevel::SMP)->count())->toBe(1)
+        ->and(Subject::forSchoolLevel(SchoolLevel::SMA)->count())->toBe(1);
 });
 
 it('filters subjects by grade scope', function () {
