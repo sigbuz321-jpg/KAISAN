@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 it('imports students and puts them in the named classroom', function () {
-    Classroom::factory()->create(['name' => 'Kelas 9A']);
+    Classroom::factory()->create(['name' => 'Kelas 9A', 'grade' => 9]);
 
     $import = runImport(<<<'CSV'
     name,email,classroom

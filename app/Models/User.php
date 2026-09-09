@@ -62,11 +62,7 @@ class User extends Authenticatable implements FilamentUser
     protected static function booted(): void
     {
         static::saving(function (User $user) {
-            if (! $user->isMurid()) {
-                $user->school_level = null;
-                $user->grade = null;
-                $user->classroom_id = null;
-            } elseif ($user->grade !== null && $user->school_level === null) {
+            if ($user->isMurid() && $user->grade !== null && $user->school_level === null) {
                 $user->school_level = SchoolLevel::fromGrade($user->grade);
             }
         });
