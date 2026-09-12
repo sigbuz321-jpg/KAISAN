@@ -29,7 +29,15 @@ class PeringkatController extends Controller
         abort_unless($student->isMurid(), 403, 'Halaman ini untuk murid.');
 
         $season = Season::current();
-        $subjects = Subject::query()->where('is_active', true)->orderBy('name')->get();
+
+        // Same two rules the practice list uses: never a board for a subject
+        // this student's school level does not have, and never one for a
+        // subject with an empty question bank -- it could only ever rank nobody.
+        $subjects = Subject::query()
+            ->visibleTo($student)
+            ->withPublishedQuestions()
+            ->orderBy('name')
+            ->get();
 
         $subjectId = $request->integer('mapel') ?: null;
 

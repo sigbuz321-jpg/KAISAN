@@ -13,9 +13,11 @@ class LatihanController extends Controller
     /**
      * The subjects a student can practise, with where they stand in each.
      *
-     * A subject with no published questions is shown but not offered: better
-     * to say the bank is empty than to hand a student a screen that cannot
-     * give them anything.
+     * Subjects with an empty question bank are left out entirely. This reverses
+     * an earlier decision to show them as "belum ada soal": Kurikulum Merdeka
+     * defines around eleven subjects per school level and a bimbel teaches only
+     * a few, so showing them all buried the two or three a student could
+     * actually open under a wall of dead ends.
      */
     public function index(): View
     {
@@ -23,16 +25,9 @@ class LatihanController extends Controller
 
         abort_unless($student->isMurid(), 403, 'Halaman ini untuk murid.');
 
-        $level = $student->effectiveSchoolLevel();
-        $grade = $student->effectiveGrade();
-
         $subjects = Subject::query()
-            ->where('is_active', true)
-            ->when($level, fn ($q) => $q->where(function ($query) use ($level) {
-                $query->whereNull('school_level')
-                    ->orWhere('school_level', $level->value);
-            }))
-            ->when($grade, fn ($q) => $q->forGrade($grade))
+            ->visibleTo($student)
+            ->withPublishedQuestions()
             ->withCount(['questions as published_questions_count' => fn ($q) => $q->where('status', QuestionStatus::Published)])
             ->orderBy('name')
             ->get();

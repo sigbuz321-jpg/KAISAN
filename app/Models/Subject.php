@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\QuestionStatus;
 use App\Enums\SchoolLevel;
 use Database\Factories\SubjectFactory;
 use Illuminate\Database\Eloquent\Builder;
@@ -120,6 +121,42 @@ class Subject extends Model
         })->where(function (Builder $q) use ($grade) {
             $q->whereNull('end_grade')->orWhere('end_grade', '>=', $grade);
         });
+    }
+
+    /**
+     * The subjects one student is allowed to be offered: their own school
+     * level, their grade, and subjects that predate levels entirely.
+     *
+     * Both the practice list and the leaderboard read through this scope. They
+     * used to filter separately, and the leaderboard was missed -- an SMP
+     * student was offered boards for subjects that only exist in SD.
+     *
+     * @param  Builder<Subject>  $query
+     */
+    public function scopeVisibleTo(Builder $query, User $student): void
+    {
+        $level = $student->effectiveSchoolLevel();
+        $grade = $student->effectiveGrade();
+
+        $query->where('is_active', true)
+            ->when($level, fn (Builder $q) => $q->where(function (Builder $inner) use ($level) {
+                $inner->whereNull('school_level')->orWhere('school_level', $level->value);
+            }))
+            ->when($grade, fn (Builder $q) => $q->forGrade($grade));
+    }
+
+    /**
+     * Subjects whose question bank has something a student can be given.
+     *
+     * Kept separate from visibleTo() on purpose: one scope answers "may this
+     * student see it", the other "is there anything in it". Reading them
+     * together at the call site is how you can tell which rule dropped a row.
+     *
+     * @param  Builder<Subject>  $query
+     */
+    public function scopeWithPublishedQuestions(Builder $query): void
+    {
+        $query->whereHas('questions', fn (Builder $q) => $q->where('status', QuestionStatus::Published));
     }
 
     /** @return HasMany<Topic, $this> */
