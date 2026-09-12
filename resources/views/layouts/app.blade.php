@@ -34,7 +34,11 @@
                 @endif
 
                 <div class="ms-auto flex items-center gap-1">
-                    <div data-react-island="sound-toggle" class="flex items-center me-1"></div>
+                    {{-- Only the student screens ever play anything, so the mute
+                         control only appears where there is something to mute. --}}
+                    @if ($murid)
+                        <div data-react-island="sound-toggle" class="flex items-center me-1"></div>
+                    @endif
 
                     @if (auth()->user()->role->canAccessPanel())
                         {{-- Staff each have their own panel; sending a teacher
@@ -61,11 +65,13 @@
                 </div>
             @else
                 <div class="ms-auto flex items-center gap-2">
-                    <div data-react-island="sound-toggle" class="flex items-center"></div>
+                    {{-- No sound control for a signed-out visitor: nothing on the
+                         public pages plays audio. --}}
 
                     {{-- The front page already lists all three ways in, so a second
-                         button up here would only compete with them. --}}
-                    @unless (request()->routeIs('beranda'))
+                         button up here would only compete with them, and the sign-in
+                         pages do not need a link back to where the reader already is. --}}
+                    @unless (request()->routeIs('beranda', 'masuk', 'lupa-kata-sandi', 'atur-ulang-kata-sandi'))
                         <a href="{{ route('masuk') }}"
                            class="inline-flex min-h-11 items-center rounded-md px-3 text-sm font-medium text-muted
                                   transition-colors duration-150 hover:bg-surface-muted hover:text-fg">Masuk</a>
