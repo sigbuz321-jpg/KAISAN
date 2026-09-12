@@ -165,3 +165,31 @@ it('does not offer the reset to a teacher', function () {
         ->test(ListSeasons::class)
         ->assertActionHidden('resetMusim');
 });
+
+it('leaves the podium out until three students have ranked', function () {
+    // A podium built for one or two is a ceremony for a race with one runner:
+    // it crowned the only participant and repeated their name in the row
+    // directly underneath.
+    skorMusim(User::factory()->murid()->create(['name' => 'Anak Satu']), '90.00');
+    skorMusim($this->murid, '70.00');
+
+    app(LeaderboardCalculator::class)->recalculate($this->season);
+
+    $this->actingAs($this->murid)
+        ->get(route('peringkat.index'))
+        ->assertOk()
+        ->assertDontSee('data-react-island="leaderboard-podium"', false);
+});
+
+it('draws the podium once three students have ranked', function () {
+    skorMusim(User::factory()->murid()->create(['name' => 'Anak Satu']), '90.00');
+    skorMusim(User::factory()->murid()->create(['name' => 'Anak Dua']), '80.00');
+    skorMusim($this->murid, '70.00');
+
+    app(LeaderboardCalculator::class)->recalculate($this->season);
+
+    $this->actingAs($this->murid)
+        ->get(route('peringkat.index'))
+        ->assertOk()
+        ->assertSee('data-react-island="leaderboard-podium"', false);
+});

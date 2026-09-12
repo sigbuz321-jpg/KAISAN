@@ -53,8 +53,14 @@
             ])->values()->all();
         @endphp
 
-        {{-- Interactive Top 3 Podium Island with Motion.dev physics --}}
-        <div data-react-island="leaderboard-podium" data-react-props="{{ json_encode(['entries' => $podiumEntries]) }}"></div>
+        {{--
+            The podium needs all three places filled. Below that the list says
+            everything on its own, and a podium holding one student just repeats
+            the same name twice in a row.
+        --}}
+        @if (count($podiumEntries) >= 3)
+            <div data-react-island="leaderboard-podium" data-react-props="{{ json_encode(['entries' => $podiumEntries]) }}"></div>
+        @endif
 
         <ol class="mt-6 rounded-lg border border-border bg-surface px-1 py-1">
             @foreach ($top as $entry)
