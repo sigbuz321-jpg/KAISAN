@@ -55,9 +55,13 @@ class AccountSeeder extends Seeder
         $names = $this->nameParts();
         $number = 1;
 
+        // SMP first on purpose: students are numbered in this order, and
+        // DatabaseSeeder advertises murid1 as the account to log in with. The
+        // sample questions are SMP-only, so murid1 has to be an SMP student or
+        // the first thing a new developer sees is an empty practice list.
         $classes = [
-            ['6A', 6, SchoolLevel::SD],
             ['7A', 7, SchoolLevel::SMP],
+            ['6A', 6, SchoolLevel::SD],
             ['10A', 10, SchoolLevel::SMA],
         ];
 

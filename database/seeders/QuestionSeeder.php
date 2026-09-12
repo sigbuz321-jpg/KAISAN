@@ -7,6 +7,7 @@ use App\Enums\AiJobStatus;
 use App\Enums\DifficultyBand;
 use App\Enums\QuestionSource;
 use App\Enums\QuestionStatus;
+use App\Enums\SchoolLevel;
 use App\Models\AiGenerationJob;
 use App\Models\Question;
 use App\Models\Subject;
@@ -24,7 +25,7 @@ class QuestionSeeder extends Seeder
         foreach (self::questions() as $row) {
             [$subjectName, $topicName, $stem, $options, $key, $explanation, $source, $status] = $row;
 
-            $subject = Subject::where('name', $subjectName)->firstOrFail();
+            $subject = self::subject($subjectName);
             $topic = Topic::where('subject_id', $subject->id)->where('name', $topicName)->first();
 
             // Matched on the wording, not on stem_hash: the hash is filled by a
@@ -56,12 +57,28 @@ class QuestionSeeder extends Seeder
     }
 
     /**
+     * The demo content is written for one school level and stays there.
+     *
+     * Kurikulum Merdeka repeats a subject name across levels -- "Matematika"
+     * exists at SD, SMP and SMA. Looking one up by name alone returned whichever
+     * row happened to be created first, so the sample questions scattered across
+     * levels and the demo student (grade 7, seeded by AccountSeeder) could open
+     * almost none of them.
+     */
+    private static function subject(string $name): Subject
+    {
+        return Subject::where('name', $name)
+            ->where('school_level', SchoolLevel::SMP)
+            ->firstOrFail();
+    }
+
+    /**
      * One finished generation record, so the AI request list and the cost
      * recap have something in them on a fresh install.
      */
     private function generationHistory(User $teacher): void
     {
-        $subject = Subject::where('name', 'Matematika')->firstOrFail();
+        $subject = self::subject('Matematika');
 
         $job = AiGenerationJob::firstOrNew([
             'requested_by' => $teacher->id,
