@@ -21,16 +21,16 @@
     --bg: oklch(0.985 0.005 80);
     --surface: oklch(1 0 0);
     --surface-muted: oklch(0.97 0.006 80);
-    --fg: oklch(0.25 0.02 250);
-    --muted: oklch(0.55 0.01 250);
-    --border: oklch(0.92 0.005 250);
-    --border-strong: oklch(0.85 0.008 250);
+    --fg: oklch(0.25 0.02 80);
+    --muted: oklch(0.55 0.01 80);
+    --border: oklch(0.92 0.005 80);
+    --border-strong: oklch(0.85 0.008 80);
 
     /* ---------- Accent (warm amber, shared with the Filament panel) ---------- */
     --accent: oklch(0.65 0.15 65);
     --accent-hover: oklch(0.58 0.15 65);
     --accent-text: oklch(0.5 0.14 60);
-    --accent-soft: oklch(0.95 0.04 65);
+    --accent-soft: oklch(0.95 0.06 95);
     --accent-fg: oklch(1 0 0);
 
     /* ---------- Semantics ---------- */
@@ -39,10 +39,10 @@
     --success-fg: oklch(1 0 0);
     --success-text: oklch(0.3 0.1 145);
 
-    --warning: oklch(0.55 0.13 65);
-    --warning-soft: oklch(0.95 0.04 65);
+    --warning: oklch(0.58 0.14 95);
+    --warning-soft: oklch(0.95 0.06 95);
     --warning-fg: oklch(1 0 0);
-    --warning-text: oklch(0.35 0.1 65);
+    --warning-text: oklch(0.4 0.11 95);
 
     --danger: oklch(0.49 0.2 25);
     --danger-soft: oklch(0.95 0.04 25);
@@ -54,8 +54,8 @@
     --info-fg: oklch(1 0 0);
     --info-text: oklch(0.3 0.14 260);
 
-    --neutral-soft: oklch(0.95 0.005 250);
-    --neutral-text: oklch(0.35 0.01 250);
+    --neutral-soft: oklch(0.95 0.005 80);
+    --neutral-text: oklch(0.35 0.01 80);
 
     /* ---------- Leaderboard podium ---------- */
     --master: oklch(0.55 0.12 65);
