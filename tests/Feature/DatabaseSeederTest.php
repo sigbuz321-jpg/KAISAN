@@ -3,6 +3,7 @@
 use App\Enums\QuestionSource;
 use App\Enums\QuestionStatus;
 use App\Enums\Role;
+use App\Enums\SchoolLevel;
 use App\Models\AiGenerationJob;
 use App\Models\Classroom;
 use App\Models\Question;
@@ -54,6 +55,35 @@ it('seeds published questions a teacher could build an exam from', function () {
 
     expect(Subject::count())->toBeGreaterThanOrEqual(3)
         ->and(Question::where('status', QuestionStatus::Published)->count())->toBeGreaterThanOrEqual(6);
+});
+
+it('puts every demo question on the school level the demo student belongs to', function () {
+    $this->seed(DatabaseSeeder::class);
+
+    // Kurikulum Merdeka repeats subject names across levels. The seeder used to
+    // resolve them by name alone and took whichever row was created first, so
+    // the sample questions scattered and the grade 7 demo student could open
+    // almost nothing. The demo content is deliberately SMP-only now.
+    $levels = Subject::query()
+        ->whereHas('questions')
+        ->pluck('school_level')
+        ->unique()
+        ->values();
+
+    expect($levels->all())->toBe([SchoolLevel::SMP]);
+});
+
+it('gives the demo student a subject they can actually practise', function () {
+    $this->seed(DatabaseSeeder::class);
+
+    $student = User::where('email', 'murid1@kaisan.test')->firstOrFail();
+
+    $practicable = Subject::query()
+        ->visibleTo($student)
+        ->withPublishedQuestions()
+        ->count();
+
+    expect($practicable)->toBeGreaterThan(0);
 });
 
 it('stamps an approver on every published question', function () {

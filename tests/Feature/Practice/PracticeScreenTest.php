@@ -177,14 +177,25 @@ it('keeps a deactivated student out of the practice screen', function () {
 
 it('lists the subjects a student can practise', function () {
     latihanSoal();
-    Subject::factory()->create(['name' => 'IPA Tanpa Soal']);
 
     $this->actingAs($this->murid)
         ->get(route('latihan.index'))
         ->assertOk()
+        ->assertSee('Matematika');
+});
+
+it('leaves out a subject whose question bank is empty', function () {
+    latihanSoal();
+    Subject::factory()->create(['name' => 'IPA Tanpa Soal']);
+
+    // These used to be listed with a "belum ada soal" note. Kurikulum Merdeka
+    // defines around eleven subjects per level and a bimbel teaches a few, so
+    // the note buried the subjects a student could actually open.
+    $this->actingAs($this->murid)
+        ->get(route('latihan.index'))
+        ->assertOk()
         ->assertSee('Matematika')
-        ->assertSee('IPA Tanpa Soal')
-        ->assertSee('Belum ada soal di mata pelajaran ini');
+        ->assertDontSee('IPA Tanpa Soal');
 });
 
 it('shows a student their level on the subject list', function () {
